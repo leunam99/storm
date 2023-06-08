@@ -45,7 +45,17 @@ class blackBoxExplorer {
                                     storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
                                     heuristic_simulate::heuristicSim& heuristic);
      
+     StateType sampleSuccessorFromAction(StateType state,
+                                         ActionType action,
+                                         storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo);
+     
      void addStateToEmdpIfNew(StateType state, storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo);
+
+     bool exploreState(storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType>& stateGen,
+                       StateType state,
+                       storm::generator::CompressedState const& compressedState,
+                       storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
+                       storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats);
 
      storm::modelchecker::blackbox::eMDP<int> eMDP;
      mutable std::default_random_engine randomGenerator;

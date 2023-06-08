@@ -16,13 +16,15 @@ enum HeuristicsSim{NAIVE};
 //      given the latest path, state and 'other' information.
 //      because 'other' is not known right now it has to be implemented later on
 class heuristicSim {
-    virtual HeuristicsSim getType() = 0;
+    public:
+     virtual HeuristicsSim getType() = 0;
 };
 
 class naiveHeuristicSim : heuristicSim {
-    HeuristicsSim getType() {
-       return HeuristicsSim::NAIVE;
-    }
+    public:
+     HeuristicsSim getType() {
+        return HeuristicsSim::NAIVE;
+     }
 };
 
 } //namespace heuristic_simulate
