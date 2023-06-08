@@ -10,8 +10,16 @@
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
-    
-class blackBoxChecker {};
+
+template<typename ModelType, typename StateType = uint32_t>
+class blackBoxChecker: public storm::modelchecker::AbstractModelChecker<Modeltype> {
+    public:
+     blackBoxChecker(storm::prism::Program const& program);
+     
+     virtual bool canHandle(CheckTask<storm::logic::Formula, ValueType> const& checkTask) const override;
+
+     void buildAndPrintEmdp();
+};
 
 } //namespace blackbox
 } //namespace modelchecker
