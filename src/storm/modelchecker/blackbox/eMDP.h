@@ -15,7 +15,7 @@ template<class ValueType>
 
 class eMDP {
    public:
-    typedef uint32_t index_type;
+    typedef uint64_t index_type;
     
     /*!
      * Constructs an empty eMDP
