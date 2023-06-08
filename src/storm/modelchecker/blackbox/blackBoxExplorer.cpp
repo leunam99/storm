@@ -11,6 +11,7 @@
 #include "storm/modelchecker/blackbox/eMDP.h"
 #include "storm/solver/OptimizationDirection.h"
 
+#include "storm/utility/macros.h"
 
 // maybe useful class
 #include "storm/settings/modules/ModuleSettings.h"
@@ -69,6 +70,23 @@ void blackBoxExplorer<StateType, ValueType>::samplePathFromInitialState(storm::m
                                                                         storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats) {
 
 } 
+
+template<class StateType, class ValueType>
+ActionType blackBoxExplorer<StateType, ValueType>::sampleActionOfState(StateType state,
+                                                                       storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
+                                                                       heuristic_simulate::heuristicSim& heuristic) {
+    StateType stateRow = explInfo.getRowGroup(state);
+    ActionType availActions = explInfo.getRowGroupSize(stateRow);
+
+    // for now just choose action by uniform distribution
+    if (heuristic.getType() == heuristic_simulate::HeuristicsSim::NAIVE) {
+        std::uniform_int_distribution<ActionType> distribution(0, availActions - 1);
+        return distribution(randomGenerator);
+    } else {
+        STORM_LOG_THROW(true, "Only NAIVE heuristic is implemented right now.");
+}
+}
+     
 
 template<class StateType, class ValueType>
 void blackBoxExplorer<StateType, ValueType>::addStateToEmdpIfNew(StateType state,

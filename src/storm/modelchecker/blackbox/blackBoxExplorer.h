@@ -41,12 +41,14 @@ class blackBoxExplorer {
                                      heuristic_simulate::heuristicSim& heuristic,
                                      storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats);
 
-     StateType getAvailActionsCount(StateType state);
-     ActionType sampleActionOfState(StateType state, heuristic_simulate::heuristicSim& heuristic);
+     ActionType sampleActionOfState(StateType state,
+                                    storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
+                                    heuristic_simulate::heuristicSim& heuristic);
+     
      void addStateToEmdpIfNew(StateType state, storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo);
 
      storm::modelchecker::blackbox::eMDP<int> eMDP;
-     //mutable std::default_random_engine randomGenerator;
+     mutable std::default_random_engine randomGenerator;
 };
 
 } //namespace blackbox
