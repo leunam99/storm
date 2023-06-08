@@ -8,6 +8,7 @@
 #include "storm/modelchecker/exploration/StateGeneration.h"
 #include "storm/modelchecker/exploration/Statistics.h"
 
+#include "storm/modelchecker/blackbox/eMDP.h"
 #include "storm/solver/OptimizationDirection.h"
 
 
@@ -45,7 +46,7 @@ void blackBoxExplorer<StateType, ValueType>::performExploration(storm::modelchec
             StateType state = it.first;
             ActionType action = it.second;
 
-            addStateToEmdpIfNew(state);
+            addStateToEmdpIfNew(state, explInfo);
         }
     }
 }
@@ -59,13 +60,17 @@ void blackBoxExplorer<StateType, ValueType>::samplePathFromInitialState(storm::m
 } 
 
 template<class StateType, class ValueType>
-void blackBoxExplorer<StateType, ValueType>::addStateToEmdpIfNew(StateType state) {
+void blackBoxExplorer<StateType, ValueType>::addStateToEmdpIfNew(StateType state,
+                                                                 storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo) {
     if (eMDP.isStateKnown(state)) {
         return;
     }
     // get availActionCount
-    
-    ActionType availActions = 0;
+    StateType stateRow = explInfo.getRowGroup(state);
+    ActionType availActions = explInfo.getRowGroupSize(stateRow);
+    std::vector<typename storm::modelchecker::blackbox::eMDP::index_type> actionsVec(availActions);
+    std::iota(actionsVec.begin(), actionsVec.end(), 0);
+    eMDP.addState(state, actionsVec);
 }
 
 
