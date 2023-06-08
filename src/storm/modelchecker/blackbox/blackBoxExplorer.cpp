@@ -39,14 +39,25 @@ void blackBoxExplorer<StateType, ValueType>::performExploration(storm::modelchec
     storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats;
 
     for (int i = 0; i < samplePathCount; i++) {
-        samplePathFromInitialState(stateGen, explInfo, heuristic, stats);
+        samplePathFromInitialState(stateGen, explInfo, stack, heuristic, stats);
 
+        // make sure sampled path is long enough
+        if (stack.size() < 2) {
+            continue;
+        }
+
+        StateType state = stack[0].first;
+        ActionType action = stack[0].second;
+        StatType succ;
         // store explorationSteps in eMDP
-        for (auto& it : stack) {
-            StateType state = it.first;
-            ActionType action = it.second;
+        for (auto& it = std::next(stack.begin()); it != stack.end(); it++) {
+            succ = it.first;
 
             addStateToEmdpIfNew(state, explInfo);
+            eMDP.addVisit(state, action, succ);
+
+            state = it.first;
+            action = it.second;
         }
     }
 }

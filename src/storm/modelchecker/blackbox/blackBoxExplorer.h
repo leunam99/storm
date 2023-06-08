@@ -37,6 +37,7 @@ class blackBoxExplorer {
     private:
      void samplePathFromInitialState(storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType>& stateGen,
                                      storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
+                                     StateActionStack stack,
                                      heuristic_simulate::heuristicSim& heuristic,
                                      storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats);
 
