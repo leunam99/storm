@@ -63,6 +63,8 @@ ValueType eMDP<ValueType>::getSampleCount(index_type state, index_type action, i
     return hashStorage.get_succ_samples(state, action, succ);
 }
 
+template class eMDP<int>;
+
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
