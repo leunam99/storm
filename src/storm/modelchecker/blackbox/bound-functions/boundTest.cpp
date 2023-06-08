@@ -1,7 +1,8 @@
+/*!
+
 #include "BoundFunc.h"
 #include <cstdio>
 
-/*!
  * File to test Bound Functions
 
 /*
