@@ -20,18 +20,30 @@ namespace blackbox {
 template<class StateType, class ValueType>
 class blackBoxExplorer {
     public:
-     blackBoxExplorer();
+     typedef StateType ActionType;
+     typedef std::vector<std::pair<StateType, ActionType>> StateActionStack;
 
-     void performExploration(storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType> stateGen,
-                             storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType> explInfo,
-                             heuristic_simulate::heuristicSim& heuristic);
+     blackBoxExplorer(storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType> stateGen,
+                      storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType> explInfo);
+
+     void performExploration(heuristic_simulate::heuristicSim& heuristic, int samplePathCount);
 
      //eMDP<ValueType>* getEMDP() {
      //   return &this->eMDP;
      //};
 
     private:
+     void samplePathFromInitialState(storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType> stateGen,
+                                     storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType> explInfo,
+                                     heuristic_simulate::heuristicSim& heuristic,
+                                     storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats);
+
+     StateType getAvailActionsCount(StateType state);
+     ActionType sampleActionOfState(StateType state, heuristic_simulate::heuristicSim& heuristic)
+
      storm::modelchecker::blackbox::eMDP<int> eMDP;
+     storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType> stateGen;
+     storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType> explInfo
      //mutable std::default_random_engine randomGenerator;
 };
 
