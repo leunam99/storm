@@ -22,7 +22,7 @@ namespace blackbox {
 template<class ValueType>
 class eMDP {
    public:
-    typedef uint_fast64_t index_type;
+    typedef uint32_t index_type;
     
     /*!
      * Constructs an empty eMDP

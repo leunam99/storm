@@ -12,6 +12,9 @@ namespace heuristic_simulate{
 
 enum HeuristicsSim{NAIVE};
 
+// TODO this heuristic class should be able to return the action to take
+//      given the latest path, state and 'other' information.
+//      because 'other' is not known right now it has to be implemented later on
 class heuristicSim {
     virtual HeuristicsSim getType() = 0;
 };

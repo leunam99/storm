@@ -36,11 +36,11 @@ Bmdp<ValueType, RewardModelType>::Bmdp(storm::storage::sparse::ModelComponents<V
     // Intentionally left empty
 }
 
-template class Bmdp<double>;
-template class Bmdp<storm::RationalNumber>;
+//template class Bmdp<double>;
+//template class Bmdp<storm::RationalNumber>;
 
-template class Bmdp<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
-template class Bmdp<storm::RationalFunction>;
+//template class Bmdp<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
+//template class Bmdp<storm::RationalFunction>;
 }  // namespace sparse
 }  // namespace models
 }  // namespace storm
