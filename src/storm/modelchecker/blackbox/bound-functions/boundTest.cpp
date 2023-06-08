@@ -1,4 +1,4 @@
-#include "BoundFunc.h"
+#include "boundFunc.h"
 #include <cstdio>
 
 /*!
