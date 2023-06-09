@@ -8,6 +8,7 @@ Befehl:
     storm --prism <path-to-mdp-file> --prop <non-trivial-prop> --engine blackbox
     -> simuliert den mdp und speichert die gesampleten Pfade in einem eMDP. Der eMDP wird dann geprinted.
     -> <non-trivial-prop> darf nicht wie "Pmax=? [F true]" sein. Sonst funktioniert der StateGenerator aus irgendeinem Grund nicht richtig.
+    -> Beispiel file (evtl. schon zu groß): resources/examples/testfiles/mdp/two_dice.nm
 
 extra flags: (siehe storm --help blackbox)
     --blackbox:stepssim <count> 
