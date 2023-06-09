@@ -41,12 +41,9 @@ void blackBoxExplorer<StateType, ValueType>::performExploration(storm::modelchec
     storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats;
 
     for (int i = 0; i < samplePathCount; i++) {
-        std::cout << "stack size before sampling: "<< stack.size() << "\n";
-
         samplePathFromInitialState(stateGen, explInfo, stack, heuristic, stats);
 
         // make sure sampled path is long enough
-        std::cout << "stack size: "<< stack.size() << "\n";
         if (stack.size() < 2) {
             continue;
         }
@@ -61,7 +58,6 @@ void blackBoxExplorer<StateType, ValueType>::performExploration(storm::modelchec
             action = stack.back().second;
 
             addStateToEmdpIfNew(state, explInfo);
-            std::cout << "add to eMDP " << state << ", " << action << ", " << succ << "\n";
             eMdp.addVisit(state, action, succ);
             
             succ = state;
@@ -157,8 +153,8 @@ template<class StateType, class ValueType>
 StateType blackBoxExplorer<StateType, ValueType>::sampleSuccessorFromAction(StateType state,
                                                                             ActionType action,
                                                                             storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo) {
-    StateType stateRow = explInfo.getRowGroup(state);
-    auto& actionRow = explInfo.getRowOfMatrix(stateRow + action);
+    StateType stateRowIdx = explInfo.getStartRowOfGroup(explInfo.getRowGroup(state));
+    auto& actionRow = explInfo.getRowOfMatrix(stateRowIdx + action);
     std::uniform_int_distribution<ActionType> distribution(0, actionRow.size() - 1);
     return actionRow[distribution(randomGenerator)].getColumn();
 }

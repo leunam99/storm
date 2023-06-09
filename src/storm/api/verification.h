@@ -205,7 +205,7 @@ typename std::enable_if<std::is_same<ValueType, double>::value, std::unique_ptr<
         }
     } else {
         STORM_LOG_THROW(false, storm::exceptions::NotSupportedException,
-                        "The model type " << program.getModelType() << " is not supported by the exploration engine.");
+                        "The model type " << program.getModelType() << " is not supported by the blackbox engine.");
     }
 
     return result;
