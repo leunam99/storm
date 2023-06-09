@@ -6,6 +6,7 @@
 
 #include "storm/modelchecker/abstraction/BisimulationAbstractionRefinementModelChecker.h"
 #include "storm/modelchecker/abstraction/GameBasedMdpModelChecker.h"
+#include "storm/modelchecker/blackbox/blackBoxChecker.h"
 #include "storm/modelchecker/csl/HybridCtmcCslModelChecker.h"
 #include "storm/modelchecker/csl/HybridMarkovAutomatonCslModelChecker.h"
 #include "storm/modelchecker/csl/SparseCtmcCslModelChecker.h"
@@ -180,6 +181,44 @@ typename std::enable_if<!std::is_same<ValueType, double>::value, std::unique_ptr
 
 template<typename ValueType>
 std::unique_ptr<storm::modelchecker::CheckResult> verifyWithExplorationEngine(storm::storage::SymbolicModelDescription const& model,
+                                                                              storm::modelchecker::CheckTask<storm::logic::Formula, ValueType> const& task) {
+    Environment env;
+    return verifyWithExplorationEngine(env, model, task);
+}
+
+//
+// Verifying with Blackbox engine
+//
+template<typename ValueType>
+typename std::enable_if<std::is_same<ValueType, double>::value, std::unique_ptr<storm::modelchecker::CheckResult>>::type verifyWithBlackboxEngine(
+    storm::Environment const& env, storm::storage::SymbolicModelDescription const& model,
+    storm::modelchecker::CheckTask<storm::logic::Formula, ValueType> const& task) {
+
+    STORM_LOG_THROW(model.isPrismProgram(), storm::exceptions::NotSupportedException, "Blackbox engine is currently only applicable to PRISM models.");
+    storm::prism::Program const& program = model.asPrismProgram();
+
+    std::unique_ptr<storm::modelchecker::CheckResult> result;
+    if (program.getModelType() == storm::prism::Program::ModelType::MDP) {
+        storm::modelchecker::blackbox::blackBoxChecker<storm::models::sparse::Mdp<ValueType>> checker(program);
+        if (checker.canHandle(task)) {
+            result = checker.check(env, task);
+        }
+    } else {
+        STORM_LOG_THROW(false, storm::exceptions::NotSupportedException,
+                        "The model type " << program.getModelType() << " is not supported by the exploration engine.");
+    }
+
+    return result;
+}
+
+template<typename ValueType>
+typename std::enable_if<!std::is_same<ValueType, double>::value, std::unique_ptr<storm::modelchecker::CheckResult>>::type verifyWithBlackboxEngine(
+    storm::Environment const&, storm::storage::SymbolicModelDescription const&, storm::modelchecker::CheckTask<storm::logic::Formula, ValueType> const&) {
+    STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "Blackbox engine does not support data type.");
+}
+
+template<typename ValueType>
+std::unique_ptr<storm::modelchecker::CheckResult> verifyWithBlackboxEngine(storm::storage::SymbolicModelDescription const& model,
                                                                               storm::modelchecker::CheckTask<storm::logic::Formula, ValueType> const& task) {
     Environment env;
     return verifyWithExplorationEngine(env, model, task);

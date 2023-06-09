@@ -37,6 +37,7 @@ enum class Engine {
     Exploration,
     AbstractionRefinement,
     Automatic,
+    Blackbox,
     Unknown
 };
 
