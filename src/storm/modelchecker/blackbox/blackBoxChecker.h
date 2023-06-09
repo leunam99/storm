@@ -2,6 +2,24 @@
 // Created by Maximilian Kamps on 25.05.23.
 //
 
+/*
+kleine Anleitung um die blackbox engine auszuführen
+Befehl:
+    storm --prism <path-to-mdp-file> --prop <non-trivial-prop> --engine blackbox
+    -> simuliert den mdp und speichert die gesampleten Pfade in einem eMDP. Der eMDP wird dann geprinted.
+    -> <non-trivial-prop> darf nicht wie "Pmax=? [F true]" sein. Sonst funktioniert der StateGenerator aus irgendeinem Grund nicht richtig.
+
+extra flags: (siehe storm --help blackbox)
+    --blackbox:stepssim <count> 
+        Sets the number of paths sampled for one simulation step. <count> (default: 30)
+    --blackbox:simheuristic <name> 
+        Sets the heuristic used for simulation. <name> (in {naive}; default: naive):
+        The name of the heuristic to use. 'naive' each time chooses a random action.
+    --[blackbox:]precision (eps) <value> The precision to achieve. (To be implemented) <value> (in (0, 1); default: 1e-06):
+        The value to use to determine convergence.
+
+*/
+
 #ifndef STORM_BLACKBOXCHECKER_H
 #define STORM_BLACKBOXCHECKER_H
 
