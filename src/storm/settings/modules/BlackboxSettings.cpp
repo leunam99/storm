@@ -58,7 +58,7 @@ uint_fast64_t BlackboxSettings::getNumberOfSamplingsPerSimulationStep() const {
 
 storm::modelchecker::blackbox::heuristic_simulate::HeuristicsSim BlackboxSettings::getSimulationHeuristic() const {
     std::string simulationHeuristic = this->getOption(simulationHeuristicOptionName).getArgumentByName("name").getValueAsString();
-    if (simulationHeuristic == "probdiffs") {
+    if (simulationHeuristic == "naive") {
         return storm::modelchecker::blackbox::heuristic_simulate::HeuristicsSim::NAIVE;
     }
     STORM_LOG_THROW(false, storm::exceptions::IllegalArgumentValueException, "Unknown simulation heuristic '" << simulationHeuristic << "'.");

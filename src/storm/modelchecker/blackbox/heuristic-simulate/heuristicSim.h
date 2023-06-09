@@ -5,6 +5,9 @@
 #ifndef STORM_HEURISTICSIM_H
 #define STORM_HEURISTICSIM_H
 
+#include "storm/utility/macros.h"
+#include "storm/exceptions/InvalidTypeException.h"
+
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
@@ -17,7 +20,10 @@ enum HeuristicsSim{NAIVE};
 //      because 'other' is not known right now it has to be implemented later on
 class heuristicSim {
     public:
-     virtual HeuristicsSim getType() = 0;
+     virtual HeuristicsSim getType() {
+        // return default value
+        return HeuristicsSim::NAIVE;
+     }
 };
 
 class naiveHeuristicSim : public heuristicSim {
@@ -26,6 +32,8 @@ class naiveHeuristicSim : public heuristicSim {
         return HeuristicsSim::NAIVE;
      }
 };
+
+std::unique_ptr<heuristicSim> getHeuristicSimFromType(HeuristicsSim heuristic);
 
 } //namespace heuristic_simulate
 } //namespace blackbox

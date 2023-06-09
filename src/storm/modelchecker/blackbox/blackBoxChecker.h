@@ -7,6 +7,7 @@
 
 #include "storm/modelchecker/AbstractModelChecker.h"
 #include "storm/modelchecker/blackbox/blackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/heuristic-simulate/heuristicSim.h"
 
 namespace storm {
 namespace modelchecker {
@@ -28,6 +29,8 @@ class blackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
      // The program that defines the model to check.
      storm::prism::Program program;
      blackBoxExplorer<StateType, ValueType> blackBoxExpl;
+     uint64_t pathsSampledPerSimulation;
+     std::unique_ptr<storm::modelchecker::blackbox::heuristic_simulate::heuristicSim> simHeuristic;
 };
 
 } //namespace blackbox

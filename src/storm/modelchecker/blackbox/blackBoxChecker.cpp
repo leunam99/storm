@@ -9,6 +9,9 @@
 #include "storm/modelchecker/exploration/StateGeneration.h"
 #include "storm/storage/expressions/ExpressionEvaluator.h"
 
+#include "storm/settings/SettingsManager.h"
+#include "storm/settings/modules/BlackboxSettings.h"
+
 #include "storm/models/sparse/Mdp.h"
 #include "storm/modelchecker/results/ExplicitQuantitativeCheckResult.h"
 
@@ -21,7 +24,10 @@ namespace blackbox {
 
 template<typename ModelType, typename StateType>
 blackBoxChecker<ModelType, StateType>::blackBoxChecker(storm::prism::Program const& program): 
-    program(program.substituteConstantsFormulas()) {
+    program(program.substituteConstantsFormulas()),
+    pathsSampledPerSimulation(storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getNumberOfSamplingsPerSimulationStep()),
+    simHeuristic(storm::modelchecker::blackbox::heuristic_simulate::getHeuristicSimFromType(
+                 storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimulationHeuristic())) {
     // intentionally left empty
 }
 
@@ -51,7 +57,7 @@ std::unique_ptr<CheckResult> blackBoxChecker<ModelType, StateType>::computeUntil
                                                                                                    conditionFormula.toExpression(program.getManager(), labelToExpressionMapping),
                                                                                                    targetFormula.toExpression(program.getManager(), labelToExpressionMapping));
     storm::modelchecker::blackbox::heuristic_simulate::naiveHeuristicSim heuristic;
-    blackBoxExpl.performExploration(stateGeneration, explorationInformation, heuristic, 300);
+    blackBoxExpl.performExploration(stateGeneration, explorationInformation, heuristic, pathsSampledPerSimulation);
 
     blackBoxExpl.getEmdp()->print();
 
