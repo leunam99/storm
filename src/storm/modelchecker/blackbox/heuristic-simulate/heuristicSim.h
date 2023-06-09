@@ -20,7 +20,7 @@ class heuristicSim {
      virtual HeuristicsSim getType() = 0;
 };
 
-class naiveHeuristicSim : heuristicSim {
+class naiveHeuristicSim : public heuristicSim {
     public:
      HeuristicsSim getType() {
         return HeuristicsSim::NAIVE;

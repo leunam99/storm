@@ -23,6 +23,7 @@ class blackBoxExplorer {
     public:
      typedef StateType ActionType;
      typedef std::vector<std::pair<StateType, ActionType>> StateActionStack;
+     typedef int eMdpType;
 
      blackBoxExplorer();
 
@@ -30,14 +31,12 @@ class blackBoxExplorer {
                              storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
                              heuristic_simulate::heuristicSim& heuristic, int samplePathCount);
 
-     //eMDP<ValueType>* getEMDP() {
-     //   return &this->eMDP;
-     //};
+     eMDP<eMdpType>* getEmdp();
 
     private:
      void samplePathFromInitialState(storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType>& stateGen,
                                      storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
-                                     StateActionStack stack,
+                                     StateActionStack& stack,
                                      heuristic_simulate::heuristicSim& heuristic,
                                      storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats);
 
@@ -57,7 +56,7 @@ class blackBoxExplorer {
                        storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo,
                        storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats);
 
-     storm::modelchecker::blackbox::eMDP<int> eMDP;
+     storm::modelchecker::blackbox::eMDP<eMdpType> eMdp;
      mutable std::default_random_engine randomGenerator;
 };
 

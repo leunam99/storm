@@ -23,8 +23,7 @@ namespace modelchecker {
 namespace blackbox {
 
 template<class StateType, class ValueType>
-blackBoxExplorer<StateType, ValueType>::blackBoxExplorer(): eMDP() {
-    
+blackBoxExplorer<StateType, ValueType>::blackBoxExplorer(): eMdp() {  
 }
 
 template <class StateType, class ValueType>
@@ -42,9 +41,12 @@ void blackBoxExplorer<StateType, ValueType>::performExploration(storm::modelchec
     storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats;
 
     for (int i = 0; i < samplePathCount; i++) {
+        std::cout << "stack size before sampling: "<< stack.size() << "\n";
+
         samplePathFromInitialState(stateGen, explInfo, stack, heuristic, stats);
 
         // make sure sampled path is long enough
+        std::cout << "stack size: "<< stack.size() << "\n";
         if (stack.size() < 2) {
             continue;
         }
@@ -59,7 +61,8 @@ void blackBoxExplorer<StateType, ValueType>::performExploration(storm::modelchec
             action = stack.back().second;
 
             addStateToEmdpIfNew(state, explInfo);
-            eMDP.addVisit(state, action, succ);
+            std::cout << "add to eMDP " << state << ", " << action << ", " << succ << "\n";
+            eMdp.addVisit(state, action, succ);
             
             succ = state;
             stack.pop_back();
@@ -68,9 +71,14 @@ void blackBoxExplorer<StateType, ValueType>::performExploration(storm::modelchec
 }
 
 template <class StateType, class ValueType>
+eMDP<typename blackBoxExplorer<StateType, ValueType>::eMdpType>* blackBoxExplorer<StateType, ValueType>::getEmdp() {
+    return &eMdp;
+}
+
+template <class StateType, class ValueType>
 void blackBoxExplorer<StateType, ValueType>::samplePathFromInitialState(storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType>& stateGeneration,
                                                                         storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explorationInformation,
-                                                                        StateActionStack stack,
+                                                                        StateActionStack& stack,
                                                                         heuristic_simulate::heuristicSim& heuristic,
                                                                         storm::modelchecker::exploration_detail::Statistics<StateType, ValueType> stats) {
     // This function is mainly copied from SparseExplorationModelChecker, however parts regarding the precomputation are omitted
@@ -159,7 +167,7 @@ StateType blackBoxExplorer<StateType, ValueType>::sampleSuccessorFromAction(Stat
 template<class StateType, class ValueType>
 void blackBoxExplorer<StateType, ValueType>::addStateToEmdpIfNew(StateType state,
                                                                  storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType>& explInfo) {
-    if (eMDP.isStateKnown(state)) {
+    if (eMdp.isStateKnown(state)) {
         return;
     }
     // get availActionCount
@@ -167,7 +175,7 @@ void blackBoxExplorer<StateType, ValueType>::addStateToEmdpIfNew(StateType state
     ActionType availActions = explInfo.getRowGroupSize(stateRow);
     std::vector<typename storm::modelchecker::blackbox::eMDP<ValueType>::index_type> actionsVec(availActions);
     std::iota(actionsVec.begin(), actionsVec.end(), 0);
-    eMDP.addState(state, actionsVec);
+    eMdp.addState(state, actionsVec);
 }
 
 
@@ -256,6 +264,7 @@ bool blackBoxExplorer<StateType, ValueType>::exploreState(storm::modelchecker::e
 
     return isTerminalState;}
 
+//template class blackBoxExplorer<uint32_t, double>;
 template class blackBoxExplorer<uint32_t, double>;
 
 } //namespace blackbox
