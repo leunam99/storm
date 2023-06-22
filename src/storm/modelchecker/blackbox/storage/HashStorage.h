@@ -51,6 +51,24 @@ class HashStorage {
     using count_sampleMap_pair = std::pair<index_type, std::unordered_map<index_type, index_type> >;
     std::unordered_map<index_type, std::unordered_map<index_type, count_sampleMap_pair > > data;
 
+
+    //TODO: Use boost::hash instead, keep pair_hash for easy compile
+    struct pair_hash {
+        template <class T1, class T2>
+        std::size_t operator () (const std::pair<T1,T2> &p) const {
+            auto h1 = std::hash<T1>{}(p.first);
+            auto h2 = std::hash<T2>{}(p.second);
+
+            return h1 ^ h2;  
+        }
+    };
+
+    /* Maps state action pair to number of known successors -> used in greybox setting */
+    std::unordered_map<std::pair<index_type, index_type>, index_type, pair_hash> succ_count_map;
+    
+    /*Maps state to the number of available actions*/
+    std::unordered_map<index_type, index_type> action_count_map;
+
     std::unordered_map<index_type, index_type> get_succ_map(index_type state, index_type action);
 
    public:
@@ -147,6 +165,8 @@ class HashStorage {
      */
     bool state_exists(index_type state);
 
+    index_type get_action_count(index_type state);
+
     /*!
      * Returns the total samples for a given state and action 
      * 
@@ -165,6 +185,10 @@ class HashStorage {
      * @return index_type
      */
     index_type get_succ_samples(index_type state, index_type action, index_type succ);
+
+    void set_succ_count(std::pair<index_type, index_type> state_action_pair, index_type count);
+
+    index_type get_succ_count(std::pair<index_type, index_type> state_action_pair);
 
     /*!
      * Prints the data structure to std::cout

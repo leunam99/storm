@@ -64,6 +64,7 @@ void HashStorage<IntValueType>::add_state(IntValueType state) {
 template<typename IntValueType>
 void HashStorage<IntValueType>::add_state_actions(IntValueType state, std::vector<IntValueType> actions) {
     add_state(state);
+    action_count_map[state] = actions.size();
     auto* act_map = &data.at(state);
     if (act_map->begin() == act_map->end()) {
         for (auto act : actions) (*act_map)[act] = count_sampleMap_pair();
@@ -77,6 +78,7 @@ void HashStorage<IntValueType>::inc_trans(IntValueType state, IntValueType actio
 
     auto* act_map = &data.at(state);  // add action to data if it doesn't exist
     if (act_map->find(action) == act_map->end()) {
+        action_count_map[state] += 1;
         (*act_map)[action] = count_sampleMap_pair();
     }
 
@@ -142,6 +144,13 @@ bool HashStorage<IntValueType>::state_exists(IntValueType state) {
     return data.find(state) != data.end();
 }
 
+template<typename IntValueType> 
+IntValueType HashStorage<IntValueType>::get_action_count(IntValueType state) {
+    if(action_count_map.find(state) == action_count_map.end()) 
+        return -1;
+    return action_count_map[state];
+}
+
 template<typename IntValueType>
 IntValueType HashStorage<IntValueType>::get_total_samples(IntValueType state, IntValueType action) {
     if (data.find(state) == data.end()) {
@@ -161,6 +170,18 @@ IntValueType HashStorage<IntValueType>::get_succ_samples(IntValueType state, Int
 
     if (succ_map.find(succ) != succ_map.end())
         return succ_map.at(succ);
+    return -1;
+}
+
+template<typename IntValueType>
+void HashStorage<IntValueType>::set_succ_count(std::pair<IntValueType, IntValueType> state_action_pair, IntValueType count) {
+    succ_count_map[state_action_pair] = count;
+}
+
+template<typename IntValueType>
+IntValueType HashStorage<IntValueType>::get_succ_count(std::pair<IntValueType, IntValueType> state_action_pair) {
+    if(succ_count_map.find(state_action_pair) != succ_count_map.end())
+        return succ_count_map[state_action_pair];
     return -1;
 }
 
@@ -186,7 +207,7 @@ template class KeyIterator<int_fast64_t>; //Type for which class gets compiled
 }
 }
 
-/*
+
 int main(int argc, char const *argv[])
 {       
     
@@ -195,6 +216,11 @@ int main(int argc, char const *argv[])
     x.inc_trans(1,2,7,5);
     x.inc_trans(1,2,4,3);
     x.inc_trans(1,3,5,3);
+
+    x.set_succ_count(std::make_pair(1,2), 4);
+    std::cout << x.get_succ_count(std::make_pair(1,2)) << " meh\n";
+    std::cout << x.get_succ_count(std::make_pair(1,3)) << " meh\n";
+    std::cout << x.get_action_count(1) << " www \n";
 
     //auto i1 = x.get_state_itr();
 
@@ -220,7 +246,7 @@ int main(int argc, char const *argv[])
         std::cout << i3.next() << "\n";
     }
 }
-*/
+
 
 
 
