@@ -116,6 +116,23 @@ void eMDP<StateType>::removeStateLabel(std::string label, StateType state) {
 }
 
 template<typename StateType>
+void eMDP<StateType>::addActionLabel(std::string label, StateType state, StateType action) {
+    auto* labelVec = &actionLabeling[std::make_pair(state, action)];
+    auto it = find(labelVec->begin(), labelVec->end(), label);
+    if(it == labelVec->end())
+        labelVec->push_back(label);
+}
+
+template<typename StateType>   
+void eMDP<StateType>::removeActionLabel(std::string label, StateType state, StateType action) {
+    auto* labelVec = &stateLabeling[state];
+
+    auto it = find(labelVec->begin(), labelVec->end(), label);
+    if(it != labelVec->end())
+        labelVec->erase(it);
+}
+
+template<typename StateType>
 std::vector<std::string> eMDP<StateType>::getStateLabels(StateType state) {
     return stateLabeling[state];
 }

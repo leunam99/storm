@@ -55,7 +55,7 @@ class eMDP {
      * @param avail_actions vector of available actions at state
      */
     void addState(StateType state, std::vector<StateType> avail_actions);
-
+    
     /*!
      * Adds a new Label to the state 
      * 
@@ -79,6 +79,22 @@ class eMDP {
      * @return std::vector<std::string> 
      */
     std::vector<std::string> getStateLabels(StateType state);
+
+    /*!
+     * Adds a new Label to the Action 
+     * 
+     * @param label 
+     * @param state 
+     */
+    void addActionLabel(std::string label, StateType state, StateType action);
+    
+    /*!
+     * Removes a label from the Action
+     * 
+     * @param label 
+     * @param state 
+     */
+    void removeActionLabel(std::string label, StateType state, StateType action);
 
     /*!
      * print the eMDP to std::cout
@@ -185,6 +201,19 @@ class eMDP {
    storage::HashStorage<StateType> hashStorage;
    std::unordered_map<StateType, StateType> explorationOrder; // maps state to its position of when its been found
    std::unordered_map<StateType, std::vector<std::string> > stateLabeling; 
+
+   //TODO: Use boost::hash instead, keep pair_hash for easy compile
+    struct pair_hash {
+        template <class T1, class T2>
+        std::size_t operator () (const std::pair<T1,T2> &p) const {
+            auto h1 = std::hash<T1>{}(p.first);
+            auto h2 = std::hash<T2>{}(p.second);
+
+            return h1 ^ h2;  
+        }
+    };
+
+   std::unordered_map<std::pair<StateType, StateType>, std::vector<std::string, pair_hash> > actionLabeling; 
    StateType init_state = -1;
    StateType explorationCount = 0; //Number of explored states
 };
