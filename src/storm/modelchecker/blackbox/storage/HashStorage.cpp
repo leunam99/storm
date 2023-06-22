@@ -7,39 +7,39 @@ namespace storage {
 
 //-------------------- Iterator Methods ---------------------------//
 
-template<typename IntValueType>
-KeyIterator<IntValueType>::KeyIterator(void* map) {
+template<typename StateType>
+KeyIterator<StateType>::KeyIterator(void* map) {
     cur = (*(std::unordered_map<int, void*>*) map).begin();
     end = (*(std::unordered_map<int, void*>*) map).end();
 }
 
-template<typename IntValueType>
-KeyIterator<IntValueType>::KeyIterator() {
+template<typename StateType>
+KeyIterator<StateType>::KeyIterator() {
     std::unordered_map<int, void*> empty_map;
     cur = empty_map.begin();
     end = empty_map.end();
 }
 
-template<typename IntValueType>
-IntValueType KeyIterator<IntValueType>::next() {
-    IntValueType key = cur->first;
+template<typename StateType>
+StateType KeyIterator<StateType>::next() {
+    StateType key = cur->first;
     cur++;
     return key;
 }
 
-template<typename IntValueType>
-bool KeyIterator<IntValueType>::hasNext() {
+template<typename StateType>
+bool KeyIterator<StateType>::hasNext() {
     return cur != end;
 } 
 //--------------------- HashStorage Mathods -------------------------//
 
-template<typename IntValueType>
-HashStorage<IntValueType>::HashStorage() : data() {
+template<typename StateType>
+HashStorage<StateType>::HashStorage() : data() {
 }
 
-template<typename IntValueType>
-std::unordered_map<IntValueType, IntValueType> HashStorage<IntValueType>::get_succ_map(IntValueType state, IntValueType action) {
-    std::unordered_map<IntValueType, IntValueType> succ_map;
+template<typename StateType>
+std::unordered_map<StateType, StateType> HashStorage<StateType>::get_succ_map(StateType state, StateType action) {
+    std::unordered_map<StateType, StateType> succ_map;
     if (data.find(state) == data.end()) {
         return succ_map;
     }
@@ -53,16 +53,16 @@ std::unordered_map<IntValueType, IntValueType> HashStorage<IntValueType>::get_su
     return succ_map;
 }
 
-template<typename IntValueType>
-void HashStorage<IntValueType>::add_state(IntValueType state) {
+template<typename StateType>
+void HashStorage<StateType>::add_state(StateType state) {
     if (data.find(state) == data.end())
-           data[state] = std::unordered_map<IntValueType, count_sampleMap_pair>();
+           data[state] = std::unordered_map<StateType, count_sampleMap_pair>();
 }
 
 //__________________ Add states and actions to Datastructure __________//
 
-template<typename IntValueType>
-void HashStorage<IntValueType>::add_state_actions(IntValueType state, std::vector<IntValueType> actions) {
+template<typename StateType>
+void HashStorage<StateType>::add_state_actions(StateType state, std::vector<StateType> actions) {
     add_state(state);
     action_count_map[state] = actions.size();
     auto* act_map = &data.at(state);
@@ -71,8 +71,8 @@ void HashStorage<IntValueType>::add_state_actions(IntValueType state, std::vecto
     }
 }
 
-template<typename IntValueType>
-void HashStorage<IntValueType>::inc_trans(IntValueType state, IntValueType action, IntValueType succ, IntValueType samples) {
+template<typename StateType>
+void HashStorage<StateType>::inc_trans(StateType state, StateType action, StateType succ, StateType samples) {
     add_state(state);  // add state to data if it doesn't exist
     add_state(succ);   // add succ to data if it doesn't exist
 
@@ -89,70 +89,70 @@ void HashStorage<IntValueType>::inc_trans(IntValueType state, IntValueType actio
 
 //__________________ Access the Datastructure via Vectors _________________//
 
-template<typename IntValueType>
-std::vector<IntValueType> HashStorage<IntValueType>::get_state_vec() {
-    std::vector<IntValueType> state_vec;
+template<typename StateType>
+std::vector<StateType> HashStorage<StateType>::get_state_vec() {
+    std::vector<StateType> state_vec;
     for (auto const& p : data) state_vec.push_back(p.first);
     return state_vec;
 }
 
-template<typename IntValueType>
-std::vector<IntValueType> HashStorage<IntValueType>::get_state_actions_vec(IntValueType state) {
-    std::vector<IntValueType> action_vec;
+template<typename StateType>
+std::vector<StateType> HashStorage<StateType>::get_state_actions_vec(StateType state) {
+    std::vector<StateType> action_vec;
     if (data.find(state) != data.end())
         for (auto const& p : data.at(state)) action_vec.push_back(p.first);
     return action_vec;
 }
 
-template<typename IntValueType>
-std::vector<IntValueType> HashStorage<IntValueType>::get_state_action_succ_vec(IntValueType state, IntValueType action) {
-    std::vector<IntValueType> succ_vec;
+template<typename StateType>
+std::vector<StateType> HashStorage<StateType>::get_state_action_succ_vec(StateType state, StateType action) {
+    std::vector<StateType> succ_vec;
     for (auto const& p : get_succ_map(state, action)) succ_vec.push_back(p.first);
     return succ_vec;
 }
 //__________________ Access the Datastructure via Iterators _________________//
 
-template<typename IntValueType>
-KeyIterator<IntValueType> HashStorage<IntValueType>::get_state_itr() {
-    return KeyIterator<IntValueType>(&data);
+template<typename StateType>
+KeyIterator<StateType> HashStorage<StateType>::get_state_itr() {
+    return KeyIterator<StateType>(&data);
 }
 
-template<typename IntValueType>
-KeyIterator<IntValueType> HashStorage<IntValueType>::get_state_actions_itr(IntValueType state) {
+template<typename StateType>
+KeyIterator<StateType> HashStorage<StateType>::get_state_actions_itr(StateType state) {
     if (data.find(state) == data.end()) {
-        return KeyIterator<IntValueType>();
+        return KeyIterator<StateType>();
     }
-    return KeyIterator<IntValueType>(&data.at(state));
+    return KeyIterator<StateType>(&data.at(state));
 }
 
-template<typename IntValueType>
-KeyIterator<IntValueType> HashStorage<IntValueType>::get_state_action_succ_itr(IntValueType state, IntValueType action) {
+template<typename StateType>
+KeyIterator<StateType> HashStorage<StateType>::get_state_action_succ_itr(StateType state, StateType action) {
     if (data.find(state) == data.end()) {
-        return KeyIterator<IntValueType>();
+        return KeyIterator<StateType>();
     }
     auto* act_map = &data.at(state);
     if(act_map->find(action) == act_map->end()) {
-        return KeyIterator<IntValueType>();
+        return KeyIterator<StateType>();
     }
-    return KeyIterator<IntValueType>(&(act_map->at(action).second));
+    return KeyIterator<StateType>(&(act_map->at(action).second));
 }
 
 //__________________ Access seperate elements of the Datastructure _____________________//
 
-template<typename IntValueType>
-bool HashStorage<IntValueType>::state_exists(IntValueType state) {
+template<typename StateType>
+bool HashStorage<StateType>::state_exists(StateType state) {
     return data.find(state) != data.end();
 }
 
-template<typename IntValueType> 
-IntValueType HashStorage<IntValueType>::get_action_count(IntValueType state) {
+template<typename StateType> 
+StateType HashStorage<StateType>::get_action_count(StateType state) {
     if(action_count_map.find(state) == action_count_map.end()) 
         return -1;
     return action_count_map[state];
 }
 
-template<typename IntValueType>
-IntValueType HashStorage<IntValueType>::get_total_samples(IntValueType state, IntValueType action) {
+template<typename StateType>
+StateType HashStorage<StateType>::get_total_samples(StateType state, StateType action) {
     if (data.find(state) == data.end()) {
         return -1;
     }
@@ -164,8 +164,8 @@ IntValueType HashStorage<IntValueType>::get_total_samples(IntValueType state, In
     return act_map->at(action).first;
 }
 
-template<typename IntValueType>
-IntValueType HashStorage<IntValueType>::get_succ_samples(IntValueType state, IntValueType action, IntValueType succ) {
+template<typename StateType>
+StateType HashStorage<StateType>::get_succ_samples(StateType state, StateType action, StateType succ) {
     auto succ_map = get_succ_map(state, action);
 
     if (succ_map.find(succ) != succ_map.end())
@@ -173,20 +173,20 @@ IntValueType HashStorage<IntValueType>::get_succ_samples(IntValueType state, Int
     return -1;
 }
 
-template<typename IntValueType>
-void HashStorage<IntValueType>::set_succ_count(std::pair<IntValueType, IntValueType> state_action_pair, IntValueType count) {
+template<typename StateType>
+void HashStorage<StateType>::set_succ_count(std::pair<StateType, StateType> state_action_pair, StateType count) {
     succ_count_map[state_action_pair] = count;
 }
 
-template<typename IntValueType>
-IntValueType HashStorage<IntValueType>::get_succ_count(std::pair<IntValueType, IntValueType> state_action_pair) {
+template<typename StateType>
+StateType HashStorage<StateType>::get_succ_count(std::pair<StateType, StateType> state_action_pair) {
     if(succ_count_map.find(state_action_pair) != succ_count_map.end())
         return succ_count_map[state_action_pair];
     return -1;
 }
 
-template<typename IntValueType>
-void HashStorage<IntValueType>::print() {
+template<typename StateType>
+void HashStorage<StateType>::print() {
     for (auto state : get_state_vec()) {
         std::cout << "-------------------------\n";
         std::cout << "State: " << state << "\n";

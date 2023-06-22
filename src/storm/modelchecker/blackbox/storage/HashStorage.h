@@ -12,7 +12,7 @@ namespace blackbox {
 namespace storage {
 
 
-template<typename IntValueType> 
+template<typename StateType> 
 class KeyIterator {
     private: 
      std::unordered_map<int, void*>::iterator cur;
@@ -21,7 +21,7 @@ class KeyIterator {
      KeyIterator(void* map);
      KeyIterator();
 
-     IntValueType next();
+     StateType next();
      bool hasNext();
 }; 
 
@@ -29,16 +29,15 @@ class KeyIterator {
  * Class to store eMDPs
  * The underlying data structure uses consequitive hashmaps and NOT matrices
  */
-template<typename IntValueType>
+template<typename StateType>
 class HashStorage {
    private:
-   typedef IntValueType index_type;
     /*!
      * Helper function, returns the succ_map of a (state,action) Pair
      * 
      * @param state 
      * @param action 
-     * @return std::unordered_map<index_type, index_type>
+     * @return std::unordered_map<StateType, StateType>
      */
 
         /*!
@@ -48,8 +47,8 @@ class HashStorage {
     * 3.) key = succ       | value = #samples of the (state,action,succ) triple
     */
 
-    using count_sampleMap_pair = std::pair<index_type, std::unordered_map<index_type, index_type> >;
-    std::unordered_map<index_type, std::unordered_map<index_type, count_sampleMap_pair > > data;
+    using count_sampleMap_pair = std::pair<StateType, std::unordered_map<StateType, StateType> >;
+    std::unordered_map<StateType, std::unordered_map<StateType, count_sampleMap_pair > > data;
 
 
     //TODO: Use boost::hash instead, keep pair_hash for easy compile
@@ -64,12 +63,12 @@ class HashStorage {
     };
 
     /* Maps state action pair to number of known successors -> used in greybox setting */
-    std::unordered_map<std::pair<index_type, index_type>, index_type, pair_hash> succ_count_map;
+    std::unordered_map<std::pair<StateType, StateType>, StateType, pair_hash> succ_count_map;
     
     /*Maps state to the number of available actions*/
-    std::unordered_map<index_type, index_type> action_count_map;
+    std::unordered_map<StateType, StateType> action_count_map;
 
-    std::unordered_map<index_type, index_type> get_succ_map(index_type state, index_type action);
+    std::unordered_map<StateType, StateType> get_succ_map(StateType state, StateType action);
 
    public:
     /**
@@ -84,7 +83,7 @@ class HashStorage {
      * 
      * @param state
      */
-    void add_state(index_type state);
+    void add_state(StateType state);
 
     /*!
      * Adds a vector of actions to the state 
@@ -93,7 +92,7 @@ class HashStorage {
      * @param state 
      * @param actions
      */
-    void add_state_actions(index_type state, std::vector<index_type> actions);
+    void add_state_actions(StateType state, std::vector<StateType> actions);
 
     /*!
      * Increments a transition of the form (state,action,succ) = samples
@@ -105,56 +104,56 @@ class HashStorage {
      * @param succ 
      * @param samples
      */
-    void inc_trans(index_type state, index_type action, index_type succ, index_type samples);
+    void inc_trans(StateType state, StateType action, StateType succ, StateType samples);
 
     /*!
      * Returns a vector of all states 
      * 
-     * @return std::vector<index_type>
+     * @return std::vector<StateType>
      */
-    std::vector<index_type> get_state_vec();
+    std::vector<StateType> get_state_vec();
 
     /*!
      * Returns a vector of available actions for the state  
      * 
      * @param state 
-     * @return std::vector<index_type>
+     * @return std::vector<StateType>
      */
-    std::vector<index_type> get_state_actions_vec(index_type state);
+    std::vector<StateType> get_state_actions_vec(StateType state);
 
     /*!
      * Return as vector of successors for a state action pair 
      * 
      * @param state 
      * @param action 
-     * @return std::vector<index_type> 
+     * @return std::vector<StateType> 
      */
 
-    std::vector<index_type> get_state_action_succ_vec(index_type state, index_type action);
+    std::vector<StateType> get_state_action_succ_vec(StateType state, StateType action);
 
     /*!
      * Returns a KeyIterator over the states 
      * 
-     * @return KeyIterator<index_type> 
+     * @return KeyIterator<StateType> 
      */
-    KeyIterator<index_type> get_state_itr();
+    KeyIterator<StateType> get_state_itr();
 
     /*!
      * Returns a KeyIterator over the actions of a state
      * 
      * @param state 
-     * @return KeyIterator<index_type> 
+     * @return KeyIterator<StateType> 
      */
-    KeyIterator<index_type> get_state_actions_itr(index_type state);
+    KeyIterator<StateType> get_state_actions_itr(StateType state);
 
     /*!
      * Returns a KeyIterator over the successor of a state for a given action 
      * 
      * @param state 
      * @param action 
-     * @return KeyIterator<index_type> 
+     * @return KeyIterator<StateType> 
      */
-    KeyIterator<index_type> get_state_action_succ_itr(index_type state, index_type action);
+    KeyIterator<StateType> get_state_action_succ_itr(StateType state, StateType action);
 
     /*!
      * Returns true if the passed state is in data 
@@ -163,18 +162,18 @@ class HashStorage {
      * @return true 
      * @return false 
      */
-    bool state_exists(index_type state);
+    bool state_exists(StateType state);
 
-    index_type get_action_count(index_type state);
+    StateType get_action_count(StateType state);
 
     /*!
      * Returns the total samples for a given state and action 
      * 
      * @param state 
      * @param action 
-     * @return index_type
+     * @return StateType
      */
-    index_type get_total_samples(index_type state, index_type action);
+    StateType get_total_samples(StateType state, StateType action);
 
     /*!
      * Returns the samples for a (state,action,succ) triple
@@ -182,13 +181,13 @@ class HashStorage {
      * @param state 
      * @param action 
      * @param succ 
-     * @return index_type
+     * @return StateType
      */
-    index_type get_succ_samples(index_type state, index_type action, index_type succ);
+    StateType get_succ_samples(StateType state, StateType action, StateType succ);
 
-    void set_succ_count(std::pair<index_type, index_type> state_action_pair, index_type count);
+    void set_succ_count(std::pair<StateType, StateType> state_action_pair, StateType count);
 
-    index_type get_succ_count(std::pair<index_type, index_type> state_action_pair);
+    StateType get_succ_count(std::pair<StateType, StateType> state_action_pair);
 
     /*!
      * Prints the data structure to std::cout

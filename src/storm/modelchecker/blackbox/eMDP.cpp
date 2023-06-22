@@ -4,25 +4,25 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-template<typename ValueType>
-eMDP<ValueType>::eMDP() : explorationOrder(), hashStorage(), stateLabeling() {
+template<typename StateType>
+eMDP<StateType>::eMDP() : explorationOrder(), hashStorage(), stateLabeling() {
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::addInitialState(index_type state) {
+template<typename StateType>
+void eMDP<StateType>::addInitialState(StateType state) {
     if(init_state == -1) 
         hashStorage.add_state(state);
         init_state = state;
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::addStateToExplorationOrder(index_type state) {
+template<typename StateType>
+void eMDP<StateType>::addStateToExplorationOrder(StateType state) {
     if(explorationOrder.find(state) == explorationOrder.end())
         explorationOrder[state] = (explorationCount++);
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::print() {
+template<typename StateType>
+void eMDP<StateType>::print() {
 
     std::cout << "exploration order [state, explorationTime]:\n";
     for (const auto& i: explorationOrder)
@@ -32,8 +32,8 @@ void eMDP<ValueType>::print() {
     hashStorage.print();
 }
 
-template<typename ValueType>
-std::string eMDP<ValueType>::toDotString() {
+template<typename StateType>
+std::string eMDP<StateType>::toDotString() {
     std::unordered_map<int, std::string> color_map; //colors to distinguish actions 
     color_map[0] = "green";
     color_map[1] = "red";
@@ -68,46 +68,46 @@ std::string eMDP<ValueType>::toDotString() {
     return dot_str;
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::writeDotFile(std::string filename) {
+template<typename StateType>
+void eMDP<StateType>::writeDotFile(std::string filename) {
     std::ofstream MyFile(filename);
     MyFile << toDotString();
     MyFile.close();
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::printDot() {
+template<typename StateType>
+void eMDP<StateType>::printDot() {
     std::cout(toDotString());
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::addVisit(index_type state, index_type action, index_type succ) {
+template<typename StateType>
+void eMDP<StateType>::addVisit(StateType state, StateType action, StateType succ) {
     addStateToExplorationOrder(succ);
     hashStorage.inc_trans(state, action, succ, 1);
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::addVisits(index_type state, index_type action, index_type succ, ValueType visits) {
+template<typename StateType>
+void eMDP<StateType>::addVisits(StateType state, StateType action, StateType succ, StateType visits) {
     addStateToExplorationOrder(succ);
     hashStorage.inc_trans(state, action, succ, visits);
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::addState(index_type state, std::vector<index_type> avail_actions) {
+template<typename StateType>
+void eMDP<StateType>::addState(StateType state, std::vector<StateType> avail_actions) {
     addStateToExplorationOrder(state);
     hashStorage.add_state_actions(state, avail_actions);
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::addStateLabel(std::string label, index_type state) {
+template<typename StateType>
+void eMDP<StateType>::addStateLabel(std::string label, StateType state) {
     auto* labelVec = &stateLabeling[state];
     auto it = find(labelVec->begin(), labelVec->end(), label);
     if(it == labelVec->end())
         labelVec->push_back(label);
 }
 
-template<typename ValueType>
-void eMDP<ValueType>::removeStateLabel(std::string label, index_type state) {
+template<typename StateType>
+void eMDP<StateType>::removeStateLabel(std::string label, StateType state) {
     auto* labelVec = &stateLabeling[state];
 
     auto it = find(labelVec->begin(), labelVec->end(), label);
@@ -115,38 +115,53 @@ void eMDP<ValueType>::removeStateLabel(std::string label, index_type state) {
         labelVec->erase(it);
 }
 
-template<typename ValueType>
-std::vector<std::string> eMDP<ValueType>::getStateLabels(index_type state) {
+template<typename StateType>
+std::vector<std::string> eMDP<StateType>::getStateLabels(StateType state) {
     return stateLabeling[state];
 }
 
-template<typename ValueType>
-bool eMDP<ValueType>::isStateKnown(index_type state) {
+template<typename StateType>
+bool eMDP<StateType>::isStateKnown(StateType state) {
     return hashStorage.state_exists(state);
 }
 
-template<typename ValueType>
-ValueType eMDP<ValueType>::getSampleCount(index_type state, index_type action) {
+template<typename StateType>
+StateType eMDP<StateType>::getSampleCount(StateType state, StateType action) {
     return hashStorage.get_total_samples(state, action);
 }
 
-template<typename ValueType>
-ValueType eMDP<ValueType>::getSampleCount(index_type state, index_type action, index_type succ) {
+template<typename StateType>
+StateType eMDP<StateType>::getSampleCount(StateType state, StateType action, StateType succ) {
     return hashStorage.get_succ_samples(state, action, succ);
 }
 
-template<typename ValueType>
-storage::KeyIterator<ValueType> eMDP<ValueType>::get_state_itr() {
+template<typename StateType>
+void eMDP<StateType>::setSuccCount(StateType state, StateType action, StateType count) {
+    hashStorage.set_succ_count(std::make_pair(state, action), count);
+}
+
+template<typename StateType>
+StateType eMDP<StateType>::getSuccCount(StateType state, StateType action) {
+    return hashStorage.get_succ_count(std::make_pair(state, action));
+}
+
+template<typename StateType> 
+StateType eMDP<StateType>::getActionCount(StateType state) {
+    return hashStorage.get_action_count(state);
+}
+
+template<typename StateType>
+storage::KeyIterator<StateType> eMDP<StateType>::get_state_itr() {
     return hashStorage.get_state_itr();
 }
 
-template<typename ValueType>
-storage::KeyIterator<ValueType> eMDP<ValueType>::get_state_actions_itr(index_type state) {
+template<typename StateType>
+storage::KeyIterator<StateType> eMDP<StateType>::get_state_actions_itr(StateType state) {
     return hashStorage.get_state_actions_itr(state);
 }
 
-template<typename ValueType>
-storage::KeyIterator<ValueType> eMDP<ValueType>::get_state_action_succ_itr(index_type state, index_type action) {
+template<typename StateType>
+storage::KeyIterator<StateType> eMDP<StateType>::get_state_action_succ_itr(StateType state, StateType action) {
     return hashStorage.get_state_action_succ_itr(state, action);
 }
 
@@ -154,7 +169,7 @@ storage::KeyIterator<ValueType> eMDP<ValueType>::get_state_action_succ_itr(index
 } //namespace modelchecker
 } //namespace storm
 
-
+/*
 int main(int argc, char const *argv[]) {
     auto emdp = storm::modelchecker::blackbox::eMDP<int_fast32_t>();
     emdp.addInitialState(1);
@@ -180,4 +195,5 @@ int main(int argc, char const *argv[]) {
     emdp.writeDotFile("name.txt");
     return 0;
 }
+*/
 

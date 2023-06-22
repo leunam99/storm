@@ -16,12 +16,10 @@ namespace modelchecker {
 namespace blackbox {
 
 
-template<typename ValueType>
+template<typename StateType>
 
 class eMDP {
    public:
-    typedef ValueType index_type;
-    
     /*!
      * Constructs an empty eMDP
      */
@@ -32,7 +30,7 @@ class eMDP {
      * 
      * @param state initial state 
      */
-    void addInitialState(index_type state);
+    void addInitialState(StateType state);
     
     /*!
      * increments the visits count of the given triple by 1
@@ -40,7 +38,7 @@ class eMDP {
      * @param action  action index of chosen action
      * @param succ    state index of successor state
      */
-    void addVisit(index_type state, index_type action, index_type succ);
+    void addVisit(StateType state, StateType action, StateType succ);
 
     /*!
      * increments the visits count of the given by visits
@@ -49,14 +47,14 @@ class eMDP {
      * @param succ    state index of successor state
      * @param visits  visits to be added to counter
      */
-    void addVisits(index_type state, index_type action, index_type succ, ValueType visits);
+    void addVisits(StateType state, StateType action, StateType succ, StateType visits);
 
     /*!
      * Add a new state to the eMDP
      * @param state  state index of new state
      * @param avail_actions vector of available actions at state
      */
-    void addState(index_type state, std::vector<index_type> avail_actions);
+    void addState(StateType state, std::vector<StateType> avail_actions);
 
     /*!
      * Adds a new Label to the state 
@@ -64,7 +62,7 @@ class eMDP {
      * @param label 
      * @param state 
      */
-    void addStateLabel(std::string label, index_type state);
+    void addStateLabel(std::string label, StateType state);
     
     /*!
      * Removes a label from the state 
@@ -72,7 +70,7 @@ class eMDP {
      * @param label 
      * @param state 
      */
-    void removeStateLabel(std::string label, index_type state);
+    void removeStateLabel(std::string label, StateType state);
     
     /*!
      * Returns the vector of Labels for a state 
@@ -80,7 +78,7 @@ class eMDP {
      * @param state 
      * @return std::vector<std::string> 
      */
-    std::vector<std::string> getStateLabels(index_type state);
+    std::vector<std::string> getStateLabels(StateType state);
 
     /*!
      * print the eMDP to std::cout
@@ -110,14 +108,14 @@ class eMDP {
      * returns true. if the state was already added to this eMDP. false otherwise
      * @param state  state index of tested state
      */
-    bool isStateKnown(index_type state);
+    bool isStateKnown(StateType state);
 
     /*!
      * returns how often this state action pair was sampled
      * @param state   state index 
      * @param action  action index
      */
-    ValueType getSampleCount(index_type state, index_type action);
+    StateType getSampleCount(StateType state, StateType action);
 
     /*!
      * returns how often this state action successor triple was sampled
@@ -125,33 +123,56 @@ class eMDP {
      * @param action  action index
      * @param succ    successor state index
      */
-    ValueType getSampleCount(index_type state, index_type action, index_type succ);
+    StateType getSampleCount(StateType state, StateType action, StateType succ);
+
+    /*!
+     * Set the number of successors for a state action pair in the greybox setting 
+     * 
+     * @param state 
+     * @return StateType 
+     */
+    void setSuccCount(StateType state, StateType action, StateType count);
+
+    /*!
+     * Get the number of successors for a state action pair in the greybox setting 
+     * 
+     * @return StateType 
+     */
+    StateType getSuccCount(StateType state, StateType action);
+
+    /**
+     * Get the number of actions for a state 
+     * 
+     * @param state 
+     * @return StateType 
+     */
+    StateType getActionCount(StateType state); 
 
     //? Save to disk
 
     /*!
      * Returns a KeyIterator over the states 
      * 
-     * @return KeyIterator<index_type> 
+     * @return KeyIterator<StateType> 
      */
-    storage::KeyIterator<index_type> get_state_itr();
+    storage::KeyIterator<StateType> get_state_itr();
 
     /*!
      * Returns a KeyIterator over the actions of a state
      * 
      * @param state 
-     * @return KeyIterator<index_type> 
+     * @return KeyIterator<StateType> 
      */
-    storage::KeyIterator<index_type> get_state_actions_itr(index_type state);
+    storage::KeyIterator<StateType> get_state_actions_itr(StateType state);
 
     /*!
      * Returns a KeyIterator over the successor of a state for a given action 
      * 
      * @param state 
      * @param action 
-     * @return KeyIterator<index_type> 
+     * @return KeyIterator<StateType> 
      */
-    storage::KeyIterator<index_type> get_state_action_succ_itr(index_type state, index_type action);
+    storage::KeyIterator<StateType> get_state_action_succ_itr(StateType state, StateType action);
     
    private:
     /*!
@@ -159,13 +180,13 @@ class eMDP {
      *
      * @param state
      */
-    void addStateToExplorationOrder(index_type state);
+    void addStateToExplorationOrder(StateType state);
 
-   storage::HashStorage<index_type> hashStorage;
-   std::unordered_map<index_type, index_type> explorationOrder; // maps state to its position of when its been found
-   std::unordered_map<index_type, std::vector<std::string> > stateLabeling; 
-   index_type init_state = -1;
-   index_type explorationCount = 0; //Number of explored states
+   storage::HashStorage<StateType> hashStorage;
+   std::unordered_map<StateType, StateType> explorationOrder; // maps state to its position of when its been found
+   std::unordered_map<StateType, std::vector<std::string> > stateLabeling; 
+   StateType init_state = -1;
+   StateType explorationCount = 0; //Number of explored states
 };
 } //namespace blackbox
 } //namespace modelchecker
