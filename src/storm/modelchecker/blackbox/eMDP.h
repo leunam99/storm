@@ -7,12 +7,10 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-
-template<class ValueType>
-
 //TODO: How should initial state be saved and handled?
 //TODO: Add Methods for access of explorationOrder
 
+template<class ValueType>
 class eMDP {
    public:
     typedef uint_fast64_t index_type;
@@ -71,6 +69,24 @@ class eMDP {
      * @param succ    successor state index
      */
     ValueType getSampleCount(index_type state, index_type action, index_type succ);
+
+    /*!
+     * @return all sampled states
+     */
+    std::vector<uint_fast64_t> get_state_vec();
+
+    /*!
+     * @param state
+     * @return all sampled actions of state
+     */
+    std::vector<uint_fast64_t> get_state_actions_vec(uint_fast64_t state);
+
+    /*!
+     * @param state
+     * @param action
+     * @return all sampled successors when taking action in state
+     */
+    std::vector<uint_fast64_t> get_state_action_succ_vec(uint_fast64_t state, uint_fast64_t action);
 
     //? Save to disk
 

@@ -19,6 +19,15 @@ namespace storage {
 class HashStorage {
    private:
     /*!
+     * eMDPs are saved as 3 consequitive hashmaps
+     * 1.) key = state      | value = 2.) hashmap
+     * 2.) key = action     | value = pair (#total samples, 3.) hashmap)
+     * 3.) key = succ       | value = #samples of the (state,action,succ) triple
+     */
+    typedef std::pair<uint_fast64_t, std::unordered_map<uint_fast64_t, uint_fast64_t> > count_sampleMap_pair;
+    std::unordered_map<uint_fast64_t, std::unordered_map<uint_fast64_t, count_sampleMap_pair> > data;
+
+    /*!
                 * Helper function, returns the succ_map of a (state,action) Pair
                 * 
                 * @param state 

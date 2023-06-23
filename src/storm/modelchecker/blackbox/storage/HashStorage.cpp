@@ -5,15 +5,6 @@ namespace modelchecker {
 namespace blackbox {
 namespace storage {
 
-/*!
- * eMDPs are saved as 3 consequitive hashmaps 
- * 1.) key = state      | value = 2.) hashmap 
- * 2.) key = action     | value = pair (#total samples, 3.) hashmap)
- * 3.) key = succ       | value = #samples of the (state,action,succ) triple
- */
-typedef std::pair<uint_fast64_t, std::unordered_map<uint_fast64_t, uint_fast64_t> > count_sampleMap_pair;
-std::unordered_map<uint_fast64_t, std::unordered_map<uint_fast64_t, count_sampleMap_pair> > data;
-
 std::unordered_map<uint_fast64_t, uint_fast64_t> HashStorage::get_succ_map(uint_fast64_t state, uint_fast64_t action) {
     std::unordered_map<uint_fast64_t, uint_fast64_t> succ_map;
     if (data.find(state) == data.end()) {
@@ -55,6 +46,7 @@ void HashStorage::inc_trans(uint_fast64_t state, uint_fast64_t action, uint_fast
     (*sample_map)[succ] += samples;          // Increments the samples for the (state,action,succ) triple
 }
 
+//TODO do not copy all elements in the following methods
 std::vector<uint_fast64_t> HashStorage::get_state_vec() {
     std::vector<uint_fast64_t> state_vec;
     for (auto const& p : data) state_vec.push_back(p.first);

@@ -62,6 +62,18 @@ template<class ValueType>
 ValueType eMDP<ValueType>::getSampleCount(index_type state, index_type action, index_type succ) {
     return hashStorage.get_succ_samples(state, action, succ);
 }
+template<class ValueType>
+std::vector<uint_fast64_t> eMDP<ValueType>::get_state_vec() {
+    return hashStorage.get_state_vec();
+}
+template<class ValueType>
+std::vector<uint_fast64_t> eMDP<ValueType>::get_state_actions_vec(uint_fast64_t state) {
+    return hashStorage.get_state_actions_vec(state);
+}
+template<class ValueType>
+std::vector<uint_fast64_t> eMDP<ValueType>::get_state_action_succ_vec(uint_fast64_t state, uint_fast64_t action) {
+    return hashStorage.get_state_action_succ_vec(state,action);
+}
 
 } //namespace blackbox
 } //namespace modelchecker
