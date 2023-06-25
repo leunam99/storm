@@ -1,37 +1,35 @@
-#include <unordered_map>
-#include <string.h>
-#include "stdint.h"
-#include <iostream>
-#include <fstream>
-#include "eMDP.h"
-#include <tuple>
-#include <algorithm>
-#include <algorithm>
+#include "eMDPtoDot.h"
 
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-bool include_action = true;
-bool include_samples = true;
-bool include_label = true;
-bool include_color = true;
+template<typename StateType>
+eMDPDotGenerator<StateType>::eMDPDotGenerator() {};
 
 template<typename StateType>
-std::string color_obj(StateType color_ctr) {
+eMDPDotGenerator<StateType>::eMDPDotGenerator(bool include_action, bool include_samples, bool include_label, bool include_color) {
+    include_action = include_action; 
+    include_samples = include_samples;
+    include_label = include_label;
+    include_color = include_color;
+};
+
+template<typename StateType>
+std::string eMDPDotGenerator<StateType>::color_obj(StateType color_ctr) {
 
     return "color=\"red\"";
 }
 
 template<typename StateType>
-std::string color_obj(std::string color) {
+std::string eMDPDotGenerator<StateType>::color_obj(std::string color) {
 
 
     return "color=\"" + color + "\"";
 }
 
 template<typename StateType>
-std::string add_labels(std::vector<std::string> label_vec) {
+std::string eMDPDotGenerator<StateType>::add_labels(std::vector<std::string> label_vec) {
     std::string result =  "labels: [";
     for(auto label : label_vec) 
         result += label + ", ";
@@ -43,31 +41,31 @@ std::string add_labels(std::vector<std::string> label_vec) {
 }
 
 template<typename StateType>
-void add_trans(StateType state1, StateType state2, std::ostream& outStream) {
+void eMDPDotGenerator<StateType>::add_trans(StateType state1, StateType state2, std::ostream& outStream) {
     outStream << state1 << " -> " << state2 << " ";
 }
 
 template<typename StateType> 
-void emdp_state_dotLabel(StateType state, std::vector<std::string> label_vec, std::string color, std::ostream& outStream) {
+void eMDPDotGenerator<StateType>::emdp_state_dotLabel(StateType state, std::vector<std::string> label_vec, std::string color, std::ostream& outStream) {
     outStream << state << " [label=\"name: " << state;
-    outStream << (include_label ? "\\n" + add_labels<StateType>(label_vec) : "");
+    outStream << (include_label ? "\\n" + add_labels(label_vec) : "");
     outStream << (include_color ? "\", " + color_obj(color) : "");
     outStream << "]" << std::endl;
 }
 
 template<typename StateType>
-void emdp_trans_dotLabel(StateType action, StateType samples, std::vector<std::string> label_vec, StateType color_ctr, std::ostream& outStream) {
+void eMDPDotGenerator<StateType>::emdp_trans_dotLabel(StateType action, StateType samples, std::vector<std::string> label_vec, StateType color_ctr, std::ostream& outStream) {
     outStream << "[label=\"";
     outStream << (include_action  ? "act: " + std::to_string(action) + "\\n" : "");
     outStream << (include_samples ? "#samples: " + std::to_string(samples) + "\\n" : "");
-    outStream << (include_label   ? add_labels<StateType>(label_vec) + "\\n" : "");
+    outStream << (include_label   ? add_labels(label_vec) + "\\n" : "");
     outStream << (include_color   ? "\", " + color_obj(color_ctr) : "");
     outStream << "]" << std::endl;
 }
 
 template<typename StateType> 
-void convert_pred(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
-    emdp_state_dotLabel(state, "TODO", "grey", outStream);
+void eMDPDotGenerator<StateType>::convert_pred(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
+    emdp_state_dotLabel(state, emdp.getStateLabels(state), "grey", outStream);
     if(depth > 0) {
         for(auto pred_pair: emdp.get_predecessors(state)) {
             if(std::find(visited.begin(), visited.end(), std::make_tuple(pred_pair.first, pred_pair.second, state)) == visited.end()) {
@@ -81,8 +79,8 @@ void convert_pred(eMDP<StateType> emdp, StateType state, StateType depth, std::o
 }
 
 template<typename StateType> 
-void convert_succ(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
-    emdp_state_dotLabel(state, "TODO", "grey", outStream);
+void eMDPDotGenerator<StateType>::convert_succ(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
+    emdp_state_dotLabel(state, emdp.getStateLabels(state), "grey", outStream);
     if(depth > 0) {
         auto action_itr = emdp.get_state_actions_itr(state);
         while (action_itr.hasNext())
@@ -104,7 +102,7 @@ void convert_succ(eMDP<StateType> emdp, StateType state, StateType depth, std::o
 }
 
 template<typename StateType> 
-void convert_neighborhood_eMDP(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream) {
+void eMDPDotGenerator<StateType>::convert_neighborhood_eMDP(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream) {
     outStream << "digraph G {\n";
     outStream << "node [shape=circle style=filled, fixedsize=true, width=2, height=2]\n"; //Node Attributes 
     std::vector<std::tuple<StateType, StateType, StateType>> visited;
@@ -114,7 +112,7 @@ void convert_neighborhood_eMDP(eMDP<StateType> emdp, StateType state, StateType 
 }
 
 template<typename StateType> 
-void convert_eMDP(eMDP<StateType> emdp, std::ostream& outStream) {
+void eMDPDotGenerator<StateType>::convert_eMDP(eMDP<StateType> emdp, std::ostream& outStream) {
     outStream << "digraph G {\n";
     outStream << "node [shape=circle style=filled, fixedsize=true, width=2, height=2]\n"; //Node Attributes 
     auto state_itr = emdp.get_state_itr();
@@ -145,6 +143,7 @@ void convert_eMDP(eMDP<StateType> emdp, std::ostream& outStream) {
 
 int main(int argc, char const *argv[])
 {   
+
     auto emdp = storm::modelchecker::blackbox::eMDP<int_fast32_t>();
     emdp.addVisit(0,0,1);
     emdp.addVisit(0,0,7);
@@ -163,10 +162,13 @@ int main(int argc, char const *argv[])
     
 
     emdp.createReverseMapping();
-    //storm::modelchecker::blackbox::convert_neighborhood_eMDP(emdp, 2, 1, std::cout);
-    std::cout << std::endl;
-    storm::modelchecker::blackbox::convert_eMDP(emdp, std::cout);
+
+
+    auto dot = storm::modelchecker::blackbox::eMDPDotGenerator<int_fast32_t>(false,false,false,false);;
+    dot.convert_neighborhood_eMDP(emdp, 2, 3, std::cout);
+
     return 0;
+    
 }
 
 
