@@ -28,6 +28,11 @@ StateType KeyIterator<StateType>::next() {
 }
 
 template<typename StateType>
+StateType KeyIterator<StateType>::peek() {
+    return cur->first;
+}
+
+template<typename StateType>
 bool KeyIterator<StateType>::hasNext() {
     return cur != end;
 } 
@@ -136,6 +141,31 @@ KeyIterator<StateType> HashStorage<StateType>::get_state_action_succ_itr(StateTy
     }
     return KeyIterator<StateType>(&(act_map->at(action).second));
 }
+//_______________________________ Access predeccesors of states ___________________________//
+template<typename StateType> 
+void HashStorage<StateType>::create_reverse_mapping() {
+    
+    auto stateItr = get_state_itr();
+    while (stateItr.hasNext()) {
+        StateType predState = stateItr.next();
+        auto actionItr = get_state_actions_itr(predState);
+        while (actionItr.hasNext()) {
+            StateType action = actionItr.next();
+            auto succItr = get_state_action_succ_itr(predState, action);
+            while(succItr.hasNext()) {
+                StateType succ = succItr.next();
+                reverse_map[succ].push_back(std::make_pair(predState, action));
+            }
+        }
+    }
+}
+
+template<typename StateType>
+std::vector<std::pair<StateType, StateType>> HashStorage<StateType>::get_predecessors(StateType state) {
+    if(reverse_map.find(state) != reverse_map.end())
+        return reverse_map[state];
+    return std::vector<std::pair<StateType, StateType>>(); 
+}
 
 //__________________ Access seperate elements of the Datastructure _____________________//
 
@@ -198,6 +228,7 @@ void HashStorage<StateType>::print() {
         }
     }
 }
+
 template class HashStorage<int_fast32_t>; //Type for which class gets compiled 
 template class HashStorage<int_fast64_t>; //Type for which class gets compiled 
 template class KeyIterator<int_fast32_t>; //Type for which class gets compiled 
@@ -207,45 +238,18 @@ template class KeyIterator<int_fast64_t>; //Type for which class gets compiled
 }
 }
 
-
+/*
 int main(int argc, char const *argv[])
 {       
     
     auto x = storm::modelchecker::blackbox::storage::HashStorage<int_fast32_t>();
-    x.inc_trans(1,2,3,10);
-    x.inc_trans(1,2,7,5);
-    x.inc_trans(1,2,4,3);
-    x.inc_trans(1,3,5,3);
-
-    x.set_succ_count(std::make_pair(1,2), 4);
-    std::cout << x.get_succ_count(std::make_pair(1,2)) << " meh\n";
-    std::cout << x.get_succ_count(std::make_pair(1,3)) << " meh\n";
-    std::cout << x.get_action_count(1) << " www \n";
-
-    //auto i1 = x.get_state_itr();
-
-    auto i1 = x.get_state_itr();
-
-    while (i1.hasNext())
-    {
-        std::cout << i1.next() << "\n";
-    }
-    std::cout << "next itr \n";
-    
-    auto i2 = x.get_state_actions_itr(1);
-
-    while (i2.hasNext())
-    {
-        std::cout << i2.next() << "\n";
-    }
-
-    auto i3 = x.get_state_action_succ_itr(1,2);
-    std::cout << "next itr \n";
-    while (i3.hasNext())
-    {
-        std::cout << i3.next() << "\n";
-    }
+    x.inc_trans(1,0,3,0);
+    x.inc_trans(3,0,4,0);
+    x.inc_trans(4,0,5,0);
+    x.inc_trans(5,0,6,0);
+    x.create_reverse_mapping();
 }
+*/
 
 
 

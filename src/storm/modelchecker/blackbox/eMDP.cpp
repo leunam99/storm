@@ -9,13 +9,6 @@ eMDP<StateType>::eMDP() : explorationOrder(), hashStorage(), stateLabeling() {
 }
 
 template<typename StateType>
-void eMDP<StateType>::addInitialState(StateType state) {
-    if(init_state == -1) 
-        hashStorage.add_state(state);
-        init_state = state;
-}
-
-template<typename StateType>
 void eMDP<StateType>::addStateToExplorationOrder(StateType state) {
     if(explorationOrder.find(state) == explorationOrder.end())
         explorationOrder[state] = (explorationCount++);
@@ -77,7 +70,16 @@ void eMDP<StateType>::writeDotFile(std::string filename) {
 
 template<typename StateType>
 void eMDP<StateType>::printDot() {
-    std::cout(toDotString());
+    std::cout << toDotString();
+}
+
+//_______________________ Add states to eMDP ___________________________ //
+
+template<typename StateType>
+void eMDP<StateType>::addInitialState(StateType state) {
+    if(init_state == -1) 
+        hashStorage.add_state(state);
+        init_state = state;
 }
 
 template<typename StateType>
@@ -98,6 +100,8 @@ void eMDP<StateType>::addState(StateType state, std::vector<StateType> avail_act
     hashStorage.add_state_actions(state, avail_actions);
 }
 
+//_______________________ State/Trans Labeling Functions _______________________//
+
 template<typename StateType>
 void eMDP<StateType>::addStateLabel(std::string label, StateType state) {
     auto* labelVec = &stateLabeling[state];
@@ -116,6 +120,13 @@ void eMDP<StateType>::removeStateLabel(std::string label, StateType state) {
 }
 
 template<typename StateType>
+std::vector<std::string> eMDP<StateType>::getStateLabels(StateType state) {
+    if(stateLabeling.find(state) != stateLabeling.end())
+        return stateLabeling[state];
+    return std::vector<std::string>();
+}
+
+template<typename StateType>
 void eMDP<StateType>::addActionLabel(std::string label, StateType state, StateType action) {
     auto* labelVec = &actionLabeling[std::make_pair(state, action)];
     auto it = find(labelVec->begin(), labelVec->end(), label);
@@ -125,7 +136,7 @@ void eMDP<StateType>::addActionLabel(std::string label, StateType state, StateTy
 
 template<typename StateType>   
 void eMDP<StateType>::removeActionLabel(std::string label, StateType state, StateType action) {
-    auto* labelVec = &stateLabeling[state];
+    auto* labelVec = &actionLabeling[std::make_pair(state, action)];
 
     auto it = find(labelVec->begin(), labelVec->end(), label);
     if(it != labelVec->end())
@@ -133,9 +144,13 @@ void eMDP<StateType>::removeActionLabel(std::string label, StateType state, Stat
 }
 
 template<typename StateType>
-std::vector<std::string> eMDP<StateType>::getStateLabels(StateType state) {
-    return stateLabeling[state];
+std::vector<std::string> eMDP<StateType>::getActionLabels(StateType state, StateType action) {
+    if(actionLabeling.find(std::make_pair(state, action)) != actionLabeling.end())
+        return actionLabeling[std::make_pair(state, action)];
+    return std::vector<std::string>();
 }
+
+//______________________ Get/(Set) Count of Samples, Succ, Actions ____________________// 
 
 template<typename StateType>
 bool eMDP<StateType>::isStateKnown(StateType state) {
@@ -167,6 +182,8 @@ StateType eMDP<StateType>::getActionCount(StateType state) {
     return hashStorage.get_action_count(state);
 }
 
+//___________________________ Get Iterators ____________________________//
+
 template<typename StateType>
 storage::KeyIterator<StateType> eMDP<StateType>::get_state_itr() {
     return hashStorage.get_state_itr();
@@ -182,6 +199,20 @@ storage::KeyIterator<StateType> eMDP<StateType>::get_state_action_succ_itr(State
     return hashStorage.get_state_action_succ_itr(state, action);
 }
 
+//__________________________ Create and acces reverse mapping ________________________________//
+
+template<typename StateType>
+void eMDP<StateType>::createReverseMapping() {
+    hashStorage.create_reverse_mapping(); 
+}
+
+template<typename StateType>
+std::vector<std::pair<StateType, StateType> > eMDP<StateType>::get_predecessors(StateType state) {  
+    return hashStorage.get_predecessors(state);
+}
+
+template class eMDP<int_fast32_t>;
+template class eMDP<int_fast64_t>;
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm

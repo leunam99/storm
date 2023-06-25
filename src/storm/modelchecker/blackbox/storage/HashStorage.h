@@ -20,7 +20,8 @@ class KeyIterator {
     public:
      KeyIterator(void* map);
      KeyIterator();
-
+     
+     StateType peek();
      StateType next();
      bool hasNext();
 }; 
@@ -33,14 +34,6 @@ template<typename StateType>
 class HashStorage {
    private:
     /*!
-     * Helper function, returns the succ_map of a (state,action) Pair
-     * 
-     * @param state 
-     * @param action 
-     * @return std::unordered_map<StateType, StateType>
-     */
-
-        /*!
     * eMDPs are saved as 3 consequitive hashmaps 
     * 1.) key = state      | value = 2.) hashmap 
     * 2.) key = action     | value = pair (#total samples, 3.) hashmap)
@@ -62,12 +55,22 @@ class HashStorage {
         }
     };
 
-    /* Maps state action pair to number of known successors -> used in greybox setting */
+    // Maps state action pair to number of known successors -> used in greybox setting 
     std::unordered_map<std::pair<StateType, StateType>, StateType, pair_hash> succ_count_map;
     
-    /*Maps state to the number of available actions*/
+    // Maps state to the number of available actions
     std::unordered_map<StateType, StateType> action_count_map;
 
+    // Maps states to their predecessors action pair (created on demand for debugging)
+    std::unordered_map<StateType, std::vector<std::pair<StateType, StateType> > > reverse_map;
+
+    /*!
+     * Helper function, returns the succ_map of a (state,action) Pair
+     * 
+     * @param state 
+     * @param action 
+     * @return std::unordered_map<StateType, StateType>
+     */
     std::unordered_map<StateType, StateType> get_succ_map(StateType state, StateType action);
 
    public:
@@ -155,6 +158,15 @@ class HashStorage {
      */
     KeyIterator<StateType> get_state_action_succ_itr(StateType state, StateType action);
 
+
+    /**
+     * Get the (state,action) predecessor vector of state
+     * 
+     * @param state 
+     * @return std::vector<std::pair<StateType, StateType> > 
+     */
+    std::vector<std::pair<StateType, StateType> > get_predecessors(StateType state);
+
     /*!
      * Returns true if the passed state is in data 
      * 
@@ -164,6 +176,12 @@ class HashStorage {
      */
     bool state_exists(StateType state);
 
+    /*!
+     * Returns the number of actions for a state 
+     * 
+     * @param state 
+     * @return StateType 
+     */
     StateType get_action_count(StateType state);
 
     /*!
@@ -185,9 +203,30 @@ class HashStorage {
      */
     StateType get_succ_samples(StateType state, StateType action, StateType succ);
 
+    /*!
+     * Set the number of successors for a (state,action) pair 
+     * (used in greybox case)
+     * 
+     * @param state_action_pair 
+     * @param count 
+     */
     void set_succ_count(std::pair<StateType, StateType> state_action_pair, StateType count);
 
+    /*!
+     * get the number of successors for a (state,action) pair 
+     * (used in greybox case)
+     * 
+     * @param state_action_pair 
+     * @param count 
+     */
     StateType get_succ_count(std::pair<StateType, StateType> state_action_pair);
+
+    /*!
+     * Creates a mapping to the (state,action) predecessors of every state. 
+     * Is generated on demand
+     * Used for the visualization of neighborhoods in eMdpToDot
+     */
+    void create_reverse_mapping();
 
     /*!
      * Prints the data structure to std::cout

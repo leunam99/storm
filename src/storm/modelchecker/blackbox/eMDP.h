@@ -12,7 +12,6 @@
 
 namespace storm {
 namespace modelchecker {
-
 namespace blackbox {
 
 
@@ -95,6 +94,14 @@ class eMDP {
      * @param state 
      */
     void removeActionLabel(std::string label, StateType state, StateType action);
+
+    /*!
+     * Returns the vector of Labels for an action
+     * 
+     * @param state 
+     * @return std::vector<std::string> 
+     */
+    std::vector<std::string> getActionLabels(StateType state, StateType action);
 
     /*!
      * print the eMDP to std::cout
@@ -190,6 +197,16 @@ class eMDP {
      */
     storage::KeyIterator<StateType> get_state_action_succ_itr(StateType state, StateType action);
     
+    void createReverseMapping();
+
+    /**
+     * @brief Get the (state,action) predecessor vector of state
+     * 
+     * @param state 
+     * @return std::vector<std::pair<StateType, StateType> > 
+     */
+    std::vector<std::pair<StateType, StateType> > get_predecessors(StateType state);
+
    private:
     /*!
      * Adds the state and its corresponding exploration time to explorationOrder
@@ -203,6 +220,7 @@ class eMDP {
    std::unordered_map<StateType, std::vector<std::string> > stateLabeling; 
 
    //TODO: Use boost::hash instead, keep pair_hash for easy compile
+   
     struct pair_hash {
         template <class T1, class T2>
         std::size_t operator () (const std::pair<T1,T2> &p) const {
@@ -212,8 +230,9 @@ class eMDP {
             return h1 ^ h2;  
         }
     };
+    
 
-   std::unordered_map<std::pair<StateType, StateType>, std::vector<std::string, pair_hash> > actionLabeling; 
+   std::unordered_map<std::pair<StateType, StateType>, std::vector<std::string>, pair_hash > actionLabeling; 
    StateType init_state = -1;
    StateType explorationCount = 0; //Number of explored states
 };
