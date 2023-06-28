@@ -15,9 +15,9 @@ KeyIterator<StateType>::KeyIterator(void* map) {
 
 template<typename StateType>
 KeyIterator<StateType>::KeyIterator() {
-    std::unordered_map<int, void*> empty_map;
-    cur = empty_map.begin();
-    end = empty_map.end();
+    std::unordered_map<int, void*> emptyMap;
+    cur = emptyMap.begin();
+    end = emptyMap.end();
 }
 
 template<typename StateType>
@@ -43,87 +43,86 @@ HashStorage<StateType>::HashStorage() : data() {
 }
 
 template<typename StateType>
-std::unordered_map<StateType, StateType> HashStorage<StateType>::get_succ_map(StateType state, StateType action) {
-    std::unordered_map<StateType, StateType> succ_map;
+std::unordered_map<StateType, StateType> HashStorage<StateType>::getSuccMap(StateType state, StateType action) {
+    std::unordered_map<StateType, StateType> succMap;
     if (data.find(state) == data.end()) {
-        return succ_map;
+        return succMap;
     }
 
-    auto act_map = &data.at(state);
-    if (act_map->find(action) == act_map->end()) {
-        return succ_map;
+    auto actMap = &data.at(state);
+    if (actMap->find(action) == actMap->end()) {
+        return succMap;
     }
 
-    succ_map = act_map->at(action).second;
-    return succ_map;
+    succMap = actMap->at(action).second;
+    return succMap;
 }
 
 template<typename StateType>
-void HashStorage<StateType>::add_state(StateType state) {
+void HashStorage<StateType>::addState(StateType state) {
     if (data.find(state) == data.end())
-           data[state] = std::unordered_map<StateType, count_sampleMap_pair>();
+           data[state] = std::unordered_map<StateType, countSampleMapPair>();
 }
 
 //__________________ Add states and actions to Datastructure __________//
-
 template<typename StateType>
-void HashStorage<StateType>::add_state_actions(StateType state, std::vector<StateType> actions) {
-    add_state(state);
-    action_count_map[state] = actions.size();
-    auto* act_map = &data.at(state);
-    if (act_map->begin() == act_map->end()) {
-        for (auto act : actions) (*act_map)[act] = count_sampleMap_pair();
+void HashStorage<StateType>::addStateActions(StateType state, std::vector<StateType> actions) {
+    addState(state);
+    actionCountMap[state] = actions.size();
+    auto* actMap = &data.at(state);
+    if (actMap->begin() == actMap->end()) {
+        for (auto act : actions) (*actMap)[act] = countSampleMapPair();
     }
 }
 
 template<typename StateType>
-void HashStorage<StateType>::inc_trans(StateType state, StateType action, StateType succ, StateType samples) {
-    add_state(state);  // add state to data if it doesn't exist
-    add_state(succ);   // add succ to data if it doesn't exist
+void HashStorage<StateType>::incTrans(StateType state, StateType action, StateType succ, StateType samples) {
+    addState(state);  // add state to data if it doesn't exist
+    addState(succ);   // add succ to data if it doesn't exist
 
-    auto* act_map = &data.at(state);  // add action to data if it doesn't exist
-    if (act_map->find(action) == act_map->end()) {
-        action_count_map[state] += 1;
-        (*act_map)[action] = count_sampleMap_pair();
+    auto* actMap = &data.at(state);  // add action to data if it doesn't exist
+    if (actMap->find(action) == actMap->end()) {
+        actionCountMap[state] += 1;
+        (*actMap)[action] = countSampleMapPair();
     }
 
-    auto* sample_map = &(act_map->at(action).second);
-    (*act_map).at(action).first += samples;  // Increment the total samples for the action
-    (*sample_map)[succ] += samples;          // Increments the samples for the (state,action,succ) triple
+    auto* sampleMap = &(actMap->at(action).second);
+    (*actMap).at(action).first += samples;  // Increment the total samples for the action
+    (*sampleMap)[succ] += samples;          // Increments the samples for the (state,action,succ) triple
 }
 
 //__________________ Access the Datastructure via Vectors _________________//
 
 template<typename StateType>
-std::vector<StateType> HashStorage<StateType>::get_state_vec() {
-    std::vector<StateType> state_vec;
-    for (auto const& p : data) state_vec.push_back(p.first);
-    return state_vec;
+std::vector<StateType> HashStorage<StateType>::getStateVec() {
+    std::vector<StateType> stateVec;
+    for (auto const& p : data) stateVec.push_back(p.first);
+    return stateVec;
 }
 
 template<typename StateType>
-std::vector<StateType> HashStorage<StateType>::get_state_actions_vec(StateType state) {
-    std::vector<StateType> action_vec;
+std::vector<StateType> HashStorage<StateType>::getStateActionVec(StateType state) {
+    std::vector<StateType> actionVec;
     if (data.find(state) != data.end())
-        for (auto const& p : data.at(state)) action_vec.push_back(p.first);
-    return action_vec;
+        for (auto const& p : data.at(state)) actionVec.push_back(p.first);
+    return actionVec;
 }
 
 template<typename StateType>
-std::vector<StateType> HashStorage<StateType>::get_state_action_succ_vec(StateType state, StateType action) {
-    std::vector<StateType> succ_vec;
-    for (auto const& p : get_succ_map(state, action)) succ_vec.push_back(p.first);
-    return succ_vec;
+std::vector<StateType> HashStorage<StateType>::getStateActionSuccVec(StateType state, StateType action) {
+    std::vector<StateType> succVec;
+    for (auto const& p : getSuccMap(state, action)) succVec.push_back(p.first);
+    return succVec;
 }
 //__________________ Access the Datastructure via Iterators _________________//
 
 template<typename StateType>
-KeyIterator<StateType> HashStorage<StateType>::get_state_itr() {
+KeyIterator<StateType> HashStorage<StateType>::getStateItr() {
     return KeyIterator<StateType>(&data);
 }
 
 template<typename StateType>
-KeyIterator<StateType> HashStorage<StateType>::get_state_actions_itr(StateType state) {
+KeyIterator<StateType> HashStorage<StateType>::getStateActionsItr(StateType state) {
     if (data.find(state) == data.end()) {
         return KeyIterator<StateType>();
     }
@@ -131,99 +130,99 @@ KeyIterator<StateType> HashStorage<StateType>::get_state_actions_itr(StateType s
 }
 
 template<typename StateType>
-KeyIterator<StateType> HashStorage<StateType>::get_state_action_succ_itr(StateType state, StateType action) {
+KeyIterator<StateType> HashStorage<StateType>::getStateActionsSuccItr(StateType state, StateType action) {
     if (data.find(state) == data.end()) {
         return KeyIterator<StateType>();
     }
-    auto* act_map = &data.at(state);
-    if(act_map->find(action) == act_map->end()) {
+    auto* actMap = &data.at(state);
+    if(actMap->find(action) == actMap->end()) {
         return KeyIterator<StateType>();
     }
-    return KeyIterator<StateType>(&(act_map->at(action).second));
+    return KeyIterator<StateType>(&(actMap->at(action).second));
 }
 //_______________________________ Access predeccesors of states ___________________________//
 template<typename StateType> 
-void HashStorage<StateType>::create_reverse_mapping() {
+void HashStorage<StateType>::createReverseMapping() {
     
-    auto stateItr = get_state_itr();
+    auto stateItr = getStateItr();
     while (stateItr.hasNext()) {
         StateType predState = stateItr.next();
-        auto actionItr = get_state_actions_itr(predState);
+        auto actionItr = getStateActionsItr(predState);
         while (actionItr.hasNext()) {
             StateType action = actionItr.next();
-            auto succItr = get_state_action_succ_itr(predState, action);
+            auto succItr = getStateActionsSuccItr(predState, action);
             while(succItr.hasNext()) {
                 StateType succ = succItr.next();
-                reverse_map[succ].push_back(std::make_pair(predState, action));
+                reverseMap[succ].push_back(std::make_pair(predState, action));
             }
         }
     }
 }
 
 template<typename StateType>
-std::vector<std::pair<StateType, StateType>> HashStorage<StateType>::get_predecessors(StateType state) {
-    if(reverse_map.find(state) != reverse_map.end())
-        return reverse_map[state];
+std::vector<std::pair<StateType, StateType>> HashStorage<StateType>::getPredecessors(StateType state) {
+    if(reverseMap.find(state) != reverseMap.end())
+        return reverseMap[state];
     return std::vector<std::pair<StateType, StateType>>(); 
 }
 
 //__________________ Access seperate elements of the Datastructure _____________________//
 
 template<typename StateType>
-bool HashStorage<StateType>::state_exists(StateType state) {
+bool HashStorage<StateType>::stateExists(StateType state) {
     return data.find(state) != data.end();
 }
 
 template<typename StateType> 
-StateType HashStorage<StateType>::get_action_count(StateType state) {
-    if(action_count_map.find(state) == action_count_map.end()) 
+StateType HashStorage<StateType>::getActionCount(StateType state) {
+    if(actionCountMap.find(state) == actionCountMap.end()) 
         return -1;
-    return action_count_map[state];
+    return actionCountMap[state];
 }
 
 template<typename StateType>
-StateType HashStorage<StateType>::get_total_samples(StateType state, StateType action) {
+StateType HashStorage<StateType>::getTotalSamples(StateType state, StateType action) {
     if (data.find(state) == data.end()) {
         return -1;
     }
 
-    auto* act_map = &data.at(state);
-    if (act_map->find(action) == act_map->end()) {
+    auto* actMap = &data.at(state);
+    if (actMap->find(action) == actMap->end()) {
         return -1;
     }
-    return act_map->at(action).first;
+    return actMap->at(action).first;
 }
 
 template<typename StateType>
-StateType HashStorage<StateType>::get_succ_samples(StateType state, StateType action, StateType succ) {
-    auto succ_map = get_succ_map(state, action);
+StateType HashStorage<StateType>::getSuccSamples(StateType state, StateType action, StateType succ) {
+    auto succMap = getSuccMap(state, action);
 
-    if (succ_map.find(succ) != succ_map.end())
-        return succ_map.at(succ);
+    if (succMap.find(succ) != succMap.end())
+        return succMap.at(succ);
     return -1;
 }
 
 template<typename StateType>
-void HashStorage<StateType>::set_succ_count(std::pair<StateType, StateType> state_action_pair, StateType count) {
-    succ_count_map[state_action_pair] = count;
+void HashStorage<StateType>::setSuccCount(std::pair<StateType, StateType> stateActionPair, StateType count) {
+    succCountMap[stateActionPair] = count;
 }
 
 template<typename StateType>
-StateType HashStorage<StateType>::get_succ_count(std::pair<StateType, StateType> state_action_pair) {
-    if(succ_count_map.find(state_action_pair) != succ_count_map.end())
-        return succ_count_map[state_action_pair];
+StateType HashStorage<StateType>::getSuccCount(std::pair<StateType, StateType> stateActionPair) {
+    if(succCountMap.find(stateActionPair) != succCountMap.end())
+        return succCountMap[stateActionPair];
     return -1;
 }
 
 template<typename StateType>
 void HashStorage<StateType>::print() {
-    for (auto state : get_state_vec()) {
+    for (auto state : getStateVec()) {
         std::cout << "-------------------------\n";
         std::cout << "State: " << state << "\n";
-        for (auto action : get_state_actions_vec(state)) {
-            std::cout << " Action: " << action << " | Total Samples: " << get_total_samples(state, action) << "\n";
-            for (auto succ : get_state_action_succ_vec(state, action)) {
-                std::cout << "  * Succ: " << succ << " | Samples: " << get_succ_samples(state, action, succ) << "\n";
+        for (auto action : getStateActionVec(state)) {
+            std::cout << " Action: " << action << " | Total Samples: " << getTotalSamples(state, action) << "\n";
+            for (auto succ : getStateActionSuccVec(state, action)) {
+                std::cout << "  * Succ: " << succ << " | Samples: " << getSuccSamples(state, action, succ) << "\n";
             }
         }
     }
@@ -243,11 +242,11 @@ int main(int argc, char const *argv[])
 {       
     
     auto x = storm::modelchecker::blackbox::storage::HashStorage<int_fast32_t>();
-    x.inc_trans(1,0,3,0);
-    x.inc_trans(3,0,4,0);
-    x.inc_trans(4,0,5,0);
-    x.inc_trans(5,0,6,0);
-    x.create_reverse_mapping();
+    x.incTrans(1,0,3,0);
+    x.incTrans(3,0,4,0);
+    x.incTrans(4,0,5,0);
+    x.incTrans(5,0,6,0);
+    x.createReverseMapping();
 }
 */
 

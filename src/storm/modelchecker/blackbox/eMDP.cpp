@@ -20,84 +20,36 @@ void eMDP<StateType>::print() {
     std::cout << "exploration order [state, explorationTime]:\n";
     for (const auto& i: explorationOrder)
         std::cout << "[" << i.first << ", " << i.second << "] ";
-    std::cout << "\nInitial State: " << init_state << "\n";
+    std::cout << "\nInitial State: " << initState << "\n";
     std::cout << "explored eMDP:\n";
     hashStorage.print();
-}
-
-template<typename StateType>
-std::string eMDP<StateType>::toDotString() {
-    std::unordered_map<int, std::string> color_map; //colors to distinguish actions 
-    color_map[0] = "green";
-    color_map[1] = "red";
-    color_map[2] = "blue";
-    color_map[3] = "yellow";
-    color_map[4] = "pink";
-    color_map[5] = "orange";
-
-    std::string dot_str = "digraph G {\n";
-    dot_str += "node [shape=circle style=filled, fixedsize=true, width=2, height=2]\n"; //Node Attributes 
-    
-    dot_str += std::to_string(init_state) + " [fillcolor=green]\n"; //Make the initial state a different color 
-
-    for (auto state : hashStorage.get_state_vec()) {
-        std::string action_str = ""; //build a string of all the actions and total Samples of state 
-        int color_ctr = 0; //increment the state color per action 
-        for (auto action : hashStorage.get_state_actions_vec(state)) {
-            action_str += "\\n act: " + std::to_string(action) 
-            + " | #tot_spl: " + std::to_string(hashStorage.get_total_samples(state, action));
-            for (auto succ : hashStorage.get_state_action_succ_vec(state, action)) {
-                dot_str += "  " + std::to_string(state) + " -> " + std::to_string(succ) // transition 
-                + " [label=\"act: "  + std::to_string(action) + "\\n #spl: " //label with action and samples 
-                + std::to_string(hashStorage.get_succ_samples(state, action, succ)) 
-                + "\", color=" + color_map[color_ctr] + "]\n"; //color of trabsition 
-            }
-            color_ctr++;
-        }
-        dot_str += "  " + std::to_string(state) + " [ label=\"state: " + std::to_string(state) + action_str + "\"]\n"; // text in state 
-    }
-
-    dot_str += "}\n";
-    return dot_str;
-}
-
-template<typename StateType>
-void eMDP<StateType>::writeDotFile(std::string filename) {
-    std::ofstream MyFile(filename);
-    MyFile << toDotString();
-    MyFile.close();
-}
-
-template<typename StateType>
-void eMDP<StateType>::printDot() {
-    std::cout << toDotString();
 }
 
 //_______________________ Add states to eMDP ___________________________ //
 
 template<typename StateType>
 void eMDP<StateType>::addInitialState(StateType state) {
-    if(init_state == -1) 
-        hashStorage.add_state(state);
-        init_state = state;
+    if(initState == -1) 
+        hashStorage.addState(state);
+        initState = state;
 }
 
 template<typename StateType>
 void eMDP<StateType>::addVisit(StateType state, StateType action, StateType succ) {
     addStateToExplorationOrder(succ);
-    hashStorage.inc_trans(state, action, succ, 1);
+    hashStorage.incTrans(state, action, succ, 1);
 }
 
 template<typename StateType>
 void eMDP<StateType>::addVisits(StateType state, StateType action, StateType succ, StateType visits) {
     addStateToExplorationOrder(succ);
-    hashStorage.inc_trans(state, action, succ, visits);
+    hashStorage.incTrans(state, action, succ, visits);
 }
 
 template<typename StateType>
-void eMDP<StateType>::addState(StateType state, std::vector<StateType> avail_actions) {
+void eMDP<StateType>::addState(StateType state, std::vector<StateType> availActions) {
     addStateToExplorationOrder(state);
-    hashStorage.add_state_actions(state, avail_actions);
+    hashStorage.addStateActions(state, availActions);
 }
 
 //_______________________ State/Trans Labeling Functions _______________________//
@@ -154,61 +106,61 @@ std::vector<std::string> eMDP<StateType>::getActionLabels(StateType state, State
 
 template<typename StateType>
 bool eMDP<StateType>::isStateKnown(StateType state) {
-    return hashStorage.state_exists(state);
+    return hashStorage.stateExists(state);
 }
 
 template<typename StateType>
 StateType eMDP<StateType>::getSampleCount(StateType state, StateType action) {
-    return hashStorage.get_total_samples(state, action);
+    return hashStorage.getTotalSamples(state, action);
 }
 
 template<typename StateType>
 StateType eMDP<StateType>::getSampleCount(StateType state, StateType action, StateType succ) {
-    return hashStorage.get_succ_samples(state, action, succ);
+    return hashStorage.getSuccSamples(state, action, succ);
 }
 
 template<typename StateType>
 void eMDP<StateType>::setSuccCount(StateType state, StateType action, StateType count) {
-    hashStorage.set_succ_count(std::make_pair(state, action), count);
+    hashStorage.setSuccCount(std::make_pair(state, action), count);
 }
 
 template<typename StateType>
 StateType eMDP<StateType>::getSuccCount(StateType state, StateType action) {
-    return hashStorage.get_succ_count(std::make_pair(state, action));
+    return hashStorage.getSuccCount(std::make_pair(state, action));
 }
 
 template<typename StateType> 
 StateType eMDP<StateType>::getActionCount(StateType state) {
-    return hashStorage.get_action_count(state);
+    return hashStorage.getActionCount(state);
 }
 
 //___________________________ Get Iterators ____________________________//
 
 template<typename StateType>
-storage::KeyIterator<StateType> eMDP<StateType>::get_state_itr() {
-    return hashStorage.get_state_itr();
+storage::KeyIterator<StateType> eMDP<StateType>::getStateItr() {
+    return hashStorage.getStateItr();
 }
 
 template<typename StateType>
-storage::KeyIterator<StateType> eMDP<StateType>::get_state_actions_itr(StateType state) {
-    return hashStorage.get_state_actions_itr(state);
+storage::KeyIterator<StateType> eMDP<StateType>::getStateActionsItr(StateType state) {
+    return hashStorage.getStateActionsItr(state);
 }
 
 template<typename StateType>
-storage::KeyIterator<StateType> eMDP<StateType>::get_state_action_succ_itr(StateType state, StateType action) {
-    return hashStorage.get_state_action_succ_itr(state, action);
+storage::KeyIterator<StateType> eMDP<StateType>::getStateActionsSuccItr(StateType state, StateType action) {
+    return hashStorage.getStateActionsSuccItr(state, action);
 }
 
 //__________________________ Create and acces reverse mapping ________________________________//
 
 template<typename StateType>
 void eMDP<StateType>::createReverseMapping() {
-    hashStorage.create_reverse_mapping(); 
+    hashStorage.createReverseMapping(); 
 }
 
 template<typename StateType>
-std::vector<std::pair<StateType, StateType> > eMDP<StateType>::get_predecessors(StateType state) {  
-    return hashStorage.get_predecessors(state);
+std::vector<std::pair<StateType, StateType> > eMDP<StateType>::getPredecessors(StateType state) {  
+    return hashStorage.getPredecessors(state);
 }
 
 template class eMDP<int_fast32_t>;

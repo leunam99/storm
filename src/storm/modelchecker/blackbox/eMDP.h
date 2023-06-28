@@ -51,9 +51,9 @@ class eMDP {
     /*!
      * Add a new state to the eMDP
      * @param state  state index of new state
-     * @param avail_actions vector of available actions at state
+     * @param availActions vector of available actions at state
      */
-    void addState(StateType state, std::vector<StateType> avail_actions);
+    void addState(StateType state, std::vector<StateType> availActions);
     
     /*!
      * Adds a new Label to the state 
@@ -109,25 +109,6 @@ class eMDP {
     void print();
 
     /*!
-     * Converts the eMDP to dot string representation 
-     * 
-     * @return std::string 
-     */
-    std::string toDotString();
-    /*!
-     * Writes toDotString() to a file with name filename 
-     * 
-     * @param filename  
-     */
-    void writeDotFile(std::string filename);
-
-    /*!
-     * prints toDotString to std::cout 
-     * 
-     */
-    void printDot();
-
-    /*!
      * returns true. if the state was already added to this eMDP. false otherwise
      * @param state  state index of tested state
      */
@@ -178,7 +159,7 @@ class eMDP {
      * 
      * @return KeyIterator<StateType> 
      */
-    storage::KeyIterator<StateType> get_state_itr();
+    storage::KeyIterator<StateType> getStateItr();
 
     /*!
      * Returns a KeyIterator over the actions of a state
@@ -186,7 +167,7 @@ class eMDP {
      * @param state 
      * @return KeyIterator<StateType> 
      */
-    storage::KeyIterator<StateType> get_state_actions_itr(StateType state);
+    storage::KeyIterator<StateType> getStateActionsItr(StateType state);
 
     /*!
      * Returns a KeyIterator over the successor of a state for a given action 
@@ -195,7 +176,7 @@ class eMDP {
      * @param action 
      * @return KeyIterator<StateType> 
      */
-    storage::KeyIterator<StateType> get_state_action_succ_itr(StateType state, StateType action);
+    storage::KeyIterator<StateType> getStateActionsSuccItr(StateType state, StateType action);
     
     void createReverseMapping();
 
@@ -205,7 +186,7 @@ class eMDP {
      * @param state 
      * @return std::vector<std::pair<StateType, StateType> > 
      */
-    std::vector<std::pair<StateType, StateType> > get_predecessors(StateType state);
+    std::vector<std::pair<StateType, StateType> > getPredecessors(StateType state);
 
    private:
     /*!
@@ -219,9 +200,9 @@ class eMDP {
    std::unordered_map<StateType, StateType> explorationOrder; // maps state to its position of when its been found
    std::unordered_map<StateType, std::vector<std::string> > stateLabeling; 
 
-   //TODO: Use boost::hash instead, keep pair_hash for easy compile
+   //TODO: Use boost::hash instead, keep pairHash for easy compile
    
-    struct pair_hash {
+    struct pairHash {
         template <class T1, class T2>
         std::size_t operator () (const std::pair<T1,T2> &p) const {
             auto h1 = std::hash<T1>{}(p.first);
@@ -232,8 +213,8 @@ class eMDP {
     };
     
 
-   std::unordered_map<std::pair<StateType, StateType>, std::vector<std::string>, pair_hash > actionLabeling; 
-   StateType init_state = -1;
+   std::unordered_map<std::pair<StateType, StateType>, std::vector<std::string>, pairHash > actionLabeling; 
+   StateType initState = -1;
    StateType explorationCount = 0; //Number of explored states
 };
 } //namespace blackbox
