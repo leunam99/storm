@@ -17,7 +17,7 @@ TODO:
 - Coloring of states 
 - Information on states samples 
 - Handling of initial states 
-- Integration in to eMDP class 
+- Integration in to EMdp class 
 - pretty printing 
 */
 
@@ -65,33 +65,33 @@ class EMdpDotGenerator {
          /*!
           * Recursively writes predecessors of a state to outStream 
           * 
-          * @param emdp 
+          * @param EMdp 
           * @param state 
           * @param depth the depth to which predecessors should be explored  
           * @param outStream 
           * @param visited 
           */
-         void convertPred(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited);
+         void convertPred(EMdp<StateType> EMdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited);
 
          /*!
           * Recursively writes successors of a state to outStream 
           * 
-          * @param emdp 
+          * @param EMdp 
           * @param state 
           * @param depth the depth to which successors should be explored  
           * @param outStream 
           * @param visited 
           */
-         void convertSucc(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited);
+         void convertSucc(EMdp<StateType> EMdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited);
         public: 
          /*!
-          * Constructs new eMDP Dot Generator 
+          * Constructs new EMdp Dot Generator 
           * 
           */
          EMdpDotGenerator();
 
          /*!
-          * Constructs new eMDP Dot Generator 
+          * Constructs new EMdp Dot Generator 
           * 
           * @param includeAction if true include actions  
           * @param includeSamples if true inlude samples 
@@ -115,14 +115,14 @@ class EMdpDotGenerator {
           * @param depth 
           * @param outStream 
           */
-         void convertNeighborhood(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream);
+         void convertNeighborhood(EMdp<StateType> EMdp, StateType state, StateType depth, std::ostream& outStream);
 
          /*!
-          * Writes the entire eMDP to outStream 
+          * Writes the entire EMdp to outStream 
           * 
           * @param outStream 
           */
-         void convert(eMDP<StateType> emdp, std::ostream& outStream);
+         void convert(EMdp<StateType> EMdp, std::ostream& outStream);
 
 };
 

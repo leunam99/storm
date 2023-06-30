@@ -17,15 +17,15 @@ namespace blackbox {
 
 template<typename StateType>
 
-class eMDP {
+class EMdp {
    public:
     /*!
-     * Constructs an empty eMDP
+     * Constructs an empty EMdp
      */
-    eMDP();
+    EMdp();
 
     /*!
-     * adds initial state to eMDP
+     * adds initial state to EMdp
      * 
      * @param state initial state 
      */
@@ -49,7 +49,7 @@ class eMDP {
     void addVisits(StateType state, StateType action, StateType succ, StateType visits);
 
     /*!
-     * Add a new state to the eMDP
+     * Add a new state to the EMdp
      * @param state  state index of new state
      * @param availActions vector of available actions at state
      */
@@ -104,15 +104,36 @@ class eMDP {
     std::vector<std::string> getActionLabels(StateType state, StateType action);
 
     /*!
-     * print the eMDP to std::cout
+     * print the EMdp to std::cout
      */
     void print();
 
     /*!
-     * returns true. if the state was already added to this eMDP. false otherwise
+     * returns true. if the state was already added to this EMdp. false otherwise
      * @param state  state index of tested state
      */
     bool isStateKnown(StateType state);
+    
+    /*!
+     * Return the total number of States 
+     * 
+     * @return StateType 
+     */
+    StateType getTotalStateCount();
+
+    /*!
+     * Return the total number of state action pairs 
+     * 
+     * @return StateType 
+     */
+    StateType gettotalStateActionPairCount();
+
+    /**
+     * Return the total number of transitions 
+     * 
+     * @return StateType 
+     */
+    StateType getTotalTransitionCount();
 
     /*!
      * returns how often this state action pair was sampled
@@ -143,14 +164,6 @@ class eMDP {
      * @return StateType 
      */
     StateType getSuccCount(StateType state, StateType action);
-
-    /**
-     * Get the number of actions for a state 
-     * 
-     * @param state 
-     * @return StateType 
-     */
-    StateType getActionCount(StateType state); 
 
     //? Save to disk
 

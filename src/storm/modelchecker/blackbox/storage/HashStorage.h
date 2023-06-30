@@ -57,14 +57,13 @@ class HashStorage {
 
     // Maps state action pair to number of known successors -> used in greybox setting 
     std::unordered_map<std::pair<StateType, StateType>, StateType, pairHash> succCountMap;
-    
-    // TODO: Action -> Succ reachable with that action for a state 
-    // TODO: Total Transitions Action x Succ for a state 
-    // Maps state to the number of available actions
-    std::unordered_map<StateType, StateType> actionCountMap;
 
     // Maps states to their predecessors action pair (created on demand for debugging)
     std::unordered_map<StateType, std::vector<std::pair<StateType, StateType> > > reverseMap;
+
+    StateType totalStateCount = 0;
+    StateType totalStateActionPairCount = 0;
+    StateType totalTransitionCount = 0;
 
     /*!
      * Helper function, returns the succMap of a (state,action) Pair
@@ -179,12 +178,25 @@ class HashStorage {
     bool stateExists(StateType state);
 
     /*!
-     * Returns the number of actions for a state 
+     * Return the total number of States 
      * 
-     * @param state 
      * @return StateType 
      */
-    StateType getActionCount(StateType state);
+    StateType getTotalStateCount();
+
+    /*!
+     * Return the total number of state action pairs 
+     * 
+     * @return StateType 
+     */
+    StateType gettotalStateActionPairCount();
+
+    /**
+     * Return the total number of transitions 
+     * 
+     * @return StateType 
+     */
+    StateType getTotalTransitionCount();
 
     /*!
      * Returns the total samples for a given state and action 
