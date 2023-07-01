@@ -36,7 +36,7 @@ template<typename StateType>
 bool KeyIterator<StateType>::hasNext() {
     return cur != end;
 } 
-//--------------------- HashStorage Mathods -------------------------//
+//--------------------- HashStorage Methods -------------------------//
 
 template<typename StateType>
 HashStorage<StateType>::HashStorage() : data() {

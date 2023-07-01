@@ -138,6 +138,7 @@ void EMdpDotGenerator<StateType>::convert(EMdp<StateType> emdp, std::ostream& ou
 }
 }
 
+/*
 int main(int argc, char const *argv[])
 {   
 
@@ -167,3 +168,5 @@ int main(int argc, char const *argv[])
     return 0;
     
 }
+
+*/
