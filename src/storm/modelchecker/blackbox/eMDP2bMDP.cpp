@@ -6,27 +6,19 @@
 typedef storm::storage::SparseMatrixIndexType index_type;
 
 using storm::models::sparse::bMDP;
-using storm::modelchecker::blackbox::eMDP;
+using storm::modelchecker::blackbox::EMdp;
 
 template <typename ValueType>
-storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(eMDP<int> &emdp){
+storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<int> &emdp){
 
     //calculate sizes of matrix
     //TODO keep track of (some of) this information in emdp?
     //colum count: number of states + 1 dummy state
-    index_type states = 1;
+    index_type states = 1 + emdp.getTotalStateCount();
     //row count: sum of number of actions for each state + 1 for dummy state
-    index_type rows = 1;
+    index_type rows = 1 + emdp.gettotalStateActionPairCount();
     //entries: total number of nonzero entries + 1 for dummy state
-    index_type entries = 1;
-
-    for(auto state: emdp.get_state_vec()){
-        states++;
-        for(auto action : emdp.get_state_actions_vec(state)){
-            rows++;
-            entries += emdp.get_state_action_succ_vec(state,action).size();
-        }
-    }
+    index_type entries = 1 + emdp.getTotalTransitionCount();
 
     return storm::storage::SparseMatrixBuilder<ValueType>(rows,states,entries,true,true,states);
 
@@ -35,7 +27,7 @@ storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(eMDP<int> &emdp)
 
 //TODO make emdp (and therefore all called functions) const??
 template <typename IndexType, typename ValueType>
-bMDP<ValueType> infer(eMDP<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDistribution<IndexType> valueFunc, double pmin, double delta){
+bMDP<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDistribution<IndexType> valueFunc, double pmin, double delta){
 
     using Bounds = storm::models::sparse::ValueTypePair<ValueType>;
     using new_index_t = typename storm::storage::SparseMatrixBuilder<ValueType>::index_type;
@@ -46,27 +38,26 @@ bMDP<ValueType> infer(eMDP<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDist
     storm::storage::SparseMatrixBuilder<ValueType> matrixBuilder = initialiseMatrix<Bounds>(emdp);
 
     // create a map that gives the states an order/index
-    std::unordered_map<eMDP<int>::index_type,new_index_t> index_mapping;
+    std::unordered_map<IndexType,new_index_t> index_mapping;
 
-    auto states = emdp.get_state_vec();
-    new_index_t i;
-    for( i = 0; i < states.size(); i++){
-        index_mapping[states[i]] = i;
+    new_index_t i = 0;
+    for( auto states = emdp.getStateItr(); states.hasNext(); i++){
+        index_mapping[states.next()] = i;
     }
     new_index_t dummy_state = i; //put dummy state last
 
     //initialise value function with eMDP
-    //TODO like this, the valueFunc likely has to mirror the whole structure of the eMDP if it is more complicated than even
-    // -> maybe save it in the eMDP and have a function to recalculate it? (but this is waste for the simple case)
     valueFunc.initialiseFor(emdp, delta);
 
 
     int currentRow = 0;
     //for every state in the eMDP
-    for(auto state:states){
+    for(auto statesItr = emdp.getStateItr(); statesItr.hasNext(); ){
+        auto state = statesItr.next();
         matrixBuilder.newRowGroup(currentRow);
         //for every action of this state
-        for(auto action:emdp.get_state_actions_vec(state)) {
+        for(auto actItr = emdp.getStateActionsItr(state); actItr.hasNext();) {
+            auto action = actItr.next();
             int actionSamples = emdp.getSampleCount(state,action);
 
             if (actionSamples == 0) {
@@ -74,8 +65,8 @@ bMDP<ValueType> infer(eMDP<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDist
                 matrixBuilder.addNextValue(currentRow,dummy_state, storm::models::sparse::ValueTypePair<ValueType>::ValueTypePair(std::make_pair(1,1)));
             } else {
                 // for every sampled target state
-                for(auto target_state: emdp.get_state_action_succ_vec(state,action)){
-
+                for(auto targetItr = emdp.getStateActionsSuccItr(state,action); targetItr.hasNext();){
+                    auto target_state = targetItr.next();
                     // call value function to get delta assigned to transition
                     double delta_transition = valueFunc.getDeltaT(state, action,target_state);
 
