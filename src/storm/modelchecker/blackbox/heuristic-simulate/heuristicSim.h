@@ -25,14 +25,33 @@ class HeuristicSim {
     typedef std::vector<std::pair<StateType, ActionType>> StateActionStack;
 
     public:
+     /*!
+      * Constructor for HeuristicSim for a BlackboxMDP
+      */
      HeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp);
 
+     /*!
+      * returns the Type of this simulation heuristic
+      * @return HeuristicSimType
+      */
      virtual HeuristicSimType getType() = 0;
 
+     /*!
+      * returns returns of the exploration of the given path should be stopped
+      * @param pathHist current exploration path
+      * @return bool
+      */
      virtual bool shouldStopSim(StateActionStack& pathHist) = 0;
  
+     /*!
+      * sample next action to take on basis of of given exploration path
+      * @return Action
+      */
      virtual ActionType sampleAction(StateActionStack& pathHist) = 0;
 
+      /*!
+      * reset any memory this heuristic has collected dor its decision making
+      */
      virtual void reset() = 0;
 
     protected:
@@ -49,14 +68,30 @@ class NaiveHeuristicSim : public HeuristicSim<StateType, ValueType> {
      NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp, std::seed_seq seed);
      NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp);
 
+     /*!
+      * returns the Type of this simulation heuristic
+      * @return HeuristicSimType
+      */
      HeuristicSimType getType() {
         return HeuristicSimType::NAIVE;
      }
 
+     /*!
+      * returns returns of the exploration of the given path should be stopped
+      * @param pathHist current exploration path
+      * @return bool
+      */
      bool shouldStopSim(StateActionStack& pathHist);
  
+     /*!
+      * sample next action to take on basis of of given exploration path
+      * @return Action
+      */
      ActionType sampleAction(StateActionStack& pathHist);
 
+     /*!
+      * reset any memory this heuristic has collected dor its decision making
+      */
      void reset();
 
     private:

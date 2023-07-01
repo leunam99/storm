@@ -19,8 +19,21 @@ class BlackBoxExplorer {
     typedef std::vector<std::pair<StateType, ActionType>> StateActionStack;
  
     public:
+     /*!
+      * returns a BlackBoxExplorer for the given blackbox_interface and simulation heuristic
+      * 
+      * @param blackboxMDP 
+      * @param heuristicSim
+      * @return BlackBoxExplorer
+      */
      BlackBoxExplorer(std::shared_ptr<BlackboxMDP<StateType>> blackboxMDP, std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim);
 
+     /*!
+      * explores paths in the blackboxMDP and stores the visits in the given eMDP
+      * 
+      * @param eMDP 
+      * @param numExploration number of paths to explore
+      */
      void performExploration(eMDP<StateType>& eMDP, StateType numExplorations);
 
     private:
