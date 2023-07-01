@@ -41,7 +41,7 @@ class BlackboxMDP {
       * @param action
       * @return successor state identfier
       */
-     virtual StateType sampleSuc(StateType state, StateType action) = 0;
+     virtual StateType sampleSucc(StateType state, StateType action) = 0;
 
      /*!
       * returns a lower bound for all transition probilities in this MDP 
@@ -91,7 +91,7 @@ class BlackboxWrapperOnWhitebox: BlackboxMDP<StateType> {
       * @param action
       * @return successor state identfier
       */
-     StateType sampleSuc(StateType state, StateType action);
+     StateType sampleSucc(StateType state, StateType action);
 
      /*!
       * returns true if this MDP is a greybox MDP, false if it is a blackbox MDP 

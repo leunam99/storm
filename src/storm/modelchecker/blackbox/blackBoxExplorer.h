@@ -34,7 +34,7 @@ class BlackBoxExplorer {
       * @param eMDP 
       * @param numExploration number of paths to explore
       */
-     void performExploration(eMDP<StateType>& eMDP, StateType numExplorations);
+     void performExploration(EMdp<StateType>& eMDP, StateType numExplorations);
 
     private:
      std::shared_ptr<BlackboxMDP<StateType>> blackboxMdp;

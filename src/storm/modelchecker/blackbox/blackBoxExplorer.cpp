@@ -18,7 +18,7 @@ BlackBoxExplorer<StateType, ValueType>::BlackBoxExplorer(std::shared_ptr<Blackbo
 }
 
 template <typename StateType, typename ValueType>
-void BlackBoxExplorer<StateType, ValueType>::performExploration(eMDP<StateType>& eMDP, StateType numExplorations) {
+void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>& eMDP, StateType numExplorations) {
     StateActionStack stack;
     StateType maxPathLen = 10; // TODO magicNumber, collect constants
 
@@ -32,7 +32,7 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(eMDP<StateType>&
         // do exploration
         while (!heuristicSim->shouldStopSim(stack)) {
             actionTaken = heuristicSim->sampleAction(stack);
-            suc = blackboxMdp->sampleSuc((stack.back().first), actionTaken);
+            suc = blackboxMdp->sampleSucc((stack.back().first), actionTaken);
 
             // save in stack
             stack.back().second = actionTaken;

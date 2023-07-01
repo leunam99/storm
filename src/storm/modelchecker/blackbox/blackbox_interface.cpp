@@ -54,7 +54,7 @@ StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::getAvailActions(State
 }
 
 template <typename StateType, typename ValueType>
-StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::sampleSuc(StateType state, StateType action) {
+StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::sampleSucc(StateType state, StateType action) {
     StateType stateRowIdx = explorationInformation.getStartRowOfGroup(explorationInformation.getRowGroup(state));
     auto& actionRow = explorationInformation.getRowOfMatrix(stateRowIdx + action);
 
