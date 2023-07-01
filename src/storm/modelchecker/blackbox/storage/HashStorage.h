@@ -243,11 +243,6 @@ class HashStorage {
     void createReverseMapping();
 
     /*!
-     * Returns how many states there are in this HashStorage
-     */
-    index_type get_state_count();
-
-    /*!
      * Prints the data structure to std::cout
      *
      */

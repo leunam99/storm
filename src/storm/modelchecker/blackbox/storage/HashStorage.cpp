@@ -66,11 +66,6 @@ void HashStorage<StateType>::addState(StateType state) {
     }
 }
 
-template<typename IntValueType>
-typename HashStorage<IntValueType>::index_type HashStorage<IntValueType>::get_state_count() {
-    return data.size();
-}
-
 //__________________ Add states and actions to Datastructure __________//
 template<typename StateType>
 void HashStorage<StateType>::addStateActions(StateType state, std::vector<StateType> actions) {

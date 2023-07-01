@@ -52,7 +52,7 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(eMDP<StateType>&
         }
 
         // update maxPathLen
-        maxPathLen = 3 * eMDP.getSize();  // TODO magic number; collect constants
+        maxPathLen = 3 * eMDP.getTotalStateCount();  // TODO magic number; collect constants
     }
 }
 
