@@ -176,6 +176,7 @@ std::vector<std::pair<StateType, StateType> > EMdp<StateType>::getPredecessors(S
 }
 
 template class EMdp<int_fast32_t>;
+
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm

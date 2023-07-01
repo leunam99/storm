@@ -18,7 +18,7 @@ BlackBoxExplorer<StateType, ValueType>::BlackBoxExplorer(std::shared_ptr<Blackbo
 }
 
 template <typename StateType, typename ValueType>
-void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>& eMDP, StateType numExplorations) {
+void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<index_type_fast>& eMDP, StateType numExplorations) {
     StateActionStack stack;
     StateType maxPathLen = 10; // TODO magicNumber, collect constants
 

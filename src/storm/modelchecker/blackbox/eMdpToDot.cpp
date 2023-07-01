@@ -61,7 +61,7 @@ void EMdpDotGenerator<StateType>::addEMdpDotLabel(StateType action, StateType sa
 }
 
 template<typename StateType> 
-void EMdpDotGenerator<StateType>::convertPred(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
+void EMdpDotGenerator<StateType>::convertPred(EMdp<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
     addEMdpStateDotLabel(state, emdp.getStateLabels(state), "grey", outStream);
     if(depth > 0) {
         for(auto pred_pair: emdp.getPredecessors(state)) {
@@ -76,7 +76,7 @@ void EMdpDotGenerator<StateType>::convertPred(eMDP<StateType> emdp, StateType st
 }
 
 template<typename StateType> 
-void EMdpDotGenerator<StateType>::convertSucc(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
+void EMdpDotGenerator<StateType>::convertSucc(EMdp<StateType> emdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited) {
     addEMdpStateDotLabel(state, emdp.getStateLabels(state), "grey", outStream);
     if(depth > 0) {
         auto actionItr = emdp.getStateActionsItr(state);
@@ -99,7 +99,7 @@ void EMdpDotGenerator<StateType>::convertSucc(eMDP<StateType> emdp, StateType st
 }
 
 template<typename StateType> 
-void EMdpDotGenerator<StateType>::convertNeighborhood(eMDP<StateType> emdp, StateType state, StateType depth, std::ostream& outStream) {
+void EMdpDotGenerator<StateType>::convertNeighborhood(EMdp<StateType> emdp, StateType state, StateType depth, std::ostream& outStream) {
     outStream << "digraph G {\n";
     outStream << "node [shape=circle style=filled, fixedsize=true, width=2, height=2]\n"; //Node Attributes 
     std::vector<std::tuple<StateType, StateType, StateType>> visited;
@@ -109,7 +109,7 @@ void EMdpDotGenerator<StateType>::convertNeighborhood(eMDP<StateType> emdp, Stat
 }
 
 template<typename StateType> 
-void EMdpDotGenerator<StateType>::convert(eMDP<StateType> emdp, std::ostream& outStream) {
+void EMdpDotGenerator<StateType>::convert(EMdp<StateType> emdp, std::ostream& outStream) {
     outStream << "digraph G {\n";
     outStream << "node [shape=circle style=filled, fixedsize=true, width=2, height=2]\n"; //Node Attributes 
     auto stateItr = emdp.getStateItr();
@@ -138,6 +138,7 @@ void EMdpDotGenerator<StateType>::convert(eMDP<StateType> emdp, std::ostream& ou
 }
 }
 
+/*
 int main(int argc, char const *argv[])
 {   
 
@@ -167,3 +168,5 @@ int main(int argc, char const *argv[])
     return 0;
     
 }
+
+*/
