@@ -142,7 +142,7 @@ void EMdpDotGenerator<StateType>::convert(EMdp<StateType> emdp, std::ostream& ou
 int main(int argc, char const *argv[])
 {   
 
-    auto emdp = storm::modelchecker::blackbox::eMDP<int_fast32_t>();
+    auto emdp = storm::modelchecker::blackbox::EMdp<int_fast32_t>();
     emdp.addVisit(0,0,1);
     emdp.addVisit(0,0,7);
 

@@ -27,16 +27,26 @@ class ValueTypePair {
     ValueTypePair(std::pair<ValueType,ValueType> &&valuePair): valuePair{std::move(valuePair)}{}
 
 
-    ValueType getLBound() {
+    ValueType getLBound() const  {
         valuePair.first();
     }
-    ValueType getUBound() {
+    ValueType getUBound() const {
         valuePair.second();
     }
     std::pair<ValueType,ValueType> operator+(ValueTypePair other) {
         return std::make_pair(getLBound() + other.getLBound(), getUBound() + other.getUBound());
     }
 };
+
+/**
+ * Prints the value pair to the stream
+ * @return a reference to the stream
+ */
+template <class T>
+std::ostream& operator<<(std::ostream &os, const ValueTypePair<T>& vp){
+    os << "[" << vp.getLBound() << "," << vp.getUBound() << "]";
+    return os;
+}
 
 template<class BoundType, typename RewardModelType = StandardRewardModel<BoundType>>
 class bMDP : public NondeterministicModel<ValueTypePair<BoundType>, RewardModelType> {
