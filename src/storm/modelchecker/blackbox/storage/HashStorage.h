@@ -5,112 +5,246 @@
 #include <iostream>
 
 
-//TODO: Should we make HashStorage templated or is it fine if we use uint_fast64_t?
 
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
 namespace storage {
 
-/**
+
+template<typename StateType> 
+class KeyIterator {
+    private: 
+     std::unordered_map<int, void*>::iterator cur;
+     std::unordered_map<int, void*>::iterator end;
+    public:
+     KeyIterator(void* map);
+     KeyIterator();
+     
+     StateType peek();
+     StateType next();
+     bool hasNext();
+}; 
+
+/*!
  * Class to store eMDPs
  * The underlying data structure uses consequitive hashmaps and NOT matrices
  */
+template<typename StateType>
 class HashStorage {
    private:
     /*!
-                * Helper function, returns the succ_map of a (state,action) Pair
-                * 
-                * @param state 
-                * @param action 
-                * @return std::unordered_map<uint_fast64_t, uint_fast64_t>
+    * eMDPs are saved as 3 consequitive hashmaps 
+    * 1.) key = state      | value = 2.) hashmap 
+    * 2.) key = action     | value = pair (#total samples, 3.) hashmap)
+    * 3.) key = succ       | value = #samples of the (state,action,succ) triple
+    */
+
+    using countSampleMapPair = std::pair<StateType, std::unordered_map<StateType, StateType> >;
+    std::unordered_map<StateType, std::unordered_map<StateType, countSampleMapPair > > data;
+
+
+    //TODO: Use boost::hash instead, keep pairHash for easy compile
+    struct pairHash {
+        template <class T1, class T2>
+        std::size_t operator () (const std::pair<T1,T2> &p) const {
+            auto h1 = std::hash<T1>{}(p.first);
+            auto h2 = std::hash<T2>{}(p.second);
+
+            return h1 ^ h2;  
+        }
+    };
+
+    // Maps state action pair to number of known successors -> used in greybox setting 
+    std::unordered_map<std::pair<StateType, StateType>, StateType, pairHash> succCountMap;
+
+    // Maps states to their predecessors action pair (created on demand for debugging)
+    std::unordered_map<StateType, std::vector<std::pair<StateType, StateType> > > reverseMap;
+
+    StateType totalStateCount = 0;
+    StateType totalStateActionPairCount = 0;
+    StateType totalTransitionCount = 0;
+
+    /*!
+     * Helper function, returns the succMap of a (state,action) Pair
+     * 
+     * @param state 
+     * @param action 
+     * @return std::unordered_map<StateType, StateType>
      */
-    std::unordered_map<uint_fast64_t, uint_fast64_t> get_succ_map(uint_fast64_t state, uint_fast64_t action);
+    std::unordered_map<StateType, StateType> getSuccMap(StateType state, StateType action);
 
    public:
-    /*!
-                 * adds state do data 
-                 * 
-                 * @param state
+    /**
+     * Construct empty Hash Storage 
+     * 
      */
-    void add_state(uint_fast64_t state);
+    HashStorage();
 
     /*!
-                 * Adds a vector of actions to the state 
-                 * (only if the state does not have any actions yet!)
-                 * 
-                 * @param state 
-                 * @param actions
+     * adds state do data 
+     * sets the #actions available to the state to -1
+     * 
+     * @param state
      */
-    void add_state_actions(uint_fast64_t state, std::vector<uint_fast64_t> actions);
+    void addState(StateType state);
 
     /*!
-                 * Increments a transition of the form (state,action,succ) = samples
-                 * If state or succ don't exists yet they get added to data 
-                 * Increments the total samples of the action by samples 
-                 * 
-                 * @param state 
-                 * @param action 
-                 * @param succ 
-                 * @param samples
+     * Adds a vector of actions to the state 
+     * (only if the state does not have any actions yet!)
+     * 
+     * @param state 
+     * @param actions
      */
-    void inc_trans(uint_fast64_t state, uint_fast64_t action, uint_fast64_t succ, uint_fast64_t samples);
+    void addStateActions(StateType state, std::vector<StateType> actions);
 
     /*!
-                 * Returns a vector of all states 
-                 * 
-                 * @return std::vector<uint_fast64_t>
+     * Increments a transition of the form (state,action,succ) = samples
+     * If state or succ don't exists yet they get added to data 
+     * Increments the total samples of the action by samples 
+     * 
+     * @param state 
+     * @param action 
+     * @param succ 
+     * @param samples
      */
-    std::vector<uint_fast64_t> get_state_vec();
+    void incTrans(StateType state, StateType action, StateType succ, StateType samples);
 
     /*!
-                 * Returns a vector of available actions for the state  
-                 * 
-                 * @param state 
-                 * @return std::vector<uint_fast64_t>
+     * Returns a vector of all states 
+     * 
+     * @return std::vector<StateType>
      */
-    std::vector<uint_fast64_t> get_state_actions_vec(uint_fast64_t state);
+    std::vector<StateType> getStateVec();
 
     /*!
-                 * Returns a vector of all successors for a (state,action) pair 
-                 * 
-                 * @param state 
-                 * @param action 
-                 * @return std::vector<uint_fast64_t>
+     * Returns a vector of available actions for the state  
+     * 
+     * @param state 
+     * @return std::vector<StateType>
      */
-    std::vector<uint_fast64_t> get_state_action_succ_vec(uint_fast64_t state, uint_fast64_t action);
+    std::vector<StateType> getStateActionVec(StateType state);
 
     /*!
-                 * Returns true if the state exists in data 
-                 * 
-                 * @param state 
-                 * @return true 
-                 * @return false
+     * Return as vector of successors for a state action pair 
+     * 
+     * @param state 
+     * @param action 
+     * @return std::vector<StateType> 
      */
-    bool state_exists(uint_fast64_t state);
+
+    std::vector<StateType> getStateActionSuccVec(StateType state, StateType action);
 
     /*!
-                 * Returns the total samples for a given state and action 
-                 * 
-                 * @param state 
-                 * @param action 
-                 * @return uint_fast64_t
+     * Returns a KeyIterator over the states 
+     * 
+     * @return KeyIterator<StateType> 
      */
-    int_fast64_t get_total_samples(uint_fast64_t state, uint_fast64_t action);
+    KeyIterator<StateType> getStateItr();
 
     /*!
-                 * Returns the samples for a (state,action,succ) triple
-                 * 
-                 * @param state 
-                 * @param action 
-                 * @param succ 
-                 * @return uint_fast64_t
+     * Returns a KeyIterator over the actions of a state
+     * 
+     * @param state 
+     * @return KeyIterator<StateType> 
      */
-    int_fast64_t get_succ_samples(uint_fast64_t state, uint_fast64_t action, uint_fast64_t succ);
+    KeyIterator<StateType> getStateActionsItr(StateType state);
 
     /*!
-                 * Prints the data structure to std::cout
-                 *
+     * Returns a KeyIterator over the successor of a state for a given action 
+     * 
+     * @param state 
+     * @param action 
+     * @return KeyIterator<StateType> 
+     */
+    KeyIterator<StateType> getStateActionsSuccItr(StateType state, StateType action);
+
+
+    /**
+     * Get the (state,action) predecessor vector of state
+     * 
+     * @param state 
+     * @return std::vector<std::pair<StateType, StateType> > 
+     */
+    std::vector<std::pair<StateType, StateType> > getPredecessors(StateType state);
+
+    /*!
+     * Returns true if the passed state is in data 
+     * 
+     * @param state 
+     * @return true 
+     * @return false 
+     */
+    bool stateExists(StateType state);
+
+    /*!
+     * Return the total number of States 
+     * 
+     * @return StateType 
+     */
+    StateType getTotalStateCount();
+
+    /*!
+     * Return the total number of state action pairs 
+     * 
+     * @return StateType 
+     */
+    StateType gettotalStateActionPairCount();
+
+    /**
+     * Return the total number of transitions 
+     * 
+     * @return StateType 
+     */
+    StateType getTotalTransitionCount();
+
+    /*!
+     * Returns the total samples for a given state and action 
+     * 
+     * @param state 
+     * @param action 
+     * @return StateType
+     */
+    StateType getTotalSamples(StateType state, StateType action);
+
+    /*!
+     * Returns the samples for a (state,action,succ) triple
+     * 
+     * @param state 
+     * @param action 
+     * @param succ 
+     * @return StateType
+     */
+    StateType getSuccSamples(StateType state, StateType action, StateType succ);
+
+    /*!
+     * Set the number of successors for a (state,action) pair 
+     * (used in greybox case)
+     * 
+     * @param stateActionPair 
+     * @param count 
+     */
+    void setSuccCount(std::pair<StateType, StateType> stateActionPair, StateType count);
+
+    /*!
+     * get the number of successors for a (state,action) pair 
+     * (used in greybox case)
+     * 
+     * @param stateActionPair 
+     * @param count 
+     */
+    StateType getSuccCount(std::pair<StateType, StateType> stateActionPair);
+
+    /*!
+     * Creates a mapping to the (state,action) predecessors of every state. 
+     * Is generated on demand
+     * Used for the visualization of neighborhoods in eMdpToDot
+     */
+    void createReverseMapping();
+
+    /*!
+     * Prints the data structure to std::cout
+     *
      */
     void print();
 };

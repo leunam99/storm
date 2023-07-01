@@ -5,134 +5,274 @@ namespace modelchecker {
 namespace blackbox {
 namespace storage {
 
-/*!
- * eMDPs are saved as 3 consequitive hashmaps 
- * 1.) key = state      | value = 2.) hashmap 
- * 2.) key = action     | value = pair (#total samples, 3.) hashmap)
- * 3.) key = succ       | value = #samples of the (state,action,succ) triple
- */
-typedef std::pair<uint_fast64_t, std::unordered_map<uint_fast64_t, uint_fast64_t> > count_sampleMap_pair;
-std::unordered_map<uint_fast64_t, std::unordered_map<uint_fast64_t, count_sampleMap_pair> > data;
+//-------------------- Iterator Methods ---------------------------//
 
-std::unordered_map<uint_fast64_t, uint_fast64_t> HashStorage::get_succ_map(uint_fast64_t state, uint_fast64_t action) {
-    std::unordered_map<uint_fast64_t, uint_fast64_t> succ_map;
+template<typename StateType>
+KeyIterator<StateType>::KeyIterator(void* map) {
+    cur = (*(std::unordered_map<int, void*>*) map).begin();
+    end = (*(std::unordered_map<int, void*>*) map).end();
+}
+
+template<typename StateType>
+KeyIterator<StateType>::KeyIterator() {
+    std::unordered_map<int, void*> emptyMap;
+    cur = emptyMap.begin();
+    end = emptyMap.end();
+}
+
+template<typename StateType>
+StateType KeyIterator<StateType>::next() {
+    StateType key = cur->first;
+    cur++;
+    return key;
+}
+
+template<typename StateType>
+StateType KeyIterator<StateType>::peek() {
+    return cur->first;
+}
+
+template<typename StateType>
+bool KeyIterator<StateType>::hasNext() {
+    return cur != end;
+} 
+//--------------------- HashStorage Mathods -------------------------//
+
+template<typename StateType>
+HashStorage<StateType>::HashStorage() : data() {
+}
+
+template<typename StateType>
+std::unordered_map<StateType, StateType> HashStorage<StateType>::getSuccMap(StateType state, StateType action) {
+    std::unordered_map<StateType, StateType> succMap;
     if (data.find(state) == data.end()) {
-        return succ_map;
+        return succMap;
     }
 
-    auto act_map = &data.at(state);
-    if (act_map->find(action) == act_map->end()) {
-        return succ_map;
+    auto actMap = &data.at(state);
+    if (actMap->find(action) == actMap->end()) {
+        return succMap;
     }
 
-    succ_map = act_map->at(action).second;
-    return succ_map;
+    succMap = actMap->at(action).second;
+    return succMap;
 }
 
-void HashStorage::add_state(uint_fast64_t state) {
-    if (data.find(state) == data.end())
-        data[state] = std::unordered_map<uint_fast64_t, count_sampleMap_pair>();
-}
-
-void HashStorage::add_state_actions(uint_fast64_t state, std::vector<uint_fast64_t> actions) {
-    add_state(state);
-    auto* act_map = &data.at(state);
-    if (act_map->begin() == act_map->end()) {
-        for (auto act : actions) (*act_map)[act] = count_sampleMap_pair();
-    }
-}
-
-void HashStorage::inc_trans(uint_fast64_t state, uint_fast64_t action, uint_fast64_t succ, uint_fast64_t samples) {
-    add_state(state);  // add state to data if it doesn't exist
-    add_state(succ);   // add succ to data if it doesn't exist
-
-    auto* act_map = &data.at(state);  // add action to data if it doesn't exist
-    if (act_map->find(action) == act_map->end())
-        (*act_map)[action] = count_sampleMap_pair();
-
-    auto* sample_map = &(act_map->at(action).second);
-    (*act_map).at(action).first += samples;  // Increment the total samples for the action
-    (*sample_map)[succ] += samples;          // Increments the samples for the (state,action,succ) triple
-}
-
-std::vector<uint_fast64_t> HashStorage::get_state_vec() {
-    std::vector<uint_fast64_t> state_vec;
-    for (auto const& p : data) state_vec.push_back(p.first);
-    return state_vec;
-}
-
-std::vector<uint_fast64_t> HashStorage::get_state_actions_vec(uint_fast64_t state) {
-    std::vector<uint_fast64_t> action_vec;
-    if (data.find(state) != data.end())
-        for (auto const& p : data.at(state)) action_vec.push_back(p.first);
-    return action_vec;
-}
-
-std::vector<uint_fast64_t> HashStorage::get_state_action_succ_vec(uint_fast64_t state, uint_fast64_t action) {
-    std::vector<uint_fast64_t> succ_vec;
-    for (auto const& p : get_succ_map(state, action)) succ_vec.push_back(p.first);
-    return succ_vec;
-}
-
-bool HashStorage::state_exists(uint_fast64_t state) {
-    return data.find(state) != data.end();
-}
-
-int_fast64_t HashStorage::get_total_samples(uint_fast64_t state, uint_fast64_t action) {
+template<typename StateType>
+void HashStorage<StateType>::addState(StateType state) {
     if (data.find(state) == data.end()) {
-        return -1;
+           totalStateCount++;
+           data[state] = std::unordered_map<StateType, countSampleMapPair>();
     }
-
-    auto* act_map = &data.at(state);
-    if (act_map->find(action) == act_map->end()) {
-        return -1;
-    }
-    return act_map->at(action).first;
 }
 
-int_fast64_t HashStorage::get_succ_samples(uint_fast64_t state, uint_fast64_t action, uint_fast64_t succ) {
-    auto succ_map = get_succ_map(state, action);
-
-    if (succ_map.find(succ) != succ_map.end())
-        return succ_map.at(succ);
-    return -1;
-}
-
-void HashStorage::print() {
-    for (auto state : get_state_vec()) {
-        std::cout << "-------------------------\n";
-        std::cout << "State: " << state << "\n";
-        for (auto action : get_state_actions_vec(state)) {
-            std::cout << " Action: " << action << " | Total Samples: " << get_total_samples(state, action) << "\n";
-            for (auto succ : get_state_action_succ_vec(state, action)) {
-                std::cout << "  * Succ: " << succ << " | Samples: " << get_succ_samples(state, action, succ) << "\n";
+//__________________ Add states and actions to Datastructure __________//
+template<typename StateType>
+void HashStorage<StateType>::addStateActions(StateType state, std::vector<StateType> actions) {
+    addState(state);
+    auto* actMap = &data.at(state);
+    if (actMap->begin() == actMap->end()) {
+        for (auto act : actions) {
+            if (actMap->find(act) == actMap->end()) {
+                totalStateActionPairCount++;
+                (*actMap)[act] = countSampleMapPair();
             }
         }
     }
 }
 
+template<typename StateType>
+void HashStorage<StateType>::incTrans(StateType state, StateType action, StateType succ, StateType samples) {
+    addState(state);  // add state to data if it doesn't exist
+    addState(succ);   // add succ to data if it doesn't exist
+
+    auto* actMap = &data.at(state);  // add action to data if it doesn't exist
+    if (actMap->find(action) == actMap->end()) {
+        totalStateActionPairCount++;
+        (*actMap)[action] = countSampleMapPair();
+    }
+
+    auto* sampleMap = &(actMap->at(action).second);
+    (*actMap).at(action).first += samples;  // Increment the total samples for the action
+
+    if(sampleMap->find(succ) == sampleMap->end())
+        totalTransitionCount++;
+    (*sampleMap)[succ] += samples;          // Increments the samples for the (state,action,succ) triple
+}
+
+//__________________ Access the Datastructure via Vectors _________________//
+
+template<typename StateType>
+std::vector<StateType> HashStorage<StateType>::getStateVec() {
+    std::vector<StateType> stateVec;
+    for (auto const& p : data) stateVec.push_back(p.first);
+    return stateVec;
+}
+
+template<typename StateType>
+std::vector<StateType> HashStorage<StateType>::getStateActionVec(StateType state) {
+    std::vector<StateType> actionVec;
+    if (data.find(state) != data.end())
+        for (auto const& p : data.at(state)) actionVec.push_back(p.first);
+    return actionVec;
+}
+
+template<typename StateType>
+std::vector<StateType> HashStorage<StateType>::getStateActionSuccVec(StateType state, StateType action) {
+    std::vector<StateType> succVec;
+    for (auto const& p : getSuccMap(state, action)) succVec.push_back(p.first);
+    return succVec;
+}
+//__________________ Access the Datastructure via Iterators _________________//
+
+template<typename StateType>
+KeyIterator<StateType> HashStorage<StateType>::getStateItr() {
+    return KeyIterator<StateType>(&data);
+}
+
+template<typename StateType>
+KeyIterator<StateType> HashStorage<StateType>::getStateActionsItr(StateType state) {
+    if (data.find(state) == data.end()) {
+        return KeyIterator<StateType>();
+    }
+    return KeyIterator<StateType>(&data.at(state));
+}
+
+template<typename StateType>
+KeyIterator<StateType> HashStorage<StateType>::getStateActionsSuccItr(StateType state, StateType action) {
+    if (data.find(state) == data.end()) {
+        return KeyIterator<StateType>();
+    }
+    auto* actMap = &data.at(state);
+    if(actMap->find(action) == actMap->end()) {
+        return KeyIterator<StateType>();
+    }
+    return KeyIterator<StateType>(&(actMap->at(action).second));
+}
+//_______________________________ Access predeccesors of states ___________________________//
+template<typename StateType> 
+void HashStorage<StateType>::createReverseMapping() {
+    reverseMap = std::unordered_map<StateType, std::vector<std::pair<StateType, StateType> > >(); // delete previous map 
+
+    auto stateItr = getStateItr();
+    while (stateItr.hasNext()) {
+        StateType predState = stateItr.next();
+        auto actionItr = getStateActionsItr(predState);
+        while (actionItr.hasNext()) {
+            StateType action = actionItr.next();
+            auto succItr = getStateActionsSuccItr(predState, action);
+            while(succItr.hasNext()) {
+                StateType succ = succItr.next();
+                reverseMap[succ].push_back(std::make_pair(predState, action));
+            }
+        }
+    }
+}
+
+template<typename StateType>
+std::vector<std::pair<StateType, StateType>> HashStorage<StateType>::getPredecessors(StateType state) {
+    if(reverseMap.find(state) != reverseMap.end())
+        return reverseMap[state];
+    return std::vector<std::pair<StateType, StateType>>(); 
+}
+
+//__________________ Access seperate elements of the Datastructure _____________________//
+
+template<typename StateType>
+bool HashStorage<StateType>::stateExists(StateType state) {
+    return data.find(state) != data.end();
+}
+
+template<typename StateType>
+StateType HashStorage<StateType>::getTotalStateCount() {
+    return totalStateCount;
+}
+
+template<typename StateType>
+StateType HashStorage<StateType>::gettotalStateActionPairCount() {
+    return totalStateActionPairCount;
+}
+
+template<typename StateType>
+StateType HashStorage<StateType>::getTotalTransitionCount() {
+    return totalTransitionCount;
+}
+
+template<typename StateType>
+StateType HashStorage<StateType>::getTotalSamples(StateType state, StateType action) {
+    if (data.find(state) == data.end()) {
+        return -1;
+    }
+
+    auto* actMap = &data.at(state);
+    if (actMap->find(action) == actMap->end()) {
+        return -1;
+    }
+    return actMap->at(action).first;
+}
+
+template<typename StateType>
+StateType HashStorage<StateType>::getSuccSamples(StateType state, StateType action, StateType succ) {
+    auto succMap = getSuccMap(state, action);
+
+    if (succMap.find(succ) != succMap.end())
+        return succMap.at(succ);
+    return -1;
+}
+
+template<typename StateType>
+void HashStorage<StateType>::setSuccCount(std::pair<StateType, StateType> stateActionPair, StateType count) {
+    succCountMap[stateActionPair] = count;
+}
+
+template<typename StateType>
+StateType HashStorage<StateType>::getSuccCount(std::pair<StateType, StateType> stateActionPair) {
+    if(succCountMap.find(stateActionPair) != succCountMap.end())
+        return succCountMap[stateActionPair];
+    return -1;
+}
+
+template<typename StateType>
+void HashStorage<StateType>::print() {
+    std::cout << "Total state count: " << getTotalStateCount() << std::endl;
+    std::cout << "Total state action pair count: " << gettotalStateActionPairCount() << std::endl;
+    std::cout << "Total transition count: " << getTotalTransitionCount() << std::endl;
+    for (auto state : getStateVec()) {
+        std::cout << "-------------------------\n";
+        std::cout << "State: " << state << "\n";
+        for (auto action : getStateActionVec(state)) {
+            std::cout << " Action: " << action << " | Total Samples: " << getTotalSamples(state, action) << "\n";
+            for (auto succ : getStateActionSuccVec(state, action)) {
+                std::cout << "  * Succ: " << succ << " | Samples: " << getSuccSamples(state, action, succ) << "\n";
+            }
+        }
+    }
+}
+
+template class HashStorage<int_fast32_t>; //Type for which class gets compiled 
+template class HashStorage<int_fast64_t>; //Type for which class gets compiled 
+template class KeyIterator<int_fast32_t>; //Type for which class gets compiled 
+template class KeyIterator<int_fast64_t>; //Type for which class gets compiled 
+}
+}
+}
+}
+
 /*
 int main(int argc, char const *argv[])
-{
-        HashStorage x = HashStorage();
-        x.inc_trans(1,2,3,10);
-        x.inc_trans(1,2,3,5);
-        x.inc_trans(1,2,4,3);
-        x.inc_trans(5,6,9,3);
-
-        std::vector<uint_fast64_t> vect;
-        vect.push_back(100);
-        vect.push_back(101);
-        vect.push_back(102);
-
-        x.add_state_actions(10, vect);
-
-        x.print();
+{       
+    
+    auto x = storm::modelchecker::blackbox::storage::HashStorage<int_fast32_t>();
+    x.incTrans(1,0,3,0);
+    x.incTrans(1,0,4,0);
+    x.incTrans(1,0,5,0);
+    x.incTrans(1,1,6,0);
+    x.incTrans(1,0,5,3);
+    x.print();
 }
 */
-}
-}
-}
-}
+
+
+
 
 
