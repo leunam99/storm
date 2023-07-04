@@ -1,4 +1,4 @@
-#include "storm/modelchecker/blackbox/blackbox_interface.h"
+#include "storm/modelchecker/blackbox/BlackboxInterface.h"
 
 #include "storm/modelchecker/exploration/StateGeneration.h"
 #include "storm/modelchecker/exploration/ExplorationInformation.h"

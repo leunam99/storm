@@ -1,11 +1,11 @@
-#include "storm/modelchecker/blackbox/eMDP2bMDP.h"
+#include "storm/modelchecker/blackbox/EMdp2BMdp.h"
 
 #include "storm/storage/SparseMatrix.h"
 
 
 typedef storm::storage::SparseMatrixIndexType index_type;
 
-using storm::models::sparse::bMDP;
+using storm::models::sparse::BMdp;
 using storm::modelchecker::blackbox::EMdp;
 
 template <typename ValueType>
@@ -27,14 +27,14 @@ storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<int> &emdp)
 
 //TODO make emdp (and therefore all called functions) const??
 template <typename IndexType, typename ValueType>
-bMDP<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDistribution<IndexType> valueFunc, double pmin, double delta){
+BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDistribution<IndexType> valueFunc, double pmin, double delta){
 
     using Bounds = storm::models::sparse::ValueTypePair<ValueType>;
     using new_index_t = typename storm::storage::SparseMatrixBuilder<ValueType>::index_type;
 
     //TODO state labeling, action labeling, rewards!
     storm::models::sparse::StateLabeling stateLabeling;
-    //calculate size of bMDP and reserve enough space
+    //calculate size of BMdp and reserve enough space
     storm::storage::SparseMatrixBuilder<ValueType> matrixBuilder = initialiseMatrix<Bounds>(emdp);
 
     // create a map that gives the states an order/index
@@ -74,7 +74,7 @@ bMDP<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDist
                     int samples = emdp.getSampleCount(state,action,target_state);
 
                     auto interval = boundFunc.INTERVAL(actionSamples, samples, delta_transition);
-                    // insert into bMDP
+                    // insert into BMdp
                     matrixBuilder.addNextValue(currentRow,index_mapping[target_state],ValueTypePair(std::move(boundFunc)));
                 }
             }
@@ -104,7 +104,7 @@ bMDP<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDist
     //one action with one transition to itself (interval [1,1])
     matrixBuilder.addNextValue(currentRow,dummy_state,ValueTypePair(std::make_pair(ValueType{1},ValueType{1})));
 
-    //create bMDP
-    return bMDP<ValueType>(matrixBuilder.build(), std::move(stateLabeling));
+    //create BMdp
+    return BMdp<ValueType>(matrixBuilder.build(), std::move(stateLabeling));
 
 }

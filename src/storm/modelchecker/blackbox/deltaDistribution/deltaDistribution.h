@@ -1,7 +1,7 @@
 #ifndef STORM_DELTADISTRIBUTION_H
 #define STORM_DELTADISTRIBUTION_H
 
-#include "modelchecker/blackbox/eMDP.h"
+#include "modelchecker/blackbox/EMdp.h"
 template <typename IndexType>
 class DeltaDistribution {
 

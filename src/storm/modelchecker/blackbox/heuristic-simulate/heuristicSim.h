@@ -7,7 +7,7 @@
 
 #include <random>
 
-#include "storm/modelchecker/blackbox/blackbox_interface.h"
+#include "storm/modelchecker/blackbox/BlackboxInterface.h"
 
 namespace storm {
 namespace modelchecker {

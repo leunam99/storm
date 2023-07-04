@@ -2,9 +2,9 @@
 #define STORM_EMDP2BMDP_H
 
 #include <utility>
-#include "modelchecker/blackbox/bMDP.h"
-#include "modelchecker/blackbox/eMDP.h"
-#include "modelchecker/blackbox/bound-functions/boundFunc.h"
-#include "modelchecker/blackbox/deltaDistribution/deltaDistribution.h"
+#include "modelchecker/blackbox/BMdp.h"
+#include "modelchecker/blackbox/EMdp.h"
+#include "modelchecker/blackbox/bound-functions/BoundFunc.h"
+#include "modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
 
 #endif  // STORM_EMDP2BMDP_H

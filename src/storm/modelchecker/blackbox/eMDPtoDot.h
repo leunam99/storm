@@ -3,9 +3,8 @@
 #include "stdint.h"
 #include <iostream>
 #include <fstream>
-#include "eMDP.h"
+#include "EMdp.h"
 #include <tuple>
-#include <algorithm>
 #include <algorithm>
 
 namespace storm {

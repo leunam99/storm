@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "eMDP.h"
+#include "EMdp.h"
 
 #include <algorithm>
 

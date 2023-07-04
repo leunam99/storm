@@ -2,9 +2,9 @@
 // Created by Maximilian Kamps on 25.05.23.
 //
 
-#include "storm/modelchecker/blackbox/blackbox_interface.h"
-#include "storm/modelchecker/blackbox/eMDP.h"
-#include "storm/modelchecker/blackbox/heuristic-simulate/heuristicSim.h"
+#include "storm/modelchecker/blackbox/BlackboxInterface.h"
+#include "storm/modelchecker/blackbox/EMdp.h"
+#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
 
 #ifndef STORM_BLACKBOXEXPLORER_H
 #define STORM_BLACKBOXEXPLORER_H

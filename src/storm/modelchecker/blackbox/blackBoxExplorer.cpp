@@ -2,10 +2,10 @@
 // Created by Maximilian Kamps on 25.05.23.
 //
 
-#include "blackBoxExplorer.h"
-#include "storm/modelchecker/blackbox/blackbox_interface.h"
-#include "storm/modelchecker/blackbox/eMDP.h"
-#include "storm/modelchecker/blackbox/heuristic-simulate/heuristicSim.h"
+#include "BlackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/BlackboxInterface.h"
+#include "storm/modelchecker/blackbox/EMdp.h"
+#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
 
 namespace storm {
 namespace modelchecker {
