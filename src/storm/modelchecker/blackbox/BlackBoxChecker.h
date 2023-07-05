@@ -35,8 +35,6 @@ class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
 
     private:
      std::shared_ptr<BlackboxMDP<StateType>> blackboxMDP;
-     EMdp<StateType> eMDP;
-     BMdp<BoundType> bMDP;
 
 };
 
