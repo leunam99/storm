@@ -1262,6 +1262,19 @@ typename std::enable_if<DdType == storm::dd::DdType::CUDD && !std::is_same<Value
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "CUDD does not support the selected data-type.");
 }
 
+template<typename ValueType>
+void verifyWithBlackboxEngine(SymbolicInput const& input, ModelProcessingInformation const& mpi) {
+    STORM_LOG_ASSERT(input.model, "Expected symbolic model description.");
+    STORM_LOG_THROW((std::is_same<ValueType, double>::value), storm::exceptions::NotSupportedException,
+                    "Blackbox Engine does not support other data-types than floating points.");
+
+    verifyProperties<ValueType>(
+        input, [&input, &mpi](std::shared_ptr<storm::logic::Formula const> const& formula, std::shared_ptr<storm::logic::Formula const> const& states) {
+            STORM_LOG_THROW(states->isInitialFormula(), storm::exceptions::NotSupportedException, "Blackbox can only filter initial states.");
+            return storm::api::verifyWithBlackboxEngine<ValueType>(mpi.env, input.model.get(), storm::api::createTask<ValueType>(formula, true));
+        });
+}
+
 template<storm::dd::DdType DdType, typename ValueType>
 void verifyModel(std::shared_ptr<storm::models::ModelBase> const& model, SymbolicInput const& input, ModelProcessingInformation const& mpi) {
     if (model->isSparseModel()) {
@@ -1317,6 +1330,8 @@ void processInputWithValueTypeAndDdlib(SymbolicInput const& input, ModelProcessi
         verifyWithAbstractionRefinementEngine<DdType, VerificationValueType>(input, mpi);
     } else if (mpi.engine == storm::utility::Engine::Exploration) {
         verifyWithExplorationEngine<VerificationValueType>(input, mpi);
+    } else if (mpi.engine == storm::utility::Engine::Blackbox) {
+        verifyWithBlackboxEngine<VerificationValueType>(input, mpi);    
     } else {
         std::shared_ptr<storm::models::ModelBase> model =
             buildPreprocessExportModelWithValueTypeAndDdlib<DdType, BuildValueType, VerificationValueType>(input, mpi);

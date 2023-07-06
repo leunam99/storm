@@ -48,6 +48,8 @@ std::string toString(Engine const& engine) {
             return "dd-to-sparse";
         case Engine::Exploration:
             return "expl";
+        case Engine::Blackbox:
+            return "blackbox";
         case Engine::AbstractionRefinement:
             return "abs";
         case Engine::Automatic:
@@ -90,6 +92,8 @@ storm::builder::BuilderType getBuilderType(Engine const& engine) {
         case Engine::DdSparse:
             return storm::builder::BuilderType::Dd;
         case Engine::Exploration:
+            return storm::builder::BuilderType::Explicit;
+        case Engine::Blackbox:
             return storm::builder::BuilderType::Explicit;
         case Engine::AbstractionRefinement:
             return storm::builder::BuilderType::Dd;
