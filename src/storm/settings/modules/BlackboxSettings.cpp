@@ -17,13 +17,16 @@ namespace settings {
 namespace modules {
 
 const std::string BlackboxSettings::moduleName = "blackbox";
-const std::string BlackboxSettings::NumberOfSamplingsPerSimulationStepOptionName = "stepssim";
+const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepssim";
 const std::string BlackboxSettings::simulationHeuristicOptionName = "simheuristic";
+const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheuristic";
 const std::string BlackboxSettings::precisionOptionName = "precision";
 const std::string BlackboxSettings::precisionOptionShortName = "eps";
+const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiterations";
+
 
 BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
-    this->addOption(storm::settings::OptionBuilder(moduleName, NumberOfSamplingsPerSimulationStepOptionName, true,
+    this->addOption(storm::settings::OptionBuilder(moduleName, numberOfSamplingsPerSimulationStepOptionName, true,
                                                    "Sets the number of paths sampled for one simulation step.")
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createUnsignedIntegerArgument("count", "The number of sampled paths per simulation step.")
@@ -42,6 +45,16 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .build())
                         .build());
 
+    this->addOption(storm::settings::OptionBuilder(moduleName, simulationHeuristicOptionName, true, "Set seed used to initialize simulation heuristic. 'default' tells the program to use the current datetime.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "seedSimHeuristic",
+                                         "The seed used to initalize the simulation heuristic.")
+                                         .addValidatorString(ArgumentValidatorFactory::createMultipleChoiceValidator(simulationHeuristics))
+                                         .setDefaultValueString("default")
+                                         .build())
+                        .build());
+
     this->addOption(storm::settings::OptionBuilder(moduleName, precisionOptionName, false, "The precision to achieve. (To be implemented)")
                         .setShortName(precisionOptionShortName)
                         .setIsAdvanced()
@@ -50,10 +63,22 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
                                          .build())
                         .build());
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, maxNumIterationsOptionName, true, "Maximal number of iterations the 3 step algorithm is performe.")
+                        .setShortName(precisionOptionShortName)
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createUnsignedIntegerArgument("maxIter", "Maximum number of algorithm iterations.")
+                                         .setDefaultValueUnsignedInteger(5)
+                                         .build())
+                        .build());                        
 }
 
 uint_fast64_t BlackboxSettings::getNumberOfSamplingsPerSimulationStep() const {
-    return this->getOption(NumberOfSamplingsPerSimulationStepOptionName).getArgumentByName("count").getValueAsUnsignedInteger();
+    return this->getOption(numberOfSamplingsPerSimulationStepOptionName).getArgumentByName("count").getValueAsUnsignedInteger();
+}
+
+uint_fast64_t BlackboxSettings::getMaxIterations() const {
+    return this->getOption(maxNumIterationsOptionName).getArgumentByName("maxIter").getValueAsUnsignedInteger();
 }
 
 storm::modelchecker::blackbox::heuristicSim::HeuristicSimType BlackboxSettings::getSimulationHeuristicType() const {
@@ -64,12 +89,20 @@ storm::modelchecker::blackbox::heuristicSim::HeuristicSimType BlackboxSettings::
     STORM_LOG_THROW(false, storm::exceptions::IllegalArgumentValueException, "Unknown simulation heuristic type '" << simulationHeuristicType << "'.");
 }
 
+std::seed_seq BlackboxSettings::getSimHeuristicSeed() const {
+    std::string seedStr = this->getOption(simulationHeuristicOptionName).getArgumentByName("seedSimHeuristic").getValueAsString();
+    if (seedStr == "default") {
+        return std::seed_seq(std::chrono::system_clock::now().time_since_epoch().count());
+    }
+    return std::seed_seq(seedStr.begin(), seedStr.end());
+}
+
 double BlackboxSettings::getPrecision() const {
     return this->getOption(precisionOptionName).getArgumentByName("value").getValueAsDouble();
 }
 
 bool BlackboxSettings::check() const {
-    bool optionsSet = this->getOption(NumberOfSamplingsPerSimulationStepOptionName).getHasOptionBeenSet() ||
+    bool optionsSet = this->getOption(numberOfSamplingsPerSimulationStepOptionName).getHasOptionBeenSet() ||
                       this->getOption(simulationHeuristicOptionName).getHasOptionBeenSet() ||
                       this->getOption(precisionOptionName).getHasOptionBeenSet();
     STORM_LOG_WARN_COND(storm::settings::getModule<storm::settings::modules::CoreSettings>().getEngine() == storm::utility::Engine::Blackbox || !optionsSet,

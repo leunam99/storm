@@ -1,8 +1,9 @@
 #ifndef STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_
 #define STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_
 
-#include "storm/settings/modules/ModuleSettings.h"
+#include <random>
 
+#include "storm/settings/modules/ModuleSettings.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
 
 namespace storm {
@@ -27,11 +28,25 @@ class BlackboxSettings : public ModuleSettings {
     uint_fast64_t getNumberOfSamplingsPerSimulationStep() const;
 
     /*!
+     * Retrieves maximum number of algorithm iterations.
+     *
+     * @return max iterations
+     */
+    uint_fast64_t getMaxIterations() const;
+
+    /*!
      * Retrieves the selected next-state heuristic.
      *
      * @return The selected next-state heuristic.
      */
     storm::modelchecker::blackbox::heuristicSim::HeuristicSimType getSimulationHeuristicType() const;
+
+    /*!
+     * Retrieves a seed for the simulation heuristic.
+     *
+     * @return seed for random generator
+     */
+    std::seed_seq getSimHeuristicSeed() const;
 
     /*!
      * Retrieves the precision to use for numerical operations.
@@ -47,10 +62,12 @@ class BlackboxSettings : public ModuleSettings {
 
    private:
     // Define the string names of the options as constants.
-    static const std::string NumberOfSamplingsPerSimulationStepOptionName;
+    static const std::string numberOfSamplingsPerSimulationStepOptionName;
     static const std::string simulationHeuristicOptionName;
+    static const std::string seedSimHeuristicOptionName;
     static const std::string precisionOptionName;
     static const std::string precisionOptionShortName;
+    static const std::string maxNumIterationsOptionName;
 };
 }  // namespace modules
 }  // namespace settings
