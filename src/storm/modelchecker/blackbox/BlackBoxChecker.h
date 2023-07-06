@@ -6,8 +6,9 @@
 #define STORM_BLACKBOXCHECKER_H
 
 #include "storm/modelchecker/AbstractModelChecker.h"
-#include "storm/modelchecker/blackbox/EMdp.h"
-#include "storm/modelchecker/blackbox/BMdp.h"
+#include "storm/modelchecker/blackbox/BlackboxInterface.h"
+
+#include "storm/storage/prism/Program.h"
 
 
 namespace storm {
