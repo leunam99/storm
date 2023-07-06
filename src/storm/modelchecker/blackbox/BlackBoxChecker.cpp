@@ -31,18 +31,20 @@ bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Fo
 template<typename ModelType, typename StateType>
 std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) {
     // cli arguments
+    uint_fast64_t maxIterations = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getMaxIterations();
+    std::seed_seq seedSimHeuristic = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimHeuristicSeed();
     uint_fast64_t simulationsPerIt = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getNumberOfSamplingsPerSimulationStep();
     double eps = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getPrecision();
     heuristicSim::HeuristicSimType heuristicSimtype = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimulationHeuristicType();
 
     // init objects for algorithm
     EMdp<StateType> eMDP;
-    std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim(new heuristicSim::NaiveHeuristicSim<StateType, ValueType>(blackboxMDP)); // TODO get heuristic via cli + seed
-    BlackBoxExplorer<StateType, ValueType> blackboxExplorer(blackboxMDP, heuristicSim);
+    std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim(new heuristicSim::NaiveHeuristicSim<StateType, ValueType>(blackboxMDP, seedSimHeuristic));
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
 
     // run 3 step algorithm
-    while (eps < valueBounds.second - valueBounds.first) {
+    uint64_fast64_t iterCount = 0;
+    while (eps < valueBounds.second - valueBounds.first && iterCount < maxIterations) {
         // simulate
         blackBoxExplorer.performExploration(eMDP, simulationsPerIt);
         // simulate output
@@ -50,6 +52,8 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         // infer TODO
 
         // value approximation (some time in future)
+
+        iterCount++;
     }
 
     // TODO return actual result when it can be computed
