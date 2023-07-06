@@ -8,6 +8,10 @@
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
 #include "storm/modelchecker/results/ExplicitQuantitativeCheckResult.h"
 
+#include "storm/settings/SettingsManager.h"
+#include "storm/settings/modules/BlackboxSettings.h"
+
+
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
@@ -26,9 +30,27 @@ bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Fo
 
 template<typename ModelType, typename StateType>
 std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) {
+    // cli arguments
+    uint_fast64_t simulationsPerIt = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getNumberOfSamplingsPerSimulationStep();
+    double eps = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getPrecision();
+    heuristicSim::HeuristicSimType heuristicSimtype = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimulationHeuristicType();
+
+    // init objects for algorithm
     EMdp<StateType> eMDP;
     std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim(new heuristicSim::NaiveHeuristicSim<StateType, ValueType>(blackboxMDP)); // TODO get heuristic via cli + seed
     BlackBoxExplorer<StateType, ValueType> blackboxExplorer(blackboxMDP, heuristicSim);
+    std::pair<double, double> valueBounds = std::make_pair(0, 1);
+
+    // run 3 step algorithm
+    while (eps < valueBounds.second - valueBounds.first) {
+        // simulate
+        blackBoxExplorer.performExploration(eMDP, simulationsPerIt);
+        // simulate output
+
+        // infer TODO
+
+        // value approximation (some time in future)
+    }
 
     // TODO return actual result when it can be computed
     return  std::make_unique(storm::modelchecker::ExplicitQuantitativeCheckResult<ValueType>(0, 1));
