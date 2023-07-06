@@ -15,6 +15,7 @@
 #include "storm/settings/Option.h"
 #include "storm/settings/modules/AbstractionSettings.h"
 #include "storm/settings/modules/BisimulationSettings.h"
+#include "storm/settings/modules/BlackboxSettings.h"
 #include "storm/settings/modules/BuildSettings.h"
 #include "storm/settings/modules/CoreSettings.h"
 #include "storm/settings/modules/CuddSettings.h"
@@ -701,6 +702,7 @@ void initializeAll(std::string const& name, std::string const& executableName) {
     storm::settings::addModule<storm::settings::modules::TopologicalEquationSolverSettings>();
     storm::settings::addModule<storm::settings::modules::Smt2SmtSolverSettings>();
     storm::settings::addModule<storm::settings::modules::ExplorationSettings>();
+    storm::settings::addModule<storm::settings::modules::BlackboxSettings>();
     storm::settings::addModule<storm::settings::modules::ResourceSettings>();
     storm::settings::addModule<storm::settings::modules::AbstractionSettings>();
     storm::settings::addModule<storm::settings::modules::MultiObjectiveSettings>();
