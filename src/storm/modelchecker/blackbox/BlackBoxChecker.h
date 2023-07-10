@@ -31,9 +31,9 @@ class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
       * @param checkTask The task for which to check whether the model checker can handle it.
       * @return True iff the model checker can check the given task.
       */
-     bool canHandle(CheckTask<storm::logic::Formula, ValueType> const& checkTask);
+     bool canHandle(CheckTask<storm::logic::Formula, ValueType> const& checkTask) const override;
      
-     std::unique_ptr<CheckResult> computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask);
+     std::unique_ptr<CheckResult> computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) override;
 
     private:
      std::shared_ptr<BlackboxMDP<StateType>> blackboxMDP;

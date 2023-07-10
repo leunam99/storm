@@ -25,7 +25,7 @@ BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program con
 }
 
 template<typename ModelType, typename StateType>
-bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Formula, ValueType> const& checkTask) {
+bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Formula, ValueType> const& checkTask) const {
     // TODO implement actual check
     return true;
 }

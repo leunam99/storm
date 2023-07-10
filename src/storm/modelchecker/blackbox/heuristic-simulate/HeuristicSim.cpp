@@ -25,7 +25,8 @@ NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm
 
 template<typename StateType, typename ValueType>
 NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp) :
-                                                           NaiveHeuristicSim(blackboxMdp, std::chrono::system_clock::now().time_since_epoch().count()) {
+                                                           HeuristicSim<StateType, ValueType>(blackboxMdp),
+                                                           randomGenerator(std::chrono::system_clock::now().time_since_epoch().count()) {
     // intentionally left empty
 }
 
@@ -47,6 +48,8 @@ template<typename StateType, typename ValueType>
 void NaiveHeuristicSim<StateType, ValueType>::reset() {
     // empty, nothing to reset
 }
+
+template class NaiveHeuristicSim<uint32_t, double>;
 
 } //namespace heuristicSim
 } //namespace blackbox
