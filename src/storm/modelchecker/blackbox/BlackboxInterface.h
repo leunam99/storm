@@ -66,14 +66,14 @@ class BlackboxMDP {
 };
 
 template <typename StateType, typename ValueType>
-class BlackboxWrapperOnWhitebox: BlackboxMDP<StateType> {
+class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
     public:
      BlackboxWrapperOnWhitebox(storm::prism::Program const& program);
     
      /*!
       * returns the state indentifier of the initial state
      */
-     StateType getInitialState();
+     StateType getInitialState() override;
 
      /*!
       * returns a KeyIterator over the available actions of the given state 
@@ -81,7 +81,7 @@ class BlackboxWrapperOnWhitebox: BlackboxMDP<StateType> {
       * @param state 
       * @return index_type number of available actions; actions are labeled in ascending order from 0
       */
-     StateType getAvailActions(StateType state);
+     StateType getAvailActions(StateType state) override;
      
 
      /*!
@@ -91,12 +91,12 @@ class BlackboxWrapperOnWhitebox: BlackboxMDP<StateType> {
       * @param action
       * @return successor state identfier
       */
-     StateType sampleSucc(StateType state, StateType action);
+     StateType sampleSucc(StateType state, StateType action) override;
 
      /*!
       * returns true if this MDP is a greybox MDP, false if it is a blackbox MDP 
       */
-     bool isGreybox();
+     bool isGreybox() override;
 
     private:
      void exploreState(StateType state);

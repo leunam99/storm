@@ -10,6 +10,8 @@ namespace storm {
 namespace settings {
 namespace modules {
 
+// TODO create methods to retrieve infer options
+
 /*!
  * This class represents the blackbox settings.
  */
@@ -26,13 +28,6 @@ class BlackboxSettings : public ModuleSettings {
      * @return The number of sampled paths per simulation step.
      */
     uint_fast64_t getNumberOfSamplingsPerSimulationStep() const;
-
-    /*!
-     * Retrieves maximum number of algorithm iterations.
-     *
-     * @return max iterations
-     */
-    uint_fast64_t getMaxIterations() const;
 
     /*!
      * Retrieves the selected next-state heuristic.
@@ -55,6 +50,13 @@ class BlackboxSettings : public ModuleSettings {
      */
     double getPrecision() const;
 
+    /*!
+     * Retrieves maximum number of algorithm iterations.
+     *
+     * @return max iterations
+     */
+    uint_fast64_t getMaxIterations() const;
+
     virtual bool check() const override;
 
     // The name of the module.
@@ -62,9 +64,16 @@ class BlackboxSettings : public ModuleSettings {
 
    private:
     // Define the string names of the options as constants.
+    // simulation step constants
     static const std::string numberOfSamplingsPerSimulationStepOptionName;
     static const std::string simulationHeuristicOptionName;
-    static const std::string seedSimHeuristicOptionName;
+    static const std::string seedSimHeuristicOptionName;  // TODO replace with one general seed
+
+    // infer constants
+    static const std::string deltaDistributionOptionName;
+    static const std::string boundFuncOptionName;
+
+    // general constants
     static const std::string precisionOptionName;
     static const std::string precisionOptionShortName;
     static const std::string maxNumIterationsOptionName;

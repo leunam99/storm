@@ -17,7 +17,7 @@ HeuristicSim<StateType, ValueType>::HeuristicSim(std::shared_ptr<storm::modelche
 
 template<typename StateType, typename ValueType>
 NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp,
-                                                           std::seed_seq seed) :
+                                                           std::seed_seq& seed) :
                                                            HeuristicSim<StateType, ValueType>(blackboxMdp),
                                                            randomGenerator(seed) {
     // intentionally left empty

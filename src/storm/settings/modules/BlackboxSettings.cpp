@@ -16,16 +16,24 @@ namespace storm {
 namespace settings {
 namespace modules {
 
+// TODO clarfify if lowercase or camelcase should be used for options
+
 const std::string BlackboxSettings::moduleName = "blackbox";
+// simulation constants
 const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepssim";
 const std::string BlackboxSettings::simulationHeuristicOptionName = "simheuristic";
 const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheuristic";
+// infer constants
+const std::string BlackboxSettings::deltaDistributionOptionName = "deltadist";
+const std::string BlackboxSettings::boundFuncOptionName = "boundfunc";
+// general constants
 const std::string BlackboxSettings::precisionOptionName = "precision";
 const std::string BlackboxSettings::precisionOptionShortName = "eps";
 const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiterations";
 
 
 BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
+    // simulation options
     this->addOption(storm::settings::OptionBuilder(moduleName, numberOfSamplingsPerSimulationStepOptionName, true,
                                                    "Sets the number of paths sampled for one simulation step.")
                         .setIsAdvanced()
@@ -45,16 +53,39 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .build())
                         .build());
 
-    this->addOption(storm::settings::OptionBuilder(moduleName, simulationHeuristicOptionName, true, "Set seed used to initialize simulation heuristic. 'default' tells the program to use the current datetime.")
+    this->addOption(storm::settings::OptionBuilder(moduleName, seedSimHeuristicOptionName, true, "Set seed used to initialize simulation heuristic. 'default' tells the program to use the current datetime.")
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
                                          "seedSimHeuristic",
                                          "The seed used to initalize the simulation heuristic.")
-                                         .addValidatorString(ArgumentValidatorFactory::createMultipleChoiceValidator(simulationHeuristics))
                                          .setDefaultValueString("default")
                                          .build())
                         .build());
+    
+    // infer options
+    std::vector<std::string> deltaDistributions = {"uniform"};
+    this->addOption(storm::settings::OptionBuilder(moduleName, deltaDistributionOptionName, true, "Set delta distribution used to distribute uncertainty on bounds during infer stage.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "deltaDist",
+                                         "delta distribution used during infer stage.")
+                                         .addValidatorString(ArgumentValidatorFactory::createMultipleChoiceValidator(deltaDistributions))
+                                         .setDefaultValueString("uniform")
+                                         .build())
+                        .build());
 
+    std::vector<std::string> boundFunctions = {"hoeffdingbound", "onesidedhoeffdingbound"};
+    this->addOption(storm::settings::OptionBuilder(moduleName, boundFuncOptionName, true, "Set boundary function used to create bounds of bounded mdp.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "boundFunc",
+                                         "Boundary function used during infer stage.")
+                                         .addValidatorString(ArgumentValidatorFactory::createMultipleChoiceValidator(boundFunctions))
+                                         .setDefaultValueString("hoeffdingbound")
+                                         .build())
+                        .build());
+
+    // general options
     this->addOption(storm::settings::OptionBuilder(moduleName, precisionOptionName, false, "The precision to achieve. (To be implemented)")
                         .setShortName(precisionOptionShortName)
                         .setIsAdvanced()
@@ -92,7 +123,7 @@ storm::modelchecker::blackbox::heuristicSim::HeuristicSimType BlackboxSettings::
 std::seed_seq BlackboxSettings::getSimHeuristicSeed() const {
     std::string seedStr = this->getOption(simulationHeuristicOptionName).getArgumentByName("seedSimHeuristic").getValueAsString();
     if (seedStr == "default") {
-        return std::seed_seq(std::chrono::system_clock::now().time_since_epoch().count());
+        return std::seed_seq({std::chrono::system_clock::now().time_since_epoch().count()});
     }
     return std::seed_seq(seedStr.begin(), seedStr.end());
 }
