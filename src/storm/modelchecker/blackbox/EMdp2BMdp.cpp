@@ -23,23 +23,43 @@ storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<int> &emdp)
     return storm::storage::SparseMatrixBuilder<ValueType>(rows,states,entries,true,true,states);
 
 }
+template <typename IndexType>
+void transferStateInformation(std::vector<std::string>&& labels, storm::models::sparse::StateLabeling& stateLabeling, IndexType newState){
+    for(const auto& label: labels ){
+        if(!stateLabeling.containsLabel(label)){
+            stateLabeling.addLabel(label);
+        }
+        stateLabeling.addLabelToState(label,newState);
+    }
+    //TODO rewards!
+}
+
+void transferActionInformation(storm::models::sparse::ChoiceLabeling& choiceLabeling, int currentRow, std::vector<std::string>&& labels) {
+    for(const auto& label: labels){
+        if(!choiceLabeling.containsLabel(label)){
+            choiceLabeling.addLabel(label);
+        }
+        choiceLabeling.addLabelToChoice(label,currentRow);
+    }
+}
 
 
-//TODO make emdp (and therefore all called functions) const??
+// TODO make emdp (and therefore all called functions) const??
 template <typename IndexType, typename ValueType>
-BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDistribution<IndexType> valueFunc, double pmin, double delta){
+BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDistribution<IndexType> valueFunc, double pmin, double delta, bool isBlackbox){
 
     using Bounds = storm::models::sparse::ValueTypePair<ValueType>;
     using new_index_t = typename storm::storage::SparseMatrixBuilder<ValueType>::index_type;
 
-    //TODO state labeling, action labeling, rewards!
-    storm::models::sparse::StateLabeling stateLabeling;
+    //TODO rewards!
+    storm::models::sparse::StateLabeling stateLabeling(emdp.getTotalStateCount() + 1);
+    storm::models::sparse::ChoiceLabeling choiceLabeling(emdp.gettotalStateActionPairCount() + 1); //TODO werden unsampled actions mitgezählt??
     //calculate size of BMdp and reserve enough space
     storm::storage::SparseMatrixBuilder<ValueType> matrixBuilder = initialiseMatrix<Bounds>(emdp);
 
     // create a map that gives the states an order/index
+    // TODO save in bmdp? be able to print it with original states?
     std::unordered_map<IndexType,new_index_t> index_mapping;
-
     new_index_t i = 0;
     for( auto states = emdp.getStateItr(); states.hasNext(); i++){
         index_mapping[states.next()] = i;
@@ -51,60 +71,71 @@ BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDist
 
 
     int currentRow = 0;
-    //for every state in the eMDP
+
     for(auto statesItr = emdp.getStateItr(); statesItr.hasNext(); ){
         auto state = statesItr.next();
         matrixBuilder.newRowGroup(currentRow);
-        //for every action of this state
+
+        transferStateInformation(emdp.getStateLabels(state), stateLabeling, index_mapping[state]);
+
         for(auto actItr = emdp.getStateActionsItr(state); actItr.hasNext();) {
             auto action = actItr.next();
             int actionSamples = emdp.getSampleCount(state,action);
+
+            int sampledSuccessors = 0; //For determining if we sampled all successors of a greybox MDP
+
+            transferActionInformation(choiceLabeling, currentRow, emdp.getActionLabels(state, action));
 
             if (actionSamples == 0) {
                 // Account for unsampled actions: one transition to dummy state (interval [1,1])
                 matrixBuilder.addNextValue(currentRow,dummy_state, storm::models::sparse::ValueTypePair<ValueType>::ValueTypePair(std::make_pair(1,1)));
             } else {
-                // for every sampled target state
                 for(auto targetItr = emdp.getStateActionsSuccItr(state,action); targetItr.hasNext();){
                     auto target_state = targetItr.next();
-                    // call value function to get delta assigned to transition
+                    sampledSuccessors++;
+
+                    // delta assigned to this transition
                     double delta_transition = valueFunc.getDeltaT(state, action,target_state);
-
-                    // get samples from eMDP
                     int samples = emdp.getSampleCount(state,action,target_state);
-
                     auto interval = boundFunc.INTERVAL(actionSamples, samples, delta_transition);
-                    // insert into BMdp
-                    matrixBuilder.addNextValue(currentRow,index_mapping[target_state],ValueTypePair(std::move(boundFunc)));
+
+                    matrixBuilder.addNextValue(currentRow,index_mapping[target_state],ValueTypePair(std::move(interval)));
                 }
             }
 
-            //TODO in the greybox case, I think we need to consider the unsampled transition (that we know exist) here as well!
-            // If blackbox: account for unsampled successors: transition to dummy state with the interval [0, 1]
-            // skip if this state action pair has been sampled enough times
-            bool isBlackbox = false;
+            // account for unsampled successors: transition to dummy state with the interval [0, 1]
             if(isBlackbox){
-                //TODO is it correct to use the global delta? -> only calculate once
-                //Otherwise: how can we make sure that the delta function takes these transitions into account?
-                int requiredSamples = log(delta) / log(1 - pmin);
+                //blackbox: skip if this state action pair has been sampled enough times
+                int requiredSamples =floor( log(delta) / log(1 - pmin));
                 if(actionSamples <= requiredSamples){
                     matrixBuilder.addNextValue(currentRow,dummy_state,ValueTypePair(std::make_pair(ValueType{0},ValueType{1})));
                 }
-
+            } else {
+                //greybox: skip if we got all successors
+                if(sampledSuccessors < emdp.getSuccCount(state,action)){
+                    matrixBuilder.addNextValue(currentRow,dummy_state,ValueTypePair(std::make_pair(ValueType{0},ValueType{1})));
+                }
             }
 
             currentRow++;
         }
-
     }
 
     //insert dummy state at the end of the matrix
     //TODO unknown reward: how??
     matrixBuilder.newRowGroup(currentRow);
+    storm::storage::BitVector v(emdp.getTotalStateCount() + 1);
+    v.set(emdp.getTotalStateCount());
+    stateLabeling.addUniqueLabel("dummy_state", v);
     //one action with one transition to itself (interval [1,1])
     matrixBuilder.addNextValue(currentRow,dummy_state,ValueTypePair(std::make_pair(ValueType{1},ValueType{1})));
 
-    //create BMdp
-    return BMdp<ValueType>(matrixBuilder.build(), std::move(stateLabeling));
+
+    storm::storage::sparse::ModelComponents m(matrixBuilder.build(), std::move(stateLabeling));
+    m.choiceLabeling = std::move(choiceLabeling);
+    return BMdp<ValueType>(std::move(m));
 
 }
+
+
+template<> BMdp<double> infer<int_fast64_t,double>(EMdp<int> &emdp, BoundFunc<double> boundFunc, DeltaDistribution<int_fast64_t> valueFunc, double pmin, double delta, bool isBlackbox);
