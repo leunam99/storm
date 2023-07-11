@@ -49,16 +49,23 @@ class BlackboxSettings : public ModuleSettings {
     /*!
      * Retrieves the selected boundaray function type for infer
      *
-     * @return seed for random generator
+     * @return boundaray function type
      */
     BoundFuncType getBoundFuncType() const;
 
     /*!
      * Retrieves the selected delta distribution type for infer
      *
-     * @return seed for random generator
+     * @return sdelat distribution type
      */
     DeltaDistType getDeltaDistType() const;
+
+    /*!
+     * Retrieves lower bound for all transition probabilities in the blackbox mdp.
+     *
+     * @return lower bound for all transition probabilities.
+     */
+    double getPMin() const;
 
     /*!
      * Retrieves the precision to use for numerical operations.
@@ -91,6 +98,7 @@ class BlackboxSettings : public ModuleSettings {
     static const std::string boundFuncOptionName;
 
     // general constants
+    static const std::string pMinOptionName;
     static const std::string precisionOptionName;
     static const std::string precisionOptionShortName;
     static const std::string maxNumIterationsOptionName;

@@ -27,6 +27,7 @@ const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheurist
 const std::string BlackboxSettings::deltaDistributionOptionName = "deltadist";
 const std::string BlackboxSettings::boundFuncOptionName = "boundfunc";
 // general constants
+const std::string BlackboxSettings::pMinOptionName = "pmin";
 const std::string BlackboxSettings::precisionOptionName = "precision";
 const std::string BlackboxSettings::precisionOptionShortName = "eps";
 const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiterations";
@@ -86,6 +87,13 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .build());
 
     // general options
+    this->addOption(storm::settings::OptionBuilder(moduleName, pMinOptionName, false, "Lower bound for all transition probabilities in the blackbox mdp.")
+                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("value", "Lower bound for all transition probabilities.")
+                                         .setDefaultValueDouble(1e-06)
+                                         .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
+                                         .build())
+                        .build());
+
     this->addOption(storm::settings::OptionBuilder(moduleName, precisionOptionName, false, "The precision to achieve. (To be implemented)")
                         .setShortName(precisionOptionShortName)
                         .setIsAdvanced()
@@ -145,6 +153,11 @@ DeltaDistType BlackboxSettings::getDeltaDistType() const {
     }
     STORM_LOG_THROW(false, storm::exceptions::IllegalArgumentValueException, "Unknown delta distribution type '" << deltaDistStr << "'.");
 };
+
+double BlackboxSettings::getPMin() const {
+    return this->getOption(pMinOptionName).getArgumentByName("value").getValueAsDouble();
+}
+
 
 double BlackboxSettings::getPrecision() const {
     return this->getOption(precisionOptionName).getArgumentByName("value").getValueAsDouble();
