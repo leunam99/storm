@@ -2,6 +2,9 @@
 #define STORM_DELTADISTRIBUTION_H
 
 #include "modelchecker/blackbox/EMdp.h"
+
+enum DeltaDistType{UNIFORM};
+
 template <typename IndexType>
 class DeltaDistribution {
 
@@ -51,7 +54,14 @@ class UniformDelta : public DeltaDistribution<IndexType> {
     double transitionDelta;
 };
 
-
+template <typename IndexType>
+std::shared_ptr<DeltaDistribution<IndexType>> getDeltaDistribution(DeltaDistType type) {
+    switch(type) {
+        case: DeltaDistType::UNIFORM:
+            return static_pointer_cast<DeltaDistribution<IndexType>>(std::make_shared<UniformDelta<IndexType>>());
+    }
+    //TODO throw exception
+};
 
 
 
