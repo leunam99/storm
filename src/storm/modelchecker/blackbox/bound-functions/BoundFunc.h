@@ -3,6 +3,9 @@
 #include <iostream>
 
 
+
+enum BoundFuncType{HOEFFDING, ONESIDEDHOEFFDING};
+
 /*!
  * Abstract Base Class for the function INTERVAL
  */
@@ -53,6 +56,16 @@ class OneSidedHoeffDingBound : public BoundFunc<ValueType> {
     } 
 };
 
+template <typename ValueType>
+std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
+    switch(type) {
+        case BoundFuncType::HOEFFDING:
+            return static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<HoeffDingBound<ValueType>>());
+        case BoundFuncType::ONESIDEDHOEFFDING:
+            return static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<OneSidedHoeffDingBound<ValueType>>());
+    }
+    // TODO exception
+};
 
 
 
