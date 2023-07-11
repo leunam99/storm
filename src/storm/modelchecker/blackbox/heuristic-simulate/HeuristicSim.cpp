@@ -49,6 +49,15 @@ void NaiveHeuristicSim<StateType, ValueType>::reset() {
     // empty, nothing to reset
 }
 
+template <typename StateType, typename ValueType>
+std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSimType type, std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMDP, std::seed_seq& seed) {
+    switch (type) {
+        case HeuristicSimType::NAIVE:
+            return static_pointer_cast<HeuristicSim<StateType, ValueType>>(std::make_shared<NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seed));
+    }
+    // exception
+}
+
 template class NaiveHeuristicSim<uint32_t, double>;
 
 } //namespace heuristicSim

@@ -100,6 +100,9 @@ class NaiveHeuristicSim : public HeuristicSim<StateType, ValueType> {
 
 };
 
+template <typename StateType, typename ValueType>
+std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSimType type, std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMDP, std::seed_seq& seed);
+
 } //namespace heuristicSim
 } //namespace blackbox
 } //namespace modelchecker
