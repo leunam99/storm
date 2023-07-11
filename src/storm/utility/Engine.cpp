@@ -159,6 +159,18 @@ bool canHandle(storm::utility::Engine const& engine, storm::storage::SymbolicMod
                     return false;
             }
             break;
+        case Engine::Blackbox:
+            switch (modelType) {
+                case ModelType::MDP:
+                    // TODO implement Check with canHandleStatic
+                    return true;
+                case ModelType::DTMC:
+                case ModelType::CTMC:
+                case ModelType::MA:
+                case ModelType::POMDP:
+                case ModelType::SMG:
+                    return false;
+            }
         default:
             STORM_LOG_ERROR("The selected engine " << engine << " is not considered.");
     }
