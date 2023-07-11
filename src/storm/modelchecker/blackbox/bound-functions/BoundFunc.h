@@ -65,7 +65,7 @@ std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
         case BoundFuncType::ONESIDEDHOEFFDING:
             return static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<OneSidedHoeffDingBound<ValueType>>());
     }
-    STORM_LOG_THROW(true, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
+    STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
 };
 
 

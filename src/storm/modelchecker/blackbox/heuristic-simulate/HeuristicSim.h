@@ -108,7 +108,7 @@ std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSim
         case HeuristicSimType::NAIVE:
             return static_pointer_cast<HeuristicSim<StateType, ValueType>>(std::make_shared<NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seed));
     }
-    STORM_LOG_THROW(true, storm::exceptions::NotSupportedException, "the selected simulation heuristic " << type << "is not supported");
+    STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected simulation heuristic " << type << "is not supported");
 };
 
 } //namespace heuristicSim
