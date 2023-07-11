@@ -3,6 +3,9 @@
 
 #include "modelchecker/blackbox/EMdp.h"
 
+#include "storm/exceptions/NotSupportedException.h"
+#include "storm/utility/macros.h"
+
 enum DeltaDistType{UNIFORM};
 
 template <typename IndexType>
@@ -60,7 +63,7 @@ std::shared_ptr<DeltaDistribution<IndexType>> getDeltaDistribution(DeltaDistType
         case: DeltaDistType::UNIFORM:
             return static_pointer_cast<DeltaDistribution<IndexType>>(std::make_shared<UniformDelta<IndexType>>());
     }
-    //TODO throw exception
+    STORM_LOG_THROW(true, storm::exceptions::NotSupportedException, "the selected delta distribution " << type << "is not supported");
 };
 
 

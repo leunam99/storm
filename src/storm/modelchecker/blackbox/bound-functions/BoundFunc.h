@@ -2,7 +2,8 @@
 #include <stdint.h>
 #include <iostream>
 
-
+#include "storm/exceptions/NotSupportedException.h"
+#include "storm/utility/macros.h"
 
 enum BoundFuncType{HOEFFDING, ONESIDEDHOEFFDING};
 
@@ -64,7 +65,7 @@ std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
         case BoundFuncType::ONESIDEDHOEFFDING:
             return static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<OneSidedHoeffDingBound<ValueType>>());
     }
-    // TODO exception
+    STORM_LOG_THROW(true, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
 };
 
 

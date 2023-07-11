@@ -8,6 +8,8 @@
 #include <random>
 
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
+#include "storm/exceptions/NotSupportedException.h"
+#include "storm/utility/macros.h"
 
 namespace storm {
 namespace modelchecker {
@@ -101,7 +103,13 @@ class NaiveHeuristicSim : public HeuristicSim<StateType, ValueType> {
 };
 
 template <typename StateType, typename ValueType>
-std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSimType type, std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMDP, std::seed_seq& seed);
+std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSimType type, std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMDP, std::seed_seq& seed) {
+    switch (type) {
+        case HeuristicSimType::NAIVE:
+            return static_pointer_cast<HeuristicSim<StateType, ValueType>>(std::make_shared<NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seed));
+    }
+    STORM_LOG_THROW(true, storm::exceptions::NotSupportedException, "the selected simulation heuristic " << type << "is not supported");
+};
 
 } //namespace heuristicSim
 } //namespace blackbox
