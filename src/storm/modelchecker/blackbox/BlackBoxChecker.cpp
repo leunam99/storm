@@ -1,10 +1,13 @@
 //
 // Created by Maximilian Kamps on 25.05.23.
 //
+#include <fstream>
+#include <string>
 
 #include "BlackBoxChecker.h"
 
-#include "storm/modelchecker/blackbox/blackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/BlackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/EMdpToDot.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
 
 #include "storm/modelchecker/results/ExplicitQuantitativeCheckResult.h"
@@ -19,9 +22,17 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
+
+
 template<typename ModelType, typename StateType>
-BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program const& program): blackboxMDP(std::static_pointer_cast<BlackboxMDP<StateType>>(std::make_shared<BlackboxWrapperOnWhitebox<StateType, ValueType>>(program))) {
-    // intentionally left empty
+BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program const& program): blackboxMDP(nullptr){
+    std::cout << "foo\n";
+    BlackboxWrapperOnWhitebox<StateType, ValueType> whiteboxWrapper(program);
+    std::cout << "foo2\n";
+    auto ptr = std::make_shared<BlackboxWrapperOnWhitebox<StateType, ValueType>>(program);
+    std::cout << "created pointer\n";
+    blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);    
+    std::cout << "blackbox Checker initialized\n";
 }
 
 template<typename ModelType, typename StateType>
@@ -32,26 +43,58 @@ bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Fo
 
 template<typename ModelType, typename StateType>
 std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) {
+    std::cout << "start algo\n";
+
+    
     // cli arguments
+    std::cout << "build cli arguments\n";
     uint_fast64_t maxIterations = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getMaxIterations();
+    std::cout << "1\n";
     std::seed_seq seedSimHeuristic = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimHeuristicSeed();
+    std::cout << "2\n";
     uint_fast64_t simulationsPerIter = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getNumberOfSamplingsPerSimulationStep();
+    std::cout << "3\n";
     double eps = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getPrecision();
+    std::cout << "4\n";
     heuristicSim::HeuristicSimType heuristicSimType = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimulationHeuristicType();
+    std::cout << "5\n";
+    std::string eMdpFilePath = "eMdp"; // TODO get from cli
+    std::cout << "6\n";
 
     // init objects for algorithm
+    std::cout << "build help objects\n";
     EMdp<BlackboxStateType> eMDP;
-    std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic)));
+    std::cout << "1\n";
+    auto ptrTmp = std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic);
+    std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(ptrTmp));
+    std::cout << "2\n";
     BlackBoxExplorer<StateType, ValueType> blackboxExplorer(blackboxMDP, heuristicSim);
+    std::cout << "3\n";
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
+    std::cout << "4\n";
+
+    // init objects for output generation
+    std::cout << "build output objects\n";
+    EMdpDotGenerator<BlackboxStateType> eMdpDotGenerator;
+    std::cout << "1\n";
+    std::string eMdpFilename;
+    std::cout << "1\n";
+    std::ofstream eMdpFile;
+    std::cout << "1\n";
 
     // run 3 step algorithm
     uint_fast64_t iterCount = 0;
     while (eps < valueBounds.second - valueBounds.first && iterCount < maxIterations) {
         iterCount++;
+        std::cout << "iteration " << iterCount << "\n";
+        
         // simulate
         blackboxExplorer.performExploration(eMDP, simulationsPerIter);
-        // simulate output
+        // show simulate output
+        std::cout << "save emdp nr " << iterCount << "\n";
+        eMdpFile.open(eMdpFilePath + "_" + std::to_string(iterCount) + ".dot");
+        eMdpDotGenerator.convert(eMDP, eMdpFile);
+        eMdpFile.close();
 
         // infer TODO
 

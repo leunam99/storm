@@ -106,7 +106,7 @@ template <typename StateType, typename ValueType>
 std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSimType type, std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMDP, std::seed_seq& seed) {
     switch (type) {
         case HeuristicSimType::NAIVE:
-            return static_pointer_cast<HeuristicSim<StateType, ValueType>>(std::make_shared<NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seed));
+            return std::static_pointer_cast<HeuristicSim<StateType, ValueType>>(std::make_shared<NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seed));
     }
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected simulation heuristic " << type << "is not supported");
 };

@@ -60,8 +60,8 @@ class UniformDelta : public DeltaDistribution<IndexType> {
 template <typename IndexType>
 std::shared_ptr<DeltaDistribution<IndexType>> getDeltaDistribution(DeltaDistType type) {
     switch(type) {
-        case: DeltaDistType::UNIFORM:
-            return static_pointer_cast<DeltaDistribution<IndexType>>(std::make_shared<UniformDelta<IndexType>>());
+        case DeltaDistType::UNIFORM:
+            return std::static_pointer_cast<DeltaDistribution<IndexType>>(std::make_shared<UniformDelta<IndexType>>());
     }
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected delta distribution " << type << "is not supported");
 };

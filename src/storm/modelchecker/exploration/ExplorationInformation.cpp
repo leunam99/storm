@@ -17,6 +17,7 @@ ExplorationInformation<StateType, ValueType>::ExplorationInformation(storm::Opti
       numberOfExplorationStepsUntilPrecomputation(100000),
       numberOfSampledPathsUntilPrecomputation(),
       nextStateHeuristic(storm::settings::modules::ExplorationSettings::NextStateHeuristic::DifferenceProbabilitySum) {
+    std::cout << "init explorationInformation";
     storm::settings::modules::ExplorationSettings const& settings = storm::settings::getModule<storm::settings::modules::ExplorationSettings>();
     localPrecomputation = settings.isLocalPrecomputationSet();
     numberOfExplorationStepsUntilPrecomputation = settings.getNumberOfExplorationStepsUntilPrecomputation();
@@ -25,6 +26,7 @@ ExplorationInformation<StateType, ValueType>::ExplorationInformation(storm::Opti
     }
 
     nextStateHeuristic = settings.getNextStateHeuristic();
+    std::cout << "explorationInformation initialzed";
 }
 
 template<typename StateType, typename ValueType>

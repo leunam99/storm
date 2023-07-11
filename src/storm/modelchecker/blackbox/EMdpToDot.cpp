@@ -134,6 +134,8 @@ void EMdpDotGenerator<StateType>::convert(EMdp<StateType> emdp, std::ostream& ou
     outStream << "}\n";
 }
 
+template class EMdpDotGenerator<int_fast32_t>;
+
 }
 }
 }

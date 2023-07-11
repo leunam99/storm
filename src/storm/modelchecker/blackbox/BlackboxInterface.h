@@ -52,6 +52,16 @@ class BlackboxMDP {
       * returns true if this MDP is a greybox MDP, false if it is a blackbox MDP 
       */
      virtual bool isGreybox() = 0;
+
+     // virtual auto getRewardModels() = 0;
+
+     // virtual auto getStateRewards(StateType state) = 0;
+
+     // virtual auto getStateLabels(StateType state) = 0;
+
+     // virtual auto getActionReward(StateType state, StateType action) = 0;
+
+     // virtual auto getActionLabels(StateType state, StateType action) = 0;
      
      /*!
       * greybox method
@@ -102,8 +112,8 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
      void exploreState(StateType state);
 
      storm::prism::Program program;
-     storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType> stateGeneration;
      storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType> explorationInformation;
+     storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType> stateGeneration;
      mutable std::default_random_engine randomGenerator;
 
 };

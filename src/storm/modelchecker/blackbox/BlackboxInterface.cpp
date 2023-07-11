@@ -39,6 +39,7 @@ BlackboxWrapperOnWhitebox<StateType, ValueType>::BlackboxWrapperOnWhitebox(storm
                                                   stateGeneration(this->program, explorationInformation, 
                                                   storm::expressions::ExpressionManager().boolean(true), storm::expressions::ExpressionManager().boolean(true)) {
     // intentionally left empty
+    std::cout << "BlackBoxInterface created\n";
 }
 
 template <typename StateType, typename ValueType>

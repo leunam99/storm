@@ -61,9 +61,9 @@ template <typename ValueType>
 std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
     switch(type) {
         case BoundFuncType::HOEFFDING:
-            return static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<HoeffDingBound<ValueType>>());
+            return std::static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<HoeffDingBound<ValueType>>());
         case BoundFuncType::ONESIDEDHOEFFDING:
-            return static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<OneSidedHoeffDingBound<ValueType>>());
+            return std::static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<OneSidedHoeffDingBound<ValueType>>());
     }
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
 };
