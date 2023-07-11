@@ -144,7 +144,6 @@ DeltaDistType BlackboxSettings::getDeltaDistType() const {
         return DeltaDistType::UNIFORM;
     }
     STORM_LOG_THROW(false, storm::exceptions::IllegalArgumentValueException, "Unknown delta distribution type '" << deltaDistStr << "'.");
-}
 };
 
 double BlackboxSettings::getPrecision() const {
@@ -154,7 +153,11 @@ double BlackboxSettings::getPrecision() const {
 bool BlackboxSettings::check() const {
     bool optionsSet = this->getOption(numberOfSamplingsPerSimulationStepOptionName).getHasOptionBeenSet() ||
                       this->getOption(simulationHeuristicOptionName).getHasOptionBeenSet() ||
-                      this->getOption(precisionOptionName).getHasOptionBeenSet();
+                      this->getOption(seedSimHeuristicOptionName).getHasOptionBeenSet() ||
+                      this->getOption(deltaDistributionOptionName).getHasOptionBeenSet() ||
+                      this->getOption(boundFuncOptionName).getHasOptionBeenSet() ||
+                      this->getOption(precisionOptionName).getHasOptionBeenSet() ||
+                      this->getOption(maxNumIterationsOptionName).getHasOptionBeenSet();
     STORM_LOG_WARN_COND(storm::settings::getModule<storm::settings::modules::CoreSettings>().getEngine() == storm::utility::Engine::Blackbox || !optionsSet,
                         "blackbox engine is not selected, so setting options for it has no effect.");
     return true;
