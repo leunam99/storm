@@ -5,6 +5,9 @@
 
 #include "storm/settings/modules/ModuleSettings.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
+#include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
+#include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
+
 
 namespace storm {
 namespace settings {
@@ -42,6 +45,20 @@ class BlackboxSettings : public ModuleSettings {
      * @return seed for random generator
      */
     std::seed_seq getSimHeuristicSeed() const;
+
+    /*!
+     * Retrieves the selected boundaray function type for infer
+     *
+     * @return seed for random generator
+     */
+    BoundFuncType getBoundFuncType() const;
+
+    /*!
+     * Retrieves the selected delta distribution type for infer
+     *
+     * @return seed for random generator
+     */
+    DeltaDistType getDeltaDistType() const;
 
     /*!
      * Retrieves the precision to use for numerical operations.

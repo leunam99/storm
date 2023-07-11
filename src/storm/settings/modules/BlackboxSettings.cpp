@@ -74,14 +74,14 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .build())
                         .build());
 
-    std::vector<std::string> boundFunctions = {"hoeffdingbound", "onesidedhoeffdingbound"};
+    std::vector<std::string> boundFunctions = {"hoeffding", "oshoeffding"};
     this->addOption(storm::settings::OptionBuilder(moduleName, boundFuncOptionName, true, "Set boundary function used to create bounds of bounded mdp.")
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
                                          "boundFunc",
                                          "Boundary function used during infer stage.")
                                          .addValidatorString(ArgumentValidatorFactory::createMultipleChoiceValidator(boundFunctions))
-                                         .setDefaultValueString("hoeffdingbound")
+                                         .setDefaultValueString("hoeffding")
                                          .build())
                         .build());
 
@@ -127,6 +127,25 @@ std::seed_seq BlackboxSettings::getSimHeuristicSeed() const {
     }
     return std::seed_seq(seedStr.begin(), seedStr.end());
 }
+
+BoundFuncType BlackboxSettings::getBoundFuncType() const {
+    std::string boundFuncStr = this->getOption(deltaDistributionOptionName).getArgumentByName("deltaDist").getValueAsString();
+    if (boundFuncStr == "hoeffding") {
+        return BoundFuncType::HOEFFDING;
+    } else if (boundFuncStr == "oshoeffding") {
+        return BoundFuncType::ONESIDEDHOEFFDING;
+    }
+    STORM_LOG_THROW(false, storm::exceptions::IllegalArgumentValueException, "Unknown boundary function type '" << boundFuncStr << "'.");
+};
+
+DeltaDistType BlackboxSettings::getDeltaDistType() const {
+    std::string deltaDistStr = this->getOption(boundFuncOptionName).getArgumentByName("boundFunc").getValueAsString();
+    if (deltaDistStr == "uniform") {
+        return DeltaDistType::UNIFORM;
+    }
+    STORM_LOG_THROW(false, storm::exceptions::IllegalArgumentValueException, "Unknown delta distribution type '" << deltaDistStr << "'.");
+}
+};
 
 double BlackboxSettings::getPrecision() const {
     return this->getOption(precisionOptionName).getArgumentByName("value").getValueAsDouble();
