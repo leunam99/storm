@@ -23,19 +23,25 @@ class ValueTypePair {
     std::pair<ValueType,ValueType> valuePair;
    public:
 
-    ValueTypePair(std::pair<ValueType,ValueType> valuePair): valuePair{valuePair}{}
-    ValueTypePair(std::pair<ValueType,ValueType> &&valuePair): valuePair{std::move(valuePair)}{}
+    ValueTypePair(std::pair<ValueType,ValueType> v): valuePair{v}{}
+    ValueTypePair(std::pair<ValueType,ValueType> &&v): valuePair{std::move(v)}{}
+    ValueTypePair(double p) : valuePair{std::make_pair(p,p)} {}
+    ValueTypePair(double p, double q) : valuePair{std::make_pair(p,q)} {}
 
 
     ValueType getLBound() const  {
-        valuePair.first();
+        return valuePair.first;
     }
     ValueType getUBound() const {
-        valuePair.second();
+        return valuePair.second;
     }
-    std::pair<ValueType,ValueType> operator+(ValueTypePair other) {
-        return std::make_pair(getLBound() + other.getLBound(), getUBound() + other.getUBound());
+    ValueTypePair operator+(ValueTypePair other) {
+        return ValueTypePair(getLBound() + other.getLBound(), getUBound() + other.getUBound());
     }
+    ValueTypePair operator/(const ValueTypePair other) const {
+        return ValueTypePair(getLBound() / other.getLBound(), getUBound() / other.getUBound());
+    }
+
 };
 
 /**

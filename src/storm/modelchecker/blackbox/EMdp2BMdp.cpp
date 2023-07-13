@@ -5,14 +5,11 @@
 
 typedef storm::storage::SparseMatrixIndexType index_type;
 
-using storm::models::sparse::BMdp;
-using storm::modelchecker::blackbox::EMdp;
+
 
 template <typename ValueType>
 storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<int> &emdp){
 
-    //calculate sizes of matrix
-    //TODO keep track of (some of) this information in emdp?
     //colum count: number of states + 1 dummy state
     index_type states = 1 + emdp.getTotalStateCount();
     //row count: sum of number of actions for each state + 1 for dummy state
@@ -46,7 +43,7 @@ void transferActionInformation(storm::models::sparse::ChoiceLabeling& choiceLabe
 
 // TODO make emdp (and therefore all called functions) const??
 template <typename IndexType, typename ValueType>
-BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDistribution<IndexType> valueFunc, double pmin, double delta, bool isBlackbox){
+BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDistribution<IndexType> &valueFunc, double pmin, double delta, bool isBlackbox){
 
     using Bounds = storm::models::sparse::ValueTypePair<ValueType>;
     using new_index_t = typename storm::storage::SparseMatrixBuilder<ValueType>::index_type;
@@ -58,7 +55,6 @@ BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDist
     storm::storage::SparseMatrixBuilder<ValueType> matrixBuilder = initialiseMatrix<Bounds>(emdp);
 
     // create a map that gives the states an order/index
-    // TODO save in bmdp? be able to print it with original states?
     std::unordered_map<IndexType,new_index_t> index_mapping;
     new_index_t i = 0;
     for( auto states = emdp.getStateItr(); states.hasNext(); i++){
@@ -138,4 +134,4 @@ BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> boundFunc, DeltaDist
 }
 
 
-template<> BMdp<double> infer<int_fast64_t,double>(EMdp<int> &emdp, BoundFunc<double> boundFunc, DeltaDistribution<int_fast64_t> valueFunc, double pmin, double delta, bool isBlackbox);
+template<> BMdp<double> infer<int_fast64_t,double>(EMdp<int> &emdp, BoundFunc<double> &boundFunc, DeltaDistribution<int_fast64_t> &valueFunc, double pmin, double delta, bool isBlackbox);

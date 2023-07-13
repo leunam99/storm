@@ -10,7 +10,7 @@ class DeltaDistribution {
      * @param emdp the eMDP for whose transitions the delta needs to be distributed
      * @param total_delta the wanted sum of all deltas
      */
-    virtual void initialiseFor(const storm::modelchecker::blackbox::EMdp<int> &emdp, double total_delta) = 0;
+    virtual void initialiseFor(storm::modelchecker::blackbox::EMdp<int> &emdp, double total_delta) = 0;
 
     /*!
      * returns the uncertainty for this specific transition
