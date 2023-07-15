@@ -26,7 +26,7 @@ ExplorationInformation<StateType, ValueType>::ExplorationInformation(storm::Opti
     }
 
     nextStateHeuristic = settings.getNextStateHeuristic();
-    std::cout << "explorationInformation initialzed";
+    std::cout << "explorationInformation initialzed\n";
 }
 
 template<typename StateType, typename ValueType>

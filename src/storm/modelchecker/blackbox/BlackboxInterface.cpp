@@ -37,14 +37,16 @@ BlackboxWrapperOnWhitebox<StateType, ValueType>::BlackboxWrapperOnWhitebox(storm
                                                 : program(program.substituteConstantsFormulas()),
                                                   explorationInformation(storm::OptimizationDirection::Maximize),
                                                   stateGeneration(this->program, explorationInformation, 
-                                                  storm::expressions::ExpressionManager().boolean(true), storm::expressions::ExpressionManager().boolean(true)) {
-    // intentionally left empty
+                                                  this->program.getManager().boolean(true), this->program.getManager().boolean(true)) {
+    // compute and explore initial state
+    explorationInformation.newRowGroup(0);
+    stateGeneration.computeInitialStates();
+    exploreState(stateGeneration.getFirstInitialState());
     std::cout << "BlackBoxInterface created\n";
 }
 
 template <typename StateType, typename ValueType>
 StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::getInitialState() {
-    stateGeneration.computeInitialStates();
     return stateGeneration.getFirstInitialState();
 }
 
@@ -83,6 +85,7 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
         return;
     }
 
+    explorationInformation.assignStateToNextRowGroup(state);
     storm::generator::CompressedState comprState = unexploredIt->second;
 
     // get actions; store them and their successors in explorationInformation

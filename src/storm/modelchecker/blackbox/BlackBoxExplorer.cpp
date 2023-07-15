@@ -30,7 +30,7 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<index_type_
         ActionType actionTaken;
         StateType suc;
         // do exploration
-        while (!heuristicSim->shouldStopSim(stack)) {
+        while (stack.size() < maxPathLen && !heuristicSim->shouldStopSim(stack)) {
             actionTaken = heuristicSim->sampleAction(stack);
             suc = blackboxMdp->sampleSucc((stack.back().first), actionTaken);
 

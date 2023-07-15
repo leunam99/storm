@@ -47,6 +47,7 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
 
     
     // cli arguments
+    // TODO setup settings object and work with that
     std::cout << "build cli arguments\n";
     uint_fast64_t maxIterations = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getMaxIterations();
     std::cout << "1\n";

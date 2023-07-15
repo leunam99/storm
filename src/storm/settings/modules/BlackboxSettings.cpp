@@ -57,7 +57,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
     this->addOption(storm::settings::OptionBuilder(moduleName, seedSimHeuristicOptionName, true, "Set seed used to initialize simulation heuristic. 'default' tells the program to use the current datetime.")
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
-                                         "seedSimHeuristic",
+                                         "seed",
                                          "The seed used to initalize the simulation heuristic.")
                                          .setDefaultValueString("default")
                                          .build())
@@ -129,7 +129,7 @@ storm::modelchecker::blackbox::heuristicSim::HeuristicSimType BlackboxSettings::
 }
 
 std::seed_seq BlackboxSettings::getSimHeuristicSeed() const {
-    std::string seedStr = this->getOption(simulationHeuristicOptionName).getArgumentByName("seedSimHeuristic").getValueAsString();
+    std::string seedStr = this->getOption(seedSimHeuristicOptionName).getArgumentByName("seed").getValueAsString();
     if (seedStr == "default") {
         return std::seed_seq({std::chrono::system_clock::now().time_since_epoch().count()});
     }
