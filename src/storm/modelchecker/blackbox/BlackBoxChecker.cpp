@@ -41,11 +41,12 @@ template<typename ModelType, typename StateType>
 std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) { 
     // cli arguments
     // TODO setup settings object and work with that
-    uint_fast64_t maxIterations = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getMaxIterations();
-    std::seed_seq seedSimHeuristic = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimHeuristicSeed();
-    uint_fast64_t simulationsPerIter = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getNumberOfSamplingsPerSimulationStep();
-    double eps = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getPrecision();
-    heuristicSim::HeuristicSimType heuristicSimType = storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getSimulationHeuristicType();
+    auto blackboxSettings = storm::settings::getModule<storm::settings::modules::BlackboxSettings>();
+    uint_fast64_t maxIterations = blackboxSettings.getMaxIterations();
+    std::seed_seq seedSimHeuristic = blackboxSettings.getSimHeuristicSeed();
+    uint_fast64_t simulationsPerIter = blackboxSettings.getNumberOfSamplingsPerSimulationStep();
+    double eps = blackboxSettings.getPrecision();
+    heuristicSim::HeuristicSimType heuristicSimType = blackboxSettings.getSimulationHeuristicType();
     std::string eMdpFilePath = "eMdp"; // TODO get from cli
 
     // init objects for algorithm
