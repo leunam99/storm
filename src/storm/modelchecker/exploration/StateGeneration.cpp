@@ -16,7 +16,6 @@ StateGeneration<StateType, ValueType>::StateGeneration(storm::prism::Program con
       stateStorage(generator.getStateSize()),
       conditionStateExpression(conditionStateExpression),
       targetStateExpression(targetStateExpression) {
-    std::cout << "init stateGen";
     stateToIdCallback = [&explorationInformation, this](storm::generator::CompressedState const& state) -> StateType {
         StateType newIndex = stateStorage.getNumberOfStates();
 
@@ -29,7 +28,6 @@ StateGeneration<StateType, ValueType>::StateGeneration(storm::prism::Program con
 
         return actualIndexBucketPair.first;
     };
-std::cout << "stateGen initialized";
 }
 
 template<typename StateType, typename ValueType>

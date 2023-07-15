@@ -242,7 +242,6 @@ Program::Program(std::shared_ptr<storm::expressions::ExpressionManager> manager,
         // Then check the validity.
         this->checkValidity(Program::ValidityCheckLevel::VALIDINPUT);
     }
-    std::cout << "program initialized\n";
 }
 
 Program::ModelType Program::getModelType() const {

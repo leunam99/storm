@@ -199,10 +199,8 @@ typename std::enable_if<std::is_same<ValueType, double>::value, std::unique_ptr<
 
     std::unique_ptr<storm::modelchecker::CheckResult> result;
     if (program.getModelType() == storm::prism::Program::ModelType::MDP) {
-        std::cout << "init blackbox checker\n";
         storm::modelchecker::blackbox::BlackBoxChecker<storm::models::sparse::Mdp<ValueType>> checker(program);
         if (checker.canHandle(task)) {
-            std::cout << "start checker\n";
             result = checker.check(env, task);
         }
     } else {

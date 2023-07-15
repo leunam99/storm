@@ -42,7 +42,6 @@ BlackboxWrapperOnWhitebox<StateType, ValueType>::BlackboxWrapperOnWhitebox(storm
     explorationInformation.newRowGroup(0);
     stateGeneration.computeInitialStates();
     exploreState(stateGeneration.getFirstInitialState());
-    std::cout << "BlackBoxInterface created\n";
 }
 
 template <typename StateType, typename ValueType>
