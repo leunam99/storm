@@ -63,7 +63,7 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(std::string fileName) {
     std::regex actionRe("\\t[[:digit:]]+: \\[(([^,]+, )*[^,]+)?\\]"); //matches expr of form "\tstate:[act1, act2]"
     std::regex succRe("\\t\\t[[:digit:]]+: [[:digit:]]+"); //matches expr of form "\t\tstate: count"
 
-    std::regex e("([a-zA-Z]|[[:digit:]])+");
+    std::regex e("([a-zA-Z0-9])+"); //matches labels, samples and states 
 
 
     std::getline(myFile, line);
@@ -77,18 +77,18 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(std::string fileName) {
         return EMdp();
     } 
 
-    bool lastLineWasState = false;  
+    bool lastLineWasState = false; //A succ line cannot imidiatly follow after a state line
     StateType lastState = -1;
     StateType lastAction = -1;
 
     while(!myFile.eof()) {
         std::getline(myFile, line);
-        std::sregex_iterator iter(line.begin(), line.end(), e);
-        std::sregex_iterator rend;
+        std::regex_token_iterator<std::string::iterator> iter ( line.begin(), line.end(), e);
+        std::regex_token_iterator<std::string::iterator> rend;
 
-        if (line.compare("eof") == 0) {
+        if (line.compare("eof") == 0) { //Reached end of file? 
             break;
-        } else if(std::regex_match(line, stateRe)) {
+        } else if(std::regex_match(line, stateRe)) { //Is line state line? 
             lastLineWasState = true;
             lastState = stoi(iter->str());
             iter++;
@@ -98,7 +98,7 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(std::string fileName) {
                 ++iter;
             }
         } 
-        else if(std::regex_match(line, actionRe)) {
+        else if(std::regex_match(line, actionRe)) { //Is line action line? 
             lastLineWasState = false;
             lastAction = stoi(iter->str());
             iter++;
@@ -108,12 +108,11 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(std::string fileName) {
                 ++iter;
             }
         } 
-        else if(std::regex_match(line, succRe) && !lastLineWasState) {
+        else if(std::regex_match(line, succRe) && !lastLineWasState) { //Is line succ line? 
             lastLineWasState = false;
-            //std::cout << stoi((*iter)[0]) << ": " << stoi((*iter)[1]) << std::endl; //TODO
-            newEMdp.addVisits(lastState, lastAction, stoi((*iter)[0]), stoi((*iter)[1]));
+            newEMdp.addVisits(lastState, lastAction, stoi((*iter)), stoi((*(++iter))));
         } 
-        else {
+        else { // => line has wrong format 
             std::cout << "Wrong file format!\n";
             return EMdp();
         }
@@ -297,20 +296,21 @@ int main(int argc, char const *argv[]) {
     auto emdp = storm::modelchecker::blackbox::EMdp<int_fast32_t>();
     emdp.addInitialState(1);
     
-    emdp.addStateLabel("label1", 0);
-    emdp.addStateLabel("label2", 0);
-    emdp.addStateLabel("label1", 1);
-    emdp.addStateLabel("label2", 1);
-    emdp.addStateLabel("label1", 2);
-    emdp.addStateLabel("label2", 2);
+    emdp.addStateLabel("label1", 10);
+    emdp.addStateLabel("label2", 10);
+    emdp.addStateLabel("label1", 10);
+    emdp.addStateLabel("label2", 10);
+    emdp.addStateLabel("label1", 18);
+    emdp.addStateLabel("label2", 18);
 
-    emdp.addActionLabel("actLabel", 0, 5);
-    emdp.addActionLabel("actLabel", 0, 6);
+    emdp.addActionLabel("actLabel2", 10, 50);
+    emdp.addActionLabel("actLabel232", 10, 6);
 
-    emdp.addVisits(0,5,1,2);
-    emdp.addVisits(0,6,2,3);
+    emdp.addVisits(10,50,18,23423);
+    emdp.addVisits(10,6,22,323);
     
     emdp.eMdpToFile("emdp_test.txt");
+    emdp.print();
     auto x = emdp.eMdpFromFile("emdp_test.txt");
     x.print();
 }
