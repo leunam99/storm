@@ -15,7 +15,7 @@
 #include "storm/utility/NumberTraits.h"
 #include "storm/utility/rationalfunction.h"
 #include "storm/utility/vector.h"
-#include "storm/modelchecker/blackbox/BMdp.h"
+#include "storm/modelchecker/blackbox/ValuePair.h"
 
 #include "storm/exceptions/NotImplementedException.h"
 
@@ -714,7 +714,8 @@ std::set<storm::RationalFunctionVariable> getAllParameters(Model<storm::Rational
 #endif
 
 template class Model<double>;
-template class Model<ValueTypePair<double>>;
+template class Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+//template class Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
 
 
 #ifdef STORM_HAVE_CARL

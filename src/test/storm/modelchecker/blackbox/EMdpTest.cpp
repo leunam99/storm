@@ -1,5 +1,7 @@
 #include "modelchecker/blackbox/EMdp.h"
 #include "modelchecker/blackbox/EMdp2BMdp.h"
+#include "storm/models/sparse/StandardRewardModel.h"
+
 #include "test/storm_gtest.h"
 
 TEST(EMdp, CreationWithDimensions) {
@@ -22,7 +24,11 @@ TEST(EMdp, CreationWithDimensions) {
     HoeffDingBound<double> bound;
     UniformDelta<int_fast32_t> delta;
 
-    BMdp<double> bmdp = infer(e,bound,delta,0.01,0.1, true);
-    bmdp.writeDotToStream(std::cout);
+    storm::storage::sparse::ModelComponents<storm::utility::ValuePair<double>,storm::models::sparse::StandardRewardModel<double>> m{};
+
+    BMdp<double> bMdp = BMdp<double>(m);
+
+    //BMdp<double> bmdp = infer(e,bound,delta,0.01,0.1, true);
+   // bmdp.writeDotToStream(std::cout);
 
 }

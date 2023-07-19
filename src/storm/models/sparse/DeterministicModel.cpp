@@ -61,6 +61,8 @@ void DeterministicModel<ValueType, RewardModelType>::writeDotToStream(std::ostre
 }
 
 template class DeterministicModel<double>;
+template class DeterministicModel<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+
 #ifdef STORM_HAVE_CARL
 template class DeterministicModel<storm::RationalNumber>;
 

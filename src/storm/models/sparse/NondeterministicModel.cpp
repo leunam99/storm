@@ -9,7 +9,7 @@
 #include "storm/storage/memorystructure/MemoryStructureBuilder.h"
 #include "storm/storage/memorystructure/SparseModelMemoryProduct.h"
 #include "storm/transformer/SubsystemBuilder.h"
-#include "storm/modelchecker/blackbox/BMdp.h"
+#include "storm/modelchecker/blackbox/ValuePair.h"
 
 namespace storm {
 namespace models {
@@ -189,7 +189,7 @@ uint_least64_t NondeterministicModel<ValueType, RewardModelType>::getChoiceIndex
 }
 
 template class NondeterministicModel<double>;
-template class NondeterministicModel<ValueTypePair<double>>;
+template class NondeterministicModel<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
 
 #ifdef STORM_HAVE_CARL
 template class NondeterministicModel<storm::RationalNumber>;

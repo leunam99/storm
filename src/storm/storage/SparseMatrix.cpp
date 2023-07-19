@@ -2626,6 +2626,18 @@ template class SparseMatrix<storm::storage::sparse::state_type>;
 template std::ostream& operator<<(std::ostream& out, SparseMatrix<storm::storage::sparse::state_type> const& matrix);
 template bool SparseMatrix<int>::isSubmatrixOf(SparseMatrix<storm::storage::sparse::state_type> const& matrix) const;
 
+// ValuePair
+template class MatrixEntry<typename SparseMatrix<utility::ValuePair<double>>::index_type, utility::ValuePair<double>>;
+template std::ostream& operator<<(
+    std::ostream& out, MatrixEntry<typename SparseMatrix<utility::ValuePair<double>>::index_type, utility::ValuePair<double>> const& entry);
+template class SparseMatrixBuilder<utility::ValuePair<double>>;
+template class SparseMatrix<utility::ValuePair<double>>;
+template std::ostream& operator<<(std::ostream& out, SparseMatrix<utility::ValuePair<double>> const& matrix);
+template bool SparseMatrix<int>::isSubmatrixOf(SparseMatrix<utility::ValuePair<double>> const& matrix) const;
+template std::vector<utility::ValuePair<double>> SparseMatrix<utility::ValuePair<double>>::getPointwiseProductRowSumVector(storm::storage::SparseMatrix<utility::ValuePair<double>> const& otherMatrix) const;
+template std::vector<double> SparseMatrix<utility::ValuePair<double>>::getPointwiseProductRowSumVector<double, double>(storm::storage::SparseMatrix<double> const& otherMatrix) const;
+
+
 #ifdef STORM_HAVE_CARL
 // Rational Numbers
 

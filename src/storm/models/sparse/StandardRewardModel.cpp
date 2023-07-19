@@ -197,6 +197,7 @@ void StandardRewardModel<ValueType>::reduceToStateBasedRewards(storm::storage::S
         }
     }
 
+
     if (reduceToStateRewards && this->hasStateActionRewards()) {
         STORM_LOG_THROW(transitionMatrix.getRowGroupCount() == this->getStateActionRewardVector().size(), storm::exceptions::InvalidOperationException,
                         "The reduction to state rewards is only possible if the size of the action reward vector equals the number of states.");
@@ -496,6 +497,12 @@ template void StandardRewardModel<double>::setStateActionReward(uint_fast64_t ch
 template void StandardRewardModel<double>::setStateReward(uint_fast64_t state, double const& newValue);
 template class StandardRewardModel<double>;
 template std::ostream& operator<< <double>(std::ostream& out, StandardRewardModel<double> const& rewardModel);
+
+template void StandardRewardModel<double>::clearRewardAtState(uint_fast64_t state, storm::storage::SparseMatrix<utility::ValuePair<double>> const& transitionMatrix);
+template void StandardRewardModel<double>::reduceToStateBasedRewards(storm::storage::SparseMatrix<utility::ValuePair<double>> const& transitionMatrix,
+                                                                                    bool reduceToStateRewards,
+                                                                                    std::vector<utility::ValuePair<double>> const* weights);
+//template class StandardRewardModel<utility::ValuePair<double>>;
 
 #ifdef STORM_HAVE_CARL
 template std::vector<storm::RationalNumber> StandardRewardModel<storm::RationalNumber>::getTotalRewardVector(

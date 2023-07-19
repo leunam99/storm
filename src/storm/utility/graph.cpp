@@ -2041,6 +2041,18 @@ template ExplicitGameProb01Result performProb1(storm::storage::SparseMatrix<doub
 
 template std::vector<uint_fast64_t> getTopologicalSort(storm::storage::SparseMatrix<double> const& matrix, std::vector<uint64_t> const& firstStates);
 
+
+//ValuePair instantiations
+template storm::storage::BitVector getReachableStates(storm::storage::SparseMatrix<utility::ValuePair<double>> const& transitionMatrix,
+                                                      storm::storage::BitVector const& initialStates, storm::storage::BitVector const& constraintStates,
+                                                      storm::storage::BitVector const& targetStates, bool useStepBound, uint_fast64_t maximalSteps,
+                                                      boost::optional<storm::storage::BitVector> const& choiceFilter);
+
+template storm::storage::BitVector performProb0E(
+    storm::models::sparse::NondeterministicModel<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>> const& model,
+    storm::storage::SparseMatrix<utility::ValuePair<double>> const& backwardTransitions, storm::storage::BitVector const& phiStates, storm::storage::BitVector const& psiStates);
+
+
 // Instantiations for storm::RationalNumber.
 #ifdef STORM_HAVE_CARL
 template storm::storage::BitVector getReachableStates(storm::storage::SparseMatrix<storm::RationalNumber> const& transitionMatrix,

@@ -559,5 +559,7 @@ template class SparseModelMemoryProduct<double, storm::models::sparse::StandardR
 template class SparseModelMemoryProduct<storm::RationalNumber>;
 template class SparseModelMemoryProduct<storm::RationalFunction>;
 
+template class SparseModelMemoryProduct<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+
 }  // namespace storage
 }  // namespace storm

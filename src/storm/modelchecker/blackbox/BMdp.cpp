@@ -39,7 +39,6 @@ BMdp<BoundType, RewardModelType>::BMdp(storm::storage::sparse::ModelComponents<B
 
 template class BMdp<double>;
 
- template class BMdp<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
 }  // namespace sparse
 }  // namespace models
 }  // namespace storm

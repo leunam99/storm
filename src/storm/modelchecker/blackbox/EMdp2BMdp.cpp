@@ -45,7 +45,7 @@ void transferActionInformation(storm::models::sparse::ChoiceLabeling& choiceLabe
 template <typename IndexType, typename ValueType>
 BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDistribution<IndexType> &valueFunc, double pmin, double delta, bool isBlackbox){
 
-    using Bounds = storm::models::sparse::ValueTypePair<ValueType>;
+    using Bounds = storm::utility::ValuePair<ValueType>;
     using new_index_t = typename storm::storage::SparseMatrixBuilder<ValueType>::index_type;
 
     //TODO rewards!
@@ -84,7 +84,7 @@ BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDis
 
             if (actionSamples == 0) {
                 // Account for unsampled actions: one transition to dummy state (interval [1,1])
-                matrixBuilder.addNextValue(currentRow,dummy_state, storm::models::sparse::ValueTypePair<ValueType>::ValueTypePair(std::make_pair(1,1)));
+                matrixBuilder.addNextValue(currentRow,dummy_state, storm::utility::ValuePair<ValueType>::ValuePair(std::make_pair(1,1)));
             } else {
                 for(auto targetItr = emdp.getStateActionsSuccItr(state,action); targetItr.hasNext();){
                     auto target_state = targetItr.next();

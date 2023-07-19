@@ -14,7 +14,7 @@ class BoundFunc {
      * @param totalSamples : total Samples for one Action generated in Simulate
      * @param partialSample : Samples for (state,transition,state) generated in Simulate
      * @param delta : Inconfidence value delta
-     * @return : ValueTypePair with upper and lower bound
+     * @return : ValuePair with upper and lower bound
      */
     virtual std::pair<ValueType,ValueType> INTERVAL(int64_t totalSamples, int64_t partialSample, double delta) = 0; //abstract method
 };

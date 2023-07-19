@@ -61,6 +61,7 @@ storm::models::sparse::ChoiceLabeling const& StochasticTwoPlayerGame<ValueType, 
 }
 
 template class StochasticTwoPlayerGame<double>;
+template class StochasticTwoPlayerGame<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
 
 #ifdef STORM_HAVE_CARL
 template class StochasticTwoPlayerGame<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
