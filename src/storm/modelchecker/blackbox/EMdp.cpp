@@ -290,7 +290,7 @@ template class EMdp<int_fast32_t>;
 } //namespace modelchecker
 } //namespace storm
 
-
+/*
 int main(int argc, char const *argv[]) {
     
     auto emdp = storm::modelchecker::blackbox::EMdp<int_fast32_t>();
@@ -314,6 +314,7 @@ int main(int argc, char const *argv[]) {
     auto x = emdp.eMdpFromFile("emdp_test.txt");
     x.print();
 }
+*/
 
 
 
