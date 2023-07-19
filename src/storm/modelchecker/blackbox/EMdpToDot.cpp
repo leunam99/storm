@@ -1,11 +1,8 @@
-#include "EMdpToDot.h"
+#include "EMdptoDot.h"
 
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
-
-template<typename StateType>
-EMdpDotGenerator<StateType>::EMdpDotGenerator() {};
 
 template<typename StateType>
 EMdpDotGenerator<StateType>::EMdpDotGenerator(bool includeAction, bool includeSamples, bool includeLabel, bool includeColor) {
@@ -13,11 +10,20 @@ EMdpDotGenerator<StateType>::EMdpDotGenerator(bool includeAction, bool includeSa
     includeSamples = includeSamples;
     includeLabel = includeLabel;
     includeColor = includeColor;
+
+
+    colorMap[0] = "red";
+    colorMap[1] = "blue";
+    colorMap[2] = "green";
+    colorMap[3] = "orange";
+    colorMap[4] = "pink";
+    colorMap[5] = "brown";
+    colorMap[6] = "black";
 };
 
 template<typename StateType>
 std::string EMdpDotGenerator<StateType>::colorObj(StateType colorCtr) {
-    return "color=\"red\"";
+    return "color=\"" + colorMap[std::clamp(colorCtr, 0, 6)] + "\"";
 }
 
 template<typename StateType>
@@ -65,11 +71,16 @@ void EMdpDotGenerator<StateType>::convertPred(EMdp<StateType> emdp, StateType st
     addEMdpStateDotLabel(state, emdp.getStateLabels(state), "grey", outStream);
     if(depth > 0) {
         for(auto pred_pair: emdp.getPredecessors(state)) {
-            if(std::find(visited.begin(), visited.end(), std::make_tuple(pred_pair.first, pred_pair.second, state)) == visited.end()) {
+            StateType succ = pred_pair.first;
+            StateType action = pred_pair.second;
+
+            if(std::find(visited.begin(), visited.end(), std::make_tuple(succ, action, state)) == visited.end()) {
+                addTrans(succ, state, outStream);
+                addEMdpDotLabel(action, emdp.getSampleCount(state, action, succ), emdp.getActionLabels(state, action), 0, outStream);
+
                 visited.push_back(std::make_tuple(pred_pair.first, pred_pair.second, state));
-                addTrans(pred_pair.first, state, outStream);
-                convertPred(emdp, pred_pair.first, depth - 1, outStream, visited);
-                convertSucc(emdp, pred_pair.first, depth - 1, outStream, visited);
+                convertPred(emdp, succ, depth - 1, outStream, visited);
+                convertSucc(emdp, succ, depth - 1, outStream, visited);
             }
         }
     }
@@ -87,8 +98,10 @@ void EMdpDotGenerator<StateType>::convertSucc(EMdp<StateType> emdp, StateType st
             while (succItr.hasNext()) {
                 StateType succ = succItr.next();
                 if(std::find(visited.begin(), visited.end(), std::make_tuple(state, action, succ)) == visited.end()) {
-                    visited.push_back(std::make_tuple(state, action, succ));
                     addTrans(state, succ, outStream);
+                    addEMdpDotLabel(action, emdp.getSampleCount(state, action, succ), emdp.getActionLabels(state, action), 0, outStream);
+
+                    visited.push_back(std::make_tuple(state, action, succ));
                     convertSucc(emdp, succ, depth - 1, outStream, visited);
                     convertPred(emdp, succ, depth - 1, outStream, visited);
                 }    
@@ -105,6 +118,7 @@ void EMdpDotGenerator<StateType>::convertNeighborhood(EMdp<StateType> emdp, Stat
     std::vector<std::tuple<StateType, StateType, StateType>> visited;
     convertPred(emdp, state, depth, outStream, visited);
     convertSucc(emdp, state, depth, outStream, visited);
+    addEMdpStateDotLabel(state, emdp.getStateLabels(state), "green", outStream);
     outStream << "}\n";
 }
 
@@ -118,19 +132,21 @@ void EMdpDotGenerator<StateType>::convert(EMdp<StateType> emdp, std::ostream& ou
         StateType state = stateItr.next();
         addEMdpStateDotLabel(state, emdp.getStateLabels(state), "grey", outStream);
         auto actionItr = emdp.getStateActionsItr(state);
+        StateType actColCtr = 0;
         while (actionItr.hasNext())
         {   
-            StateType act_col_ctr = 1;
             StateType action = actionItr.next();
             auto succItr = emdp.getStateActionsSuccItr(state, action);
                 while (succItr.hasNext()) {
                     StateType succ = succItr.next();
                     addTrans(state, succ, outStream);
-                    addEMdpDotLabel(action, emdp.getSampleCount(state, action, succ), emdp.getActionLabels(state, action), act_col_ctr, outStream);
+                    addEMdpDotLabel(action, emdp.getSampleCount(state, action, succ), emdp.getActionLabels(state, action), actColCtr, outStream);
                 }
+            actColCtr++;
         }
         
     }
+    addEMdpStateDotLabel(emdp.getInitialState(), emdp.getStateLabels(emdp.getInitialState()), "green", outStream);
     outStream << "}\n";
 }
 
@@ -150,6 +166,11 @@ int main(int argc, char const *argv[])
     emdp.addVisit(1,0,8);
     emdp.addVisit(1,0,9);
 
+    emdp.addVisit(30, 0, 1);
+    emdp.addVisit(30, 1, 1);
+    emdp.addVisit(30, 2, 1);
+    emdp.addVisit(34, 1, 1);
+
     emdp.addVisit(2,0,3);
     emdp.addVisit(3,0,10);
 
@@ -162,11 +183,11 @@ int main(int argc, char const *argv[])
     emdp.createReverseMapping();
 
 
-    auto dot = storm::modelchecker::blackbox::EMdpDotGenerator<int_fast32_t>(false,false,false,false);;
-    dot.convertNeighborhood(emdp, 2, 3, std::cout);
+    auto dot = storm::modelchecker::blackbox::EMdpDotGenerator<int_fast32_t>(true,true,true,true);
+    dot.convert(emdp, std::cout);
 
     return 0;
     
 }
-
 */
+
