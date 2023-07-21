@@ -91,6 +91,9 @@ storm::storage::SparseMatrix<ValueType> Ctmc<ValueType, RewardModelType>::comput
 }
 
 template class Ctmc<double>;
+template class Ctmc<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+template class Ctmc<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
+
 
 #ifdef STORM_HAVE_CARL
 template class Ctmc<storm::RationalNumber>;

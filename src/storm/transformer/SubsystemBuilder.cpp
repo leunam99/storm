@@ -229,6 +229,14 @@ template SubsystemBuilderReturnType<double, storm::models::sparse::StandardRewar
     storm::models::sparse::Model<double, storm::models::sparse::StandardRewardModel<storm::Interval>> const& originalModel,
     storm::storage::BitVector const& subsystemStates, storm::storage::BitVector const& subsystemActions, bool keepUnreachableStates = true,
     SubsystemBuilderOptions options = SubsystemBuilderOptions());
+template SubsystemBuilderReturnType<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>> buildSubsystem(
+    storm::models::sparse::Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>> const& originalModel,
+    storm::storage::BitVector const& subsystemStates, storm::storage::BitVector const& subsystemActions, bool keepUnreachableStates = true,
+    SubsystemBuilderOptions options = SubsystemBuilderOptions());
+template SubsystemBuilderReturnType<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>> buildSubsystem(
+    storm::models::sparse::Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>> const& originalModel,
+    storm::storage::BitVector const& subsystemStates, storm::storage::BitVector const& subsystemActions, bool keepUnreachableStates = true,
+    SubsystemBuilderOptions options = SubsystemBuilderOptions());
 template SubsystemBuilderReturnType<storm::RationalNumber> buildSubsystem(storm::models::sparse::Model<storm::RationalNumber> const& originalModel,
                                                                           storm::storage::BitVector const& subsystemStates,
                                                                           storm::storage::BitVector const& subsystemActions, bool keepUnreachableStates = true,

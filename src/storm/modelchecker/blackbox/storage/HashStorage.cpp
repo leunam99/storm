@@ -82,6 +82,18 @@ void HashStorage<StateType>::addStateActions(StateType state, std::vector<StateT
 }
 
 template<typename StateType>
+void HashStorage<StateType>::addUnsampledAction(StateType state, StateType action) {
+    addState(state);  // add state to data if it doesn't exist
+
+    auto* actMap = &data.at(state);  // add action to data if it doesn't exist
+    if (actMap->find(action) == actMap->end()) {
+        totalStateActionPairCount++;
+        (*actMap)[action] = countSampleMapPair();
+    }
+}
+
+
+template<typename StateType>
 void HashStorage<StateType>::incTrans(StateType state, StateType action, StateType succ, StateType samples) {
     addState(state);  // add state to data if it doesn't exist
     addState(succ);   // add succ to data if it doesn't exist
@@ -249,8 +261,10 @@ void HashStorage<StateType>::print() {
     }
 }
 
-template class HashStorage<int_fast32_t>; //Type for which class gets compiled 
-template class KeyIterator<int_fast32_t>; //Type for which class gets compiled
+template class HashStorage<int_fast32_t>; //Type for which class gets compiled
+template class HashStorage<int>;
+template class KeyIterator<int_fast32_t>;
+template class KeyIterator<int>;
 }
 }
 }

@@ -30,7 +30,21 @@ class EMdp {
      * @param state initial state 
      */
     void addInitialState(StateType state);
-    
+
+    /*!
+     * retrieves initial state
+     * 
+     * @param state initial state 
+     */
+    StateType getInitialState();
+
+    /*!
+     * Add a new state to the EMdp
+     * @param state  state index of new state
+     * @param availActions vector of available actions at state
+     */
+    void addState(StateType state, std::vector<StateType> availActions);
+
     /*!
      * increments the visits count of the given triple by 1
      * @param state   state index in which action was taken 
@@ -39,6 +53,7 @@ class EMdp {
      */
     void addVisit(StateType state, StateType action, StateType succ);
 
+
     /*!
      * increments the visits count of the given by visits
      * @param state   state index in which action was taken 
@@ -46,14 +61,18 @@ class EMdp {
      * @param succ    state index of successor state
      * @param visits  visits to be added to counter
      */
+
     void addVisits(StateType state, StateType action, StateType succ, StateType visits);
 
     /*!
-     * Add a new state to the EMdp
-     * @param state  state index of new state
-     * @param availActions vector of available actions at state
+     * Add action that is reachable from the state to the emdp, without having to add a successor state 
+     * (because the successor state might not have been sampled yet)
+     * 
+     * @param state 
+     * @param action 
      */
-    void addState(StateType state, std::vector<StateType> availActions);
+    void addUnsampledAction(StateType state, StateType action);
+    
     
     /*!
      * Adds a new Label to the state 
@@ -102,6 +121,29 @@ class EMdp {
      * @return std::vector<std::string> 
      */
     std::vector<std::string> getActionLabels(StateType state, StateType action);
+
+    /*!
+     * Converts a vector of state or transition labels to string 
+     * 
+     * @param labelVec 
+     * @return std::string 
+     */
+    std::string labelVecToStr(std::vector<std::string> labelVec);
+
+    /*!
+    * Writes the Emdp to a file 
+    *
+    * @param fileName
+    */
+    void eMdpToFile(std::string fileName);
+
+    /*!
+     * Constructs an EMdp from a File 
+     * 
+     * @param fileName the File containing the Emdp 
+     * @return EMdp<StateType> 
+     */
+    static EMdp<StateType> eMdpFromFile(std::string fileName);
 
     /*!
      * print the EMdp to std::cout
@@ -202,15 +244,8 @@ class EMdp {
     std::vector<std::pair<StateType, StateType> > getPredecessors(StateType state);
 
    private:
-    /*!
-     * Adds the state and its corresponding exploration time to explorationOrder
-     *
-     * @param state
-     */
-    void addStateToExplorationOrder(StateType state);
-
+    
    storage::HashStorage<StateType> hashStorage;
-   std::unordered_map<StateType, StateType> explorationOrder; // maps state to its position of when its been found
    std::unordered_map<StateType, std::vector<std::string> > stateLabeling; 
 
    //TODO: Use boost::hash instead, keep pairHash for easy compile
@@ -230,6 +265,9 @@ class EMdp {
    StateType initState = -1;
    StateType explorationCount = 0; //Number of explored states
 };
+
+template class EMdp<int>;
+
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm

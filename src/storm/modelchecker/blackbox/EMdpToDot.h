@@ -13,11 +13,8 @@ namespace blackbox {
 
 /*
 TODO: 
-- Coloring of states 
+- Coloring of states (for neib)
 - Information on states samples 
-- Handling of initial states 
-- Integration in to EMdp class 
-- pretty printing 
 */
 
 template<typename StateType>
@@ -27,6 +24,8 @@ class EMdpDotGenerator {
          bool includeSamples = true;
          bool includeLabel = true;
          bool includeColor = true;
+
+         std::unordered_map<StateType, std::string> colorMap;
 
          std::string colorObj(StateType colorCtr);
          std::string colorObj(std::string color);
@@ -70,7 +69,7 @@ class EMdpDotGenerator {
           * @param outStream 
           * @param visited 
           */
-         void convertPred(EMdp<StateType> EMdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited);
+         void convertPred(EMdp<StateType> EMdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>>* visited);
 
          /*!
           * Recursively writes successors of a state to outStream 
@@ -81,7 +80,7 @@ class EMdpDotGenerator {
           * @param outStream 
           * @param visited 
           */
-         void convertSucc(EMdp<StateType> EMdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>> visited);
+         void convertSucc(EMdp<StateType> EMdp, StateType state, StateType depth, std::ostream& outStream, std::vector<std::tuple<StateType, StateType, StateType>>* visited);
         public: 
          /*!
           * Constructs new EMdp Dot Generator 

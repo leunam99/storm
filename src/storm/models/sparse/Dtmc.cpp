@@ -45,6 +45,8 @@ void Dtmc<ValueType, RewardModelType>::reduceToStateBasedRewards() {
 }
 
 template class Dtmc<double>;
+template class Dtmc<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+template class Dtmc<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
 
 #ifdef STORM_HAVE_CARL
 template class Dtmc<storm::RationalNumber>;
