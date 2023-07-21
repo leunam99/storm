@@ -23,7 +23,7 @@ EMdpDotGenerator<StateType>::EMdpDotGenerator(bool includeAction, bool includeSa
 
 template<typename StateType>
 std::string EMdpDotGenerator<StateType>::colorObj(StateType colorCtr) {
-    return "color=\"" + colorMap[std::clamp(colorCtr, 0, 6)] + "\"";
+    return "color=\"" + colorMap[std::clamp(colorCtr, StateType(0), StateType(6))] + "\"";
 }
 
 template<typename StateType>
