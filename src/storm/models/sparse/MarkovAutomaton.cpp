@@ -13,6 +13,7 @@
 #include "storm/utility/graph.h"
 #include "storm/utility/macros.h"
 #include "storm/utility/vector.h"
+#include "storm/modelchecker/blackbox/ValuePair.h"
 
 #include "storm/exceptions/InvalidArgumentException.h"
 
@@ -258,6 +259,10 @@ void MarkovAutomaton<ValueType, RewardModelType>::printModelInformationToStream(
 }
 
 template class MarkovAutomaton<double>;
+template class MarkovAutomaton<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double> >;
+template class MarkovAutomaton<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
+
+
 #ifdef STORM_HAVE_CARL
 
 template class MarkovAutomaton<storm::RationalNumber>;

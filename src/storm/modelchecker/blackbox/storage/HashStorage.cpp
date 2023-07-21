@@ -261,8 +261,10 @@ void HashStorage<StateType>::print() {
     }
 }
 
-template class HashStorage<int_fast32_t>; //Type for which class gets compiled 
-template class KeyIterator<int_fast32_t>; //Type for which class gets compiled
+template class HashStorage<int_fast32_t>; //Type for which class gets compiled
+template class HashStorage<int>;
+template class KeyIterator<int_fast32_t>;
+template class KeyIterator<int>;
 }
 }
 }

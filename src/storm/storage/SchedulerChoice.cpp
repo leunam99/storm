@@ -73,6 +73,8 @@ template class SchedulerChoice<storm::RationalNumber>;
 template std::ostream& operator<<(std::ostream& out, SchedulerChoice<storm::RationalNumber> const& schedulerChoice);
 template class SchedulerChoice<storm::RationalFunction>;
 template std::ostream& operator<<(std::ostream& out, SchedulerChoice<storm::RationalFunction> const& schedulerChoice);
+template class SchedulerChoice<utility::ValuePair<double>>;
+template std::ostream& operator<<(std::ostream& out, SchedulerChoice<utility::ValuePair<double>> const& schedulerChoice);
 
 }  // namespace storage
 }  // namespace storm

@@ -265,6 +265,9 @@ class EMdp {
    StateType initState = -1;
    StateType explorationCount = 0; //Number of explored states
 };
+
+template class EMdp<int>;
+
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
