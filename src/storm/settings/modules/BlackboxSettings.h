@@ -56,9 +56,16 @@ class BlackboxSettings : public ModuleSettings {
     /*!
      * Retrieves the selected delta distribution type for infer
      *
-     * @return sdelat distribution type
+     * @return delta distribution type
      */
     DeltaDistType getDeltaDistType() const;
+
+    /*!
+     * Retrieves the amount of uncertainty that ishould be used for infer
+     *
+     * @return delta value for infer
+     */
+    double getDelta() const;
 
     /*!
      * Retrieves lower bound for all transition probabilities in the blackbox mdp.
@@ -95,6 +102,7 @@ class BlackboxSettings : public ModuleSettings {
 
     // infer constants
     static const std::string deltaDistributionOptionName;
+    static const std::string deltaOptionName;
     static const std::string boundFuncOptionName;
 
     // general constants
