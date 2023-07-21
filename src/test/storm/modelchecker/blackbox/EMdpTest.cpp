@@ -9,26 +9,26 @@ TEST(EMdp, CreationWithDimensions) {
 
     e.addInitialState(1);
 
-    e.addState(1, {0,1,2});
-    e.addState(2, {0});
+    e.addState(0, {0,1,2});
+    e.addState(1, {0});
 
-    e.addVisits(1,0,1, 10);
-    e.addVisits(1,0,2, 10);
+    e.addVisits(0,0,0, 10);
+    e.addVisits(0,0,1, 10);
 
-    e.addVisits(1,1,1, 10);
-    e.addVisits(1,1,2, 90);
+    e.addVisits(0,1,0, 10);
+    e.addVisits(0,1,1, 90);
 
-    e.addVisits(1,2,1, 1000);
-    e.addVisits(1,2,2, 9000);
+    e.addVisits(0,2,0, 1000);
+    e.addVisits(0,2,1, 9000);
 
     HoeffDingBound<double> bound;
     UniformDelta<int_fast32_t> delta;
 
-    storm::storage::sparse::ModelComponents<storm::utility::ValuePair<double>,storm::models::sparse::StandardRewardModel<double>> m{};
+    //storm::storage::sparse::ModelComponents<storm::utility::ValuePair<double>,storm::models::sparse::StandardRewardModel<double>> m{};
 
-    BMdp<double> bMdp = BMdp<double>(m);
+    //BMdp<double> bMdp = BMdp<double>(m);
 
-    //BMdp<double> bmdp = infer(e,bound,delta,0.01,0.1, true);
-   // bmdp.writeDotToStream(std::cout);
+    BMdp<double> bmdp = infer(e,bound,delta,0.01,0.1, true);
+    bmdp.writeDotToStream(std::cout);
 
 }

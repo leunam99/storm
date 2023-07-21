@@ -2633,7 +2633,8 @@ template std::ostream& operator<<(
 template class SparseMatrixBuilder<utility::ValuePair<double>>;
 template class SparseMatrix<utility::ValuePair<double>>;
 template std::ostream& operator<<(std::ostream& out, SparseMatrix<utility::ValuePair<double>> const& matrix);
-template bool SparseMatrix<int>::isSubmatrixOf(SparseMatrix<utility::ValuePair<double>> const& matrix) const;
+template bool SparseMatrix<utility::ValuePair<double>>::isSubmatrixOf(SparseMatrix<utility::ValuePair<double>> const& matrix) const;
+template bool SparseMatrix<double>::isSubmatrixOf(SparseMatrix<utility::ValuePair<double>> const& matrix) const;
 template std::vector<utility::ValuePair<double>> SparseMatrix<utility::ValuePair<double>>::getPointwiseProductRowSumVector(storm::storage::SparseMatrix<utility::ValuePair<double>> const& otherMatrix) const;
 template std::vector<double> SparseMatrix<utility::ValuePair<double>>::getPointwiseProductRowSumVector<double, double>(storm::storage::SparseMatrix<double> const& otherMatrix) const;
 

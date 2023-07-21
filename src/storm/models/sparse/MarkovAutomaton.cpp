@@ -260,7 +260,7 @@ void MarkovAutomaton<ValueType, RewardModelType>::printModelInformationToStream(
 
 template class MarkovAutomaton<double>;
 template class MarkovAutomaton<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double> >;
-//template class MarkovAutomaton<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
+template class MarkovAutomaton<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
 
 
 #ifdef STORM_HAVE_CARL

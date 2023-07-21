@@ -93,7 +93,7 @@ void Model<ValueType, RewardModelType>::assertValidityOfComponents(
                         "Can not create deterministic model: Number of columns of transition matrix does not match state count.");
         STORM_LOG_ERROR_COND(!components.player1Matrix.is_initialized(), "Player 1 matrix given for a model that is no stochastic game (will be ignored).");
     } else if (this->isOfType(ModelType::Mdp) || this->isOfType(ModelType::MarkovAutomaton) || this->isOfType(ModelType::Pomdp) ||
-               this->isOfType(ModelType::Smg)) {
+               this->isOfType(ModelType::Smg) || this->isOfType(ModelType::BMdp)) {
         STORM_LOG_THROW(stateCount == this->getTransitionMatrix().getRowGroupCount(), storm::exceptions::IllegalArgumentException,
                         "Can not create nondeterministic model: Number of row groups ("
                             << this->getTransitionMatrix().getRowGroupCount() << ") of transition matrix does not match state count (" << stateCount << ").");
@@ -715,7 +715,7 @@ std::set<storm::RationalFunctionVariable> getAllParameters(Model<storm::Rational
 
 template class Model<double>;
 template class Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
-//template class Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
+template class Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
 
 
 #ifdef STORM_HAVE_CARL

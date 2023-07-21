@@ -81,6 +81,8 @@ storm::storage::BitVector Smg<ValueType, RewardModelType>::computeStatesOfCoalit
 template class Smg<double>;
 template class Smg<storm::RationalNumber>;
 template class Smg<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+template class Smg<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
+
 
 template class Smg<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
 template class Smg<storm::RationalFunction>;

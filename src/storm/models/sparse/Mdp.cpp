@@ -45,6 +45,7 @@ Mdp<ValueType, RewardModelType>::Mdp(storm::storage::sparse::ModelComponents<Val
 template class Mdp<double>;
 template class Mdp<storm::RationalNumber>;
 template class Mdp<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+template class Mdp<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
 
 template class Mdp<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
 template class Mdp<storm::RationalFunction>;

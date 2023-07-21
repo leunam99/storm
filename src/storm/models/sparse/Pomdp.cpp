@@ -153,6 +153,8 @@ std::size_t Pomdp<ValueType, RewardModelType>::hash() const {
 
 template class Pomdp<double>;
 template class Pomdp<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+template class Pomdp<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
+
 template class Pomdp<storm::RationalNumber>;
 template class Pomdp<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
 template class Pomdp<storm::RationalFunction>;

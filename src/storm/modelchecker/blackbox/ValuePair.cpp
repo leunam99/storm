@@ -1,10 +1,12 @@
 #include "storm/modelchecker/blackbox/ValuePair.h"
-
+#include "settings/SettingsManager.h"
+#include "settings/modules/GeneralSettings.h"
+#include "utility/constants.h"
 
 namespace storm::utility {
 
 template<typename ValueType> ValuePair<ValueType>::ValuePair(std::pair<ValueType, ValueType> v) : valuePair{v} {}
-template<typename ValueType> ValuePair<ValueType>::ValuePair(std::pair<ValueType, ValueType>&& v) : valuePair{std::move(v)} {}
+//template<typename ValueType> ValuePair<ValueType>::ValuePair(std::pair<ValueType, ValueType>&& v) : valuePair{std::move(v)} {}
 template<typename ValueType> ValuePair<ValueType>::ValuePair(double p) : valuePair{std::make_pair(p, p)} {}
 template<typename ValueType> ValuePair<ValueType>::ValuePair() : ValuePair(0) {}
 template<typename ValueType> ValuePair<ValueType>::ValuePair(double p, double q) : valuePair{std::make_pair(p, q)} {}
@@ -162,7 +164,34 @@ bool ValuePairIterator<ValueType>::isAnEnd() const {
     return end;
 }
 
+template<typename ValueType>
+bool ConstantsComparator<ValuePair<ValueType>>::isConstant(const ValuePair<ValueType>& value) const {
+    return true;
+}
 
+template<typename ValueType>
+bool ConstantsComparator<ValuePair<ValueType>>::isEqual(const ValuePair<ValueType>& value1, const ValuePair<ValueType>& value2) const {
+    return value1 == value2;
+}
+
+template<typename ValueType>
+bool ConstantsComparator<ValuePair<ValueType>>::isInfinity(const ValuePair<ValueType>& value) const {
+    return false;
+}
+
+template<typename ValueType>
+bool ConstantsComparator<ValuePair<ValueType>>::isLess(const ValuePair<ValueType>& value1, const ValuePair<ValueType>& value2) const {
+    return value1 < value2;
+}
+template<typename ValueType>
+bool ConstantsComparator<ValuePair<ValueType>>::isOne(const ValuePair<ValueType>& value) const {
+    return value.getUBound() >= 1 - storm::utility::convertNumber<ValueType>(storm::settings::getModule<storm::settings::modules::GeneralSettings>().getPrecision());
+}
+
+template<typename ValueType>
+bool ConstantsComparator<ValuePair<ValueType>>::isZero(const ValuePair<ValueType>& value) const {
+    return value.getLBound() <= storm::utility::convertNumber<ValueType>(storm::settings::getModule<storm::settings::modules::GeneralSettings>().getPrecision());
+}
 
 template class ValuePair<double>;
 template class ValuePairIterator<double>;
@@ -170,6 +199,8 @@ template std::ostream& operator<< <double>(std::ostream& os, const storm::utilit
 template double& operator+=(double& a, const ValuePair<double>& b);
 template double operator+(double a, const ValuePair<double>& b);
 template double operator*(double a, const ValuePair<double>& b);
+
+template class ConstantsComparator<ValuePair<double>>;
 
 }
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include "boost/container_hash/hash_fwd.hpp"
 #include "storm/utility/rationalfunction.h"
+#include "storm/utility/ConstantsComparatorForward.h"
 
 namespace storm::utility {
 
@@ -58,7 +59,7 @@ class ValuePair {
 
    public:
     explicit ValuePair(std::pair<ValueType, ValueType> v);
-    explicit ValuePair(std::pair<ValueType, ValueType>&& v) ;
+   // explicit ValuePair(std::pair<ValueType, ValueType>&& v) ;
     explicit ValuePair(double p);
     ValuePair();
     ValuePair(double p, double q);
@@ -105,8 +106,21 @@ template<class V> V operator*(const V a, const ValuePair<V>& b);
 template<class T>
 std::ostream& operator<<(std::ostream& os, const ValuePair<T>& vp);
 
-}
+template<typename ValueType>
+class ConstantsComparator<ValuePair<ValueType>> {
+   public:
+    ConstantsComparator() = default;
+    bool isOne(ValuePair<ValueType> const& value) const;
+    bool isZero(ValuePair<ValueType> const& value) const;
+    bool isEqual(ValuePair<ValueType> const& value1, ValuePair<ValueType> const& value2) const;
+    bool isConstant(ValuePair<ValueType> const& value) const;
+    bool isInfinity(ValuePair<ValueType> const& value) const;
+    bool isLess(ValuePair<ValueType> const& value1, ValuePair<ValueType> const& value2) const;
+};
 
+
+
+}
 
 //Trait to enable hashing
 namespace boost::container_hash {

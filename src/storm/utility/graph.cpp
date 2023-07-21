@@ -2052,6 +2052,9 @@ template storm::storage::BitVector performProb0E(
     storm::models::sparse::NondeterministicModel<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>> const& model,
     storm::storage::SparseMatrix<utility::ValuePair<double>> const& backwardTransitions, storm::storage::BitVector const& phiStates, storm::storage::BitVector const& psiStates);
 
+template storm::storage::BitVector performProb0E(
+    storm::models::sparse::NondeterministicModel<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>> const& model,
+    storm::storage::SparseMatrix<utility::ValuePair<double>> const& backwardTransitions, storm::storage::BitVector const& phiStates, storm::storage::BitVector const& psiStates);
 
 // Instantiations for storm::RationalNumber.
 #ifdef STORM_HAVE_CARL

@@ -4,7 +4,7 @@
 #include "modelchecker/blackbox/EMdp.h"
 template <typename IndexType>
 class DeltaDistribution {
-
+   public:
     /*!
      * lets this function initialise
      * @param emdp the eMDP for whose transitions the delta needs to be distributed

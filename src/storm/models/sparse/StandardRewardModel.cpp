@@ -502,7 +502,13 @@ template void StandardRewardModel<double>::clearRewardAtState(uint_fast64_t stat
 template void StandardRewardModel<double>::reduceToStateBasedRewards(storm::storage::SparseMatrix<utility::ValuePair<double>> const& transitionMatrix,
                                                                                     bool reduceToStateRewards,
                                                                                     std::vector<utility::ValuePair<double>> const* weights);
-//template class StandardRewardModel<utility::ValuePair<double>>;
+template class StandardRewardModel<utility::ValuePair<double>>;
+template std::ostream& operator<< <utility::ValuePair<double>>(std::ostream& out, StandardRewardModel<utility::ValuePair<double>> const& rewardModel);
+
+template void StandardRewardModel<utility::ValuePair<double>>::clearRewardAtState(uint_fast64_t state, storm::storage::SparseMatrix<utility::ValuePair<double>> const& transitionMatrix);
+template void StandardRewardModel<utility::ValuePair<double>>::reduceToStateBasedRewards(storm::storage::SparseMatrix<utility::ValuePair<double>> const& transitionMatrix,
+                                                                     bool reduceToStateRewards,
+                                                                     std::vector<utility::ValuePair<double>> const* weights);
 
 #ifdef STORM_HAVE_CARL
 template std::vector<storm::RationalNumber> StandardRewardModel<storm::RationalNumber>::getTotalRewardVector(

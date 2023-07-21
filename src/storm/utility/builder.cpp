@@ -46,6 +46,9 @@ template std::shared_ptr<storm::models::sparse::Model<double, storm::models::spa
 template std::shared_ptr<storm::models::sparse::Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>> buildModelFromComponents(
     storm::models::ModelType modelType,
     storm::storage::sparse::ModelComponents<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>&& components);
+template std::shared_ptr<storm::models::sparse::Model<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>> buildModelFromComponents(
+    storm::models::ModelType modelType,
+    storm::storage::sparse::ModelComponents<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>&& components);
 
 template std::shared_ptr<storm::models::sparse::Model<storm::RationalNumber>> buildModelFromComponents(
     storm::models::ModelType modelType, storm::storage::sparse::ModelComponents<storm::RationalNumber>&& components);
