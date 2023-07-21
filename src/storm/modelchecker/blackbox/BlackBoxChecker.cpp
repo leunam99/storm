@@ -7,7 +7,11 @@
 #include "BlackBoxChecker.h"
 
 #include "storm/modelchecker/blackbox/BlackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/BMdp.h"
+#include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
+#include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
 #include "storm/modelchecker/blackbox/EMdpToDot.h"
+#include "storm/modelchecker/blackbox/EMdp2BMdp.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
 
 #include "storm/modelchecker/results/ExplicitQuantitativeCheckResult.h"
@@ -39,26 +43,33 @@ bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Fo
 
 template<typename ModelType, typename StateType>
 std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) { 
-    // cli arguments
     auto blackboxSettings = storm::settings::getModule<storm::settings::modules::BlackboxSettings>();
+    // cli arguments simulate
     uint_fast64_t maxIterations = blackboxSettings.getMaxIterations();
     std::seed_seq seedSimHeuristic = blackboxSettings.getSimHeuristicSeed();
     uint_fast64_t simulationsPerIter = blackboxSettings.getNumberOfSamplingsPerSimulationStep();
-    double eps = blackboxSettings.getPrecision();
     heuristicSim::HeuristicSimType heuristicSimType = blackboxSettings.getSimulationHeuristicType();
+    // cli arguments infer
+    BoundFuncType boundFuncType = blackboxSettings.getBoundFuncType();
+    DeltaDistType deltaDistType = blackboxSettings.getDeltaDistType();    
+    double delta = blackboxSettings.getDelta();
+    // cli arguments other
+    double eps = blackboxSettings.getPrecision();
     std::string eMdpFilePath = "eMdp"; // TODO get from cli
 
     // init objects for algorithm
     EMdp<BlackboxStateType> eMDP;
-    auto ptrTmp = std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic);
-    std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(ptrTmp));
+    auto heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic)));
     BlackBoxExplorer<StateType, ValueType> blackboxExplorer(blackboxMDP, heuristicSim);
+    auto boundFunc = getBoundFunc(boundFuncType);
+    auto deltaDist = getDeltaDistribution(deltaDistType);
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
 
     // init objects for output generation
     EMdpDotGenerator<BlackboxStateType> eMdpDotGenerator;
     std::string eMdpFilename;
     std::ofstream eMdpFile;
+    // TODO init objects for bMDP output
 
     // run 3 step algorithm
     uint_fast64_t iterCount = 0;
@@ -67,12 +78,14 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         
         // simulate
         blackboxExplorer.performExploration(eMDP, simulationsPerIter);
-        // show simulate output
+        // create simulate output
         eMdpFile.open(eMdpFilePath + "_" + std::to_string(iterCount) + ".dot");
         eMdpDotGenerator.convert(eMDP, eMdpFile);
         eMdpFile.close();
 
-        // infer TODO
+        // infer 
+        auto bMDP = infer(eMDP, boundFunc, deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
+        // TODO create infer output
 
         // value approximation (implemented some time in future)
     }
