@@ -13,39 +13,6 @@
 namespace storm::utility {
 
 template<typename ValueType> class ValuePair;
-template<typename ValueType> class ValuePairIterator;
-
-//Iterator to enable hashing
-template<typename ValueType> class ValuePairIterator
-{
-   public:
-    using iterator_category = std::input_iterator_tag;
-    using difference_type   = std::ptrdiff_t;
-    using value_type        = ValueType;
-    using pointer           = ValueType*;
-    using reference         = ValueType&;
-    explicit ValuePairIterator(ValuePair<ValueType> v);
-
-    ValuePairIterator();
-
-    reference operator*();
-    ValuePairIterator& operator++();
-    ValuePairIterator operator++(int);
-
-    bool isSecond() const;
-    bool isAnEnd() const;
-
-   private:
-    ValuePair<ValueType> v;
-    bool second;
-    bool end;
-};
-
-template<typename V> bool operator!=(const ValuePairIterator<V>& a, const ValuePairIterator<V>& b)
-{
-    return a.isSecond() != b.isSecond() || a.isAnEnd() != b.isAnEnd();
-}
-
 
 /*!
 * Wrapper around a pair to add to it the necessary methods for using it as value in SparseMatrix
@@ -59,7 +26,6 @@ class ValuePair {
 
    public:
     explicit ValuePair(std::pair<ValueType, ValueType> v);
-   // explicit ValuePair(std::pair<ValueType, ValueType>&& v) ;
     explicit ValuePair(double p);
     ValuePair();
     ValuePair(double p, double q);
@@ -90,9 +56,6 @@ class ValuePair {
     bool operator<(ValuePair other) const;
     bool operator>(ValuePair other) const;
 
-    ValuePairIterator<ValueType> begin() const;
-    ValuePairIterator<ValueType> end() const;
-
 };
 
 template<class V> V& operator+=(V& a, const ValuePair<V>& b);
@@ -106,6 +69,10 @@ template<class V> V operator*(const V a, const ValuePair<V>& b);
 template<class T>
 std::ostream& operator<<(std::ostream& os, const ValuePair<T>& vp);
 
+/*
+ * This is needed because there are some checks done if a row sums to 1,
+ *  using these functions
+ */
 template<typename ValueType>
 class ConstantsComparator<ValuePair<ValueType>> {
    public:
@@ -118,15 +85,9 @@ class ConstantsComparator<ValuePair<ValueType>> {
     bool isLess(ValuePair<ValueType> const& value1, ValuePair<ValueType> const& value2) const;
 };
 
+template<typename ValueType>
+std::size_t hash_value(ValuePair<ValueType> const& b);
 
-
-}
-
-//Trait to enable hashing
-namespace boost::container_hash {
-template<> struct is_range <storm::utility::ValuePair<double>> {
-    static constexpr bool value = true;
-};
 }
 
 
