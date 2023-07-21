@@ -40,18 +40,18 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<index_type_
         }
 
         // save stack in eMDP
-
-
         StateType state;
         suc = stack.back().first;
         stack.pop_back();
         while (!stack.empty()) {
             state = stack.back().first;
             if (!eMDP.isStateKnown(state)) {
-                // TODO init State with action count when function accepts count not array
-                // eMDP.addState(state, std::vector<StateType>());
+                // init State with all actions in eMDP
+                for (int i = 0; i < blackboxMdp->getAvailActions(state); i++) {
+                    eMDP.addUnsampledAction(state, i);
+                }
 
-                // TODO add StateLabels
+                // TODO add StateLabels and Reward
             }
 
             actionTaken = stack.back().second;

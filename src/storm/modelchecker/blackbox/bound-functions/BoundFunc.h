@@ -53,8 +53,3 @@ std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
     }
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
 };
-
-
-
-
-

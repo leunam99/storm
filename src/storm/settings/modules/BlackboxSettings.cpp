@@ -16,13 +16,22 @@ namespace storm {
 namespace settings {
 namespace modules {
 
-// TODO clarfify if lowercase or camelcase should be used for options
+// TODO add flag
+/*
+print eMDP, bMDP
+print to Dot
+    emdp
+    bmdp
+io eMDP
+    neighbours
+*/
 
 const std::string BlackboxSettings::moduleName = "blackbox";
 // simulation constants
 const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepssim";
 const std::string BlackboxSettings::simulationHeuristicOptionName = "simheuristic";
 const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheuristic";
+// plot simulation
 // infer constants
 const std::string BlackboxSettings::deltaDistributionOptionName = "deltadist";
 const std::string BlackboxSettings::boundFuncOptionName = "boundfunc";
