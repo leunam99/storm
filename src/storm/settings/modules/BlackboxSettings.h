@@ -68,9 +68,9 @@ class BlackboxSettings : public ModuleSettings {
     double getPMin() const;
 
     /*!
-     * Retrieves the precision to use for numerical operations.
+     * Retrieves the desired precision to achieve with value approximation.
      *
-     * @return The precision to use for numerical operations.
+     * @return The precision to achieve with value approximation.
      */
     double getPrecision() const;
 

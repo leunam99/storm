@@ -40,7 +40,6 @@ bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Fo
 template<typename ModelType, typename StateType>
 std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) { 
     // cli arguments
-    // TODO setup settings object and work with that
     auto blackboxSettings = storm::settings::getModule<storm::settings::modules::BlackboxSettings>();
     uint_fast64_t maxIterations = blackboxSettings.getMaxIterations();
     std::seed_seq seedSimHeuristic = blackboxSettings.getSimHeuristicSeed();
