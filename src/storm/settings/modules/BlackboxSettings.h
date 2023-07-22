@@ -3,11 +3,10 @@
 
 #include <random>
 
-#include "storm/settings/modules/ModuleSettings.h"
-#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
-#include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
 #include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
-
+#include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
+#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
+#include "storm/settings/modules/ModuleSettings.h"
 
 namespace storm {
 namespace settings {
@@ -24,6 +23,62 @@ class BlackboxSettings : public ModuleSettings {
      * Creates a new set of exploration settings.
      */
     BlackboxSettings();
+
+    /*!
+     * Retrieves the filename the eMDP should be written too.
+     *
+     * @return the filename.
+     */
+    std::string getEMdpOutFileName() const;
+
+    /*!
+     * Retrieves the filename where the eMDP for dot conversion is stored
+     *
+     * @return the filename.
+     */
+    std::string getEMdpDotInFileName() const;
+
+    /*!
+     * Retrieves the filename the dot string should be written too.
+     *
+     * @return the filename.
+     */
+    std::string getEMdpDotOutFileName() const;
+
+    /*!
+     * Retrieves the filename where the eMDP for neighborhood dot conversion is stored
+     *
+     * @return the filename.
+     */
+    std::string getEMdpNeighbDotInFileName() const;
+
+    /*!
+     * Retrieves the filename the neighborhood dot string should be written too.
+     *
+     * @return the filename.
+     */
+    std::string getEMdpNeighbDotOutFileName() const;
+
+    /*!
+     * Retrieves the state for which the neighborhood should be explored.
+     *
+     * @return the state.
+     */
+    std::string getEMdpeighbState() const;
+
+    /*!
+     * Retrieves the depth to which neighboors should be explored.
+     *
+     * @return the depth.
+     */
+    std::string getEMdpNeighbDepth() const;
+
+    /*!
+     * Retrieves the filename the dot string should be written too.
+     *
+     * @return the filename.
+     */
+    std::string getBMdpDotOutFileName() const;
 
     /*!
      * Retrieves how often a path is sampled per simulation step.
@@ -88,6 +143,21 @@ class BlackboxSettings : public ModuleSettings {
 
    private:
     // Define the string names of the options as constants.
+
+    // visualize emdp constants
+    static const std::string printEMdpOptionName;
+    static const std::string writeEMdpToFile;
+    static const std::string convertToDotEMdpOptionName;
+    static const std::string convertDotNeighborhoodEMdpOptionName;
+    static const std::string dotIncludeActionsOptionName;
+    static const std::string dotIncludeSamplesOptionName;
+    static const std::string dotIncludeLabelsOptionName;
+    static const std::string dotIncludeColorOptionName;
+
+    // visualize bdmp constants
+    static const std::string printBMdpOptionName;
+    static const std::string convertToDotBMdpOptionName;
+
     // simulation step constants
     static const std::string numberOfSamplingsPerSimulationStepOptionName;
     static const std::string simulationHeuristicOptionName;
@@ -107,4 +177,4 @@ class BlackboxSettings : public ModuleSettings {
 }  // namespace settings
 }  // namespace storm
 
-#endif /* STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_ */
+#endif /* STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_ */∏cd 

@@ -17,8 +17,22 @@ namespace settings {
 namespace modules {
 
 // TODO clarfify if lowercase or camelcase should be used for options
-
 const std::string BlackboxSettings::moduleName = "blackbox";
+
+// visualize emdp constants 
+const std::string BlackboxSettings::printEMdpOptionName = "printeMDP";
+const std::string BlackboxSettings::writeEMdpToFile = "eMDPtoFile";
+const std::string BlackboxSettings::convertToDotEMdpOptionName = "eMDPtoDot";
+const std::string BlackboxSettings::convertDotNeighborhoodEMdpOptionName = "eMDPNeighbToDot";
+const std::string BlackboxSettings::dotIncludeActionsOptionName = "eMDPDotIncAct";
+const std::string BlackboxSettings::dotIncludeSamplesOptionName = "eMDPDotIncSmpl"; 
+const std::string BlackboxSettings::dotIncludeLabelsOptionName = "eMDPDotIncLab";
+const std::string BlackboxSettings::dotIncludeColorOptionName = "eMDPDotIncCol";
+
+// visualize bmdp constants 
+const std::string BlackboxSettings::printBMdpOptionName = "printbMDP";
+const std::string BlackboxSettings::convertToDotBMdpOptionName = "bMDPtoDot"; 
+
 // simulation constants
 const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepssim";
 const std::string BlackboxSettings::simulationHeuristicOptionName = "simheuristic";
@@ -34,6 +48,92 @@ const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiterations"
 
 
 BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
+    // visualize emdp options 
+    this->addOption(storm::settings::OptionBuilder(moduleName, printEMdpOptionName, true,
+                                                   "Prints the eMDP to the console.")
+                        .setIsAdvanced()
+                        .build());
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, writeEMdpToFile, true, "Writes the eMDP to a File.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "filename",
+                                         "The name of the file to write the eMDP to. 'eMDP.txt' default.")
+                                         .setDefaultValueString("eMDP.txt")
+                                         .build())
+                        .build());
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, convertToDotEMdpOptionName, true, "Converts the eMDP to the dot format.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "eMDPInfile",
+                                         "The name of the file to read the eMDP from. If not set converts the currently explored eMDP.")
+                                         .setDefaultValueString("explored")
+                                         .build())
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "outstream",
+                                         "The name of the file to write the dot string to. If not set prints the dot string to the console.")
+                                         .setDefaultValueString("console")
+                                         .build())
+                        .build());
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, convertDotNeighborhoodEMdpOptionName, true, "Converts the eMDP to the dot format.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "eMDPInfile",
+                                         "The name of the file to read the eMDP from.")
+                                         .build())
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "outstream",
+                                         "The name of the file to write the dot string to. If not set prints the dot string to the console.")
+                                         .setDefaultValueString("console")
+                                         .build())
+                        .addArgument(storm::settings::ArgumentBuilder::createUnsignedIntegerArgument("state", "State for which neighborhood should be visualized.")
+                                         .setDefaultValueUnsignedInteger(0)
+                                         .build())
+                        .addArgument(storm::settings::ArgumentBuilder::createUnsignedIntegerArgument("depth", "Depth to which neighborhood should be explored.")
+                                         .setDefaultValueUnsignedInteger(3)
+                                         .build())
+                        .build());    
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeActionsOptionName, true,
+                                                   "Includes actions when converting the eMDP to the dot format.")
+                        .setIsAdvanced()
+                        .build());    
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeSamplesOptionName, true,
+                                                   "Includes Samples when converting the eMDP to the dot format.")
+                        .setIsAdvanced()
+                        .build());   
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeLabelsOptionName, true,
+                                                   "Includes Labels when converting the eMDP to the dot format.")
+                        .setIsAdvanced()
+                        .build());   
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeColorOptionName, true,
+                                                   "Includes Color when converting the eMDP to the dot format.")
+                        .setIsAdvanced()
+                        .build());         
+
+    // visualize bmdp options 
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, printBMdpOptionName, true,
+                                                   "Prints the bMDP to the console.")
+                        .setIsAdvanced()
+                        .build());
+
+    this->addOption(storm::settings::OptionBuilder(moduleName, convertToDotBMdpOptionName, true, "Converts the bMDP to the dot format.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
+                                         "outstream",
+                                         "The name of the file to write the dot string to. If not set prints the dot string to the console.")
+                                         .setDefaultValueString("console")
+                                         .build())
+                        .build());
+
+
+
     // simulation options
     this->addOption(storm::settings::OptionBuilder(moduleName, numberOfSamplingsPerSimulationStepOptionName, true,
                                                    "Sets the number of paths sampled for one simulation step.")
@@ -62,6 +162,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .setDefaultValueString("default")
                                          .build())
                         .build());
+
     
     // infer options
     std::vector<std::string> deltaDistributions = {"uniform"};
@@ -110,6 +211,30 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .setDefaultValueUnsignedInteger(5)
                                          .build())
                         .build());                        
+}
+
+std::string BlackboxSettings::getEMdpOutFileName() const {
+    return this->getOption(printEMdpOptionName).getArgumentByName("filename").getValueAsString();
+}
+
+std::string BlackboxSettings::getEMdpDotInFileName() const {
+    return this->getOption(convertToDotEMdpOptionName).getArgumentByName("eMDPInfile").getValueAsString();
+}
+
+std::string BlackboxSettings::getEMdpDotOutFileName() const {
+    return this->getOption(convertToDotEMdpOptionName).getArgumentByName("outstream").getValueAsString();
+}
+
+std::string BlackboxSettings::getEMdpNeighbDotInFileName() const {
+    return this->getOption(convertDotNeighborhoodEMdpOptionName).getArgumentByName("eMDPInfile").getValueAsString();
+}
+
+std::string BlackboxSettings::getEMdpNeighbDotOutFileName() const {
+    return this->getOption(convertDotNeighborhoodEMdpOptionName).getArgumentByName("outstream").getValueAsString();
+}
+
+std::string BlackboxSettings::getBMdpDotOutFileName() const {
+    return this->getOption(convertToDotBMdpOptionName).getArgumentByName("outstream").getValueAsString();
 }
 
 uint_fast64_t BlackboxSettings::getNumberOfSamplingsPerSimulationStep() const {
@@ -170,7 +295,18 @@ bool BlackboxSettings::check() const {
                       this->getOption(deltaDistributionOptionName).getHasOptionBeenSet() ||
                       this->getOption(boundFuncOptionName).getHasOptionBeenSet() ||
                       this->getOption(precisionOptionName).getHasOptionBeenSet() ||
-                      this->getOption(maxNumIterationsOptionName).getHasOptionBeenSet();
+                      this->getOption(maxNumIterationsOptionName).getHasOptionBeenSet() ||
+                      
+                      this->getOption(printEMdpOptionName).getHasOptionBeenSet() ||
+                      this->getOption(writeEMdpToFile).getHasOptionBeenSet() ||
+                      this->getOption(convertToDotEMdpOptionName).getHasOptionBeenSet() ||
+                      this->getOption(convertDotNeighborhoodEMdpOptionName).getHasOptionBeenSet() ||
+                      this->getOption(dotIncludeActionsOptionName).getHasOptionBeenSet() ||
+                      this->getOption(dotIncludeSamplesOptionName).getHasOptionBeenSet() ||
+                      this->getOption(dotIncludeLabelsOptionName).getHasOptionBeenSet() ||
+                      this->getOption(dotIncludeColorOptionName).getHasOptionBeenSet() ||
+                      this->getOption(printBMdpOptionName).getHasOptionBeenSet() ||
+                      this->getOption(convertToDotBMdpOptionName).getHasOptionBeenSet();
     STORM_LOG_WARN_COND(storm::settings::getModule<storm::settings::modules::CoreSettings>().getEngine() == storm::utility::Engine::Blackbox || !optionsSet,
                         "blackbox engine is not selected, so setting options for it has no effect.");
     return true;
