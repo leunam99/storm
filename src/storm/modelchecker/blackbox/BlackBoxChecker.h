@@ -19,8 +19,7 @@ template<typename ModelType, typename StateType = uint32_t>
 class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelType> {
     public:
      typedef typename ModelType::ValueType ValueType;
-     typedef double BoundType;  // TODO can/should we declare this in some other way? template?
-     typedef int_fast32_t BlackboxStateType;
+     typedef int_fast32_t BlackboxStateType;  // state type for blackbox datastructures
 
      BlackBoxChecker(storm::prism::Program const& program);
 

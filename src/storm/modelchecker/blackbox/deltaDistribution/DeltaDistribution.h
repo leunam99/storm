@@ -66,7 +66,4 @@ std::shared_ptr<DeltaDistribution<IndexType>> getDeltaDistribution(DeltaDistType
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected delta distribution " << type << "is not supported");
 };
 
-
-
-
 #endif  // STORM_DELTADISTRIBUTION_H

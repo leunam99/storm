@@ -61,14 +61,14 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
     EMdp<BlackboxStateType> eMDP;
     auto heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic)));
     BlackBoxExplorer<StateType, ValueType> blackboxExplorer(blackboxMDP, heuristicSim);
-    auto boundFunc = getBoundFunc(boundFuncType);
-    auto deltaDist = getDeltaDistribution(deltaDistType);
+    auto boundFunc = getBoundFunc<ValueType>(boundFuncType);
+    auto deltaDist = getDeltaDistribution<BlackboxStateType>(deltaDistType);
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
 
     // init objects for output generation
-    EMdpDotGenerator<BlackboxStateType> eMdpDotGenerator;
-    std::string eMdpFilename;
-    std::ofstream eMdpFile;
+    // EMdpDotGenerator<BlackboxStateType> eMdpDotGenerator;
+    // std::string eMdpFilename;
+    // std::ofstream eMdpFile;
     // TODO init objects for bMDP output
 
     // run 3 step algorithm
@@ -79,12 +79,12 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         // simulate
         blackboxExplorer.performExploration(eMDP, simulationsPerIter);
         // create simulate output
-        eMdpFile.open(eMdpFilePath + "_" + std::to_string(iterCount) + ".dot");
-        eMdpDotGenerator.convert(eMDP, eMdpFile);
-        eMdpFile.close();
+        // eMdpFile.open(eMdpFilePath + "_" + std::to_string(iterCount) + ".dot");
+        // eMdpDotGenerator.convert(eMDP, eMdpFile);
+        // eMdpFile.close();
 
         // infer 
-        auto bMDP = infer(eMDP, boundFunc, deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
+        // auto bMDP = infer<BlackboxStateType, ValueType>(eMDP, boundFunc, deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
         // TODO create infer output
 
         // value approximation (implemented some time in future)
