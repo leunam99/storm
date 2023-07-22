@@ -84,7 +84,7 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         // eMdpFile.close();
 
         // infer 
-        // auto bMDP = infer<StateType, ValueType>(eMDP, boundFunc, deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
+        // auto bMDP = infer<StateType, ValueType>(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
         // TODO create infer output
 
         // value approximation (implemented some time in future)

@@ -15,6 +15,9 @@
 #include "storm/generator/CompressedState.h"
 #include "storm/solver/OptimizationDirection.h"
 
+#include "storm/settings/SettingsManager.h"
+#include "storm/settings/modules/BlackboxSettings.h"
+
 
 namespace storm {
 namespace modelchecker {
@@ -29,7 +32,7 @@ StateType BlackboxMDP<StateType>::getSucCount(StateType state, StateType action)
 
 template <typename StateType>
 double BlackboxMDP<StateType>::getPmin() {
-    throw storm::exceptions::NotImplementedException();
+    return storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getPMin();
 }
 
 template <typename StateType, typename ValueType>

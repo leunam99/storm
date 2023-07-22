@@ -44,7 +44,7 @@ class BlackboxMDP {
      virtual StateType sampleSucc(StateType state, StateType action) = 0;
 
      /*!
-      * returns a lower bound for all transition probilities in this MDP 
+      * returns a lower bound for all transition probilities in this MDP, taken from cli input
       */
      virtual double getPmin();
 

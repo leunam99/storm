@@ -109,7 +109,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
 
     // general options
     this->addOption(storm::settings::OptionBuilder(moduleName, pMinOptionName, false, "Lower bound for all transition probabilities in the blackbox mdp.")
-                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("value", "Lower bound for all transition probabilities.")
+                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("pMin", "Lower bound for all transition probabilities.")
                                          .setDefaultValueDouble(1e-06)
                                          .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
                                          .build())
@@ -118,7 +118,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
     this->addOption(storm::settings::OptionBuilder(moduleName, precisionOptionName, false, "The precision to achieve. (To be implemented)")
                         .setShortName(precisionOptionShortName)
                         .setIsAdvanced()
-                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("value", "The value to use to determine convergence.")
+                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("eps", "The value to use to determine convergence.")
                                          .setDefaultValueDouble(1e-06)
                                          .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
                                          .build())

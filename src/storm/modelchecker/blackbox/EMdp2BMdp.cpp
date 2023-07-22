@@ -133,3 +133,4 @@ BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, De
 
 
 template BMdp<double> infer<uint32_t, double>(EMdp<uint32_t> &emdp, BoundFunc<double> &boundFunc, DeltaDistribution<uint32_t> &valueFunc, double pmin, double delta, bool isBlackbox);
+template BMdp<double> infer<uint64_t, double>(EMdp<uint64_t> &emdp, BoundFunc<double> &boundFunc, DeltaDistribution<uint64_t> &valueFunc, double pmin, double delta, bool isBlackbox);
