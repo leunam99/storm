@@ -15,12 +15,10 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-template<typename ModelType, typename StateType = uint32_t>
+template<typename ModelType, typename StateType>
 class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelType> {
     public:
      typedef typename ModelType::ValueType ValueType;
-     typedef double BoundType;  // TODO can/should we declare this in some other way? template?
-     typedef int_fast32_t BlackboxStateType;
 
      BlackBoxChecker(storm::prism::Program const& program);
 

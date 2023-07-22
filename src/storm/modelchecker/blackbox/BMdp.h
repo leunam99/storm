@@ -9,49 +9,17 @@
 #include "storm/utility/constants.h"
 #include "storm/utility/vector.h"
 
+#include "ValuePair.h"
+
 namespace storm {
 namespace models {
 namespace sparse {
 
-/*!
-* Template class to store the bounds of the BMdp
-* ValueType of BMdp
-*/
-template<typename ValueType>
-class ValueTypePair {
-   private:
-    std::pair<ValueType,ValueType> valuePair;
-   public:
-
-    ValueTypePair(std::pair<ValueType,ValueType> valuePair): valuePair{valuePair}{}
-    ValueTypePair(std::pair<ValueType,ValueType> &&valuePair): valuePair{std::move(valuePair)}{}
-
-
-    ValueType getLBound() const  {
-        valuePair.first();
-    }
-    ValueType getUBound() const {
-        valuePair.second();
-    }
-    std::pair<ValueType,ValueType> operator+(ValueTypePair other) {
-        return std::make_pair(getLBound() + other.getLBound(), getUBound() + other.getUBound());
-    }
-};
-
-/**
- * Prints the value pair to the stream
- * @return a reference to the stream
- */
-template <class T>
-std::ostream& operator<<(std::ostream &os, const ValueTypePair<T>& vp){
-    os << "[" << vp.getLBound() << "," << vp.getUBound() << "]";
-    return os;
-}
 
 template<class BoundType, typename RewardModelType = StandardRewardModel<BoundType>>
-class BMdp : public NondeterministicModel<ValueTypePair<BoundType>, RewardModelType> {
+class BMdp : public NondeterministicModel<utility::ValuePair<BoundType>, RewardModelType> {
 
-    using BoundPair = ValueTypePair<BoundType>;
+    using BoundPair = utility::ValuePair<BoundType>;
 
     public:
      /*!

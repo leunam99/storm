@@ -979,6 +979,22 @@ template bool isZero(storm::storage::sparse::state_type const& value);
 template bool isConstant(storm::storage::sparse::state_type const& value);
 template bool isInfinity(storm::storage::sparse::state_type const& value);
 
+// ValuePair<double>
+template ValuePair<double> one();
+template ValuePair<double> zero();
+template ValuePair<double> infinity();
+template bool isOne(ValuePair<double> const& value);
+template bool isZero(ValuePair<double> const& value);
+template bool isConstant(ValuePair<double> const& value);
+template bool isInfinity(ValuePair<double> const& value);
+template std::string to_string(ValuePair<double> const& value);
+#if defined(STORM_HAVE_GMP)
+template<> GmpRationalNumber convertNumber(ValuePair<double> const& number){
+    return convertNumber<GmpRationalNumber>(number.getLBound());
+}
+#endif
+
+
 // other instantiations
 template unsigned long convertNumber(long const&);
 template double convertNumber(long const&);

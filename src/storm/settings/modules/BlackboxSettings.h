@@ -50,28 +50,28 @@ class BlackboxSettings : public ModuleSettings {
      *
      * @return the filename.
      */
-    std::string getEMdpNeighbDotInFileName() const;
+    std::string getEMdpNeighborhoodDotInFileName() const;
 
     /*!
      * Retrieves the filename the neighborhood dot string should be written too.
      *
      * @return the filename.
      */
-    std::string getEMdpNeighbDotOutFileName() const;
+    std::string getEMdpNeighborhoodDotOutFileName() const;
 
     /*!
      * Retrieves the state for which the neighborhood should be explored.
      *
      * @return the state.
      */
-    std::string getEMdpeighbState() const;
+    uint_fast64_t getEMdpNeighborhoodState() const;
 
     /*!
      * Retrieves the depth to which neighboors should be explored.
      *
      * @return the depth.
      */
-    std::string getEMdpNeighbDepth() const;
+    uint_fast64_t getEMdpNeighborhoodDepth() const;
 
     /*!
      * Retrieves the filename the dot string should be written too.
@@ -111,9 +111,16 @@ class BlackboxSettings : public ModuleSettings {
     /*!
      * Retrieves the selected delta distribution type for infer
      *
-     * @return sdelat distribution type
+     * @return delta distribution type
      */
     DeltaDistType getDeltaDistType() const;
+
+    /*!
+     * Retrieves the amount of uncertainty that ishould be used for infer
+     *
+     * @return delta value for infer
+     */
+    double getDelta() const;
 
     /*!
      * Retrieves lower bound for all transition probabilities in the blackbox mdp.
@@ -123,9 +130,9 @@ class BlackboxSettings : public ModuleSettings {
     double getPMin() const;
 
     /*!
-     * Retrieves the precision to use for numerical operations.
+     * Retrieves the desired precision to achieve with value approximation.
      *
-     * @return The precision to use for numerical operations.
+     * @return The precision to achieve with value approximation.
      */
     double getPrecision() const;
 
@@ -165,6 +172,7 @@ class BlackboxSettings : public ModuleSettings {
 
     // infer constants
     static const std::string deltaDistributionOptionName;
+    static const std::string deltaOptionName;
     static const std::string boundFuncOptionName;
 
     // general constants
@@ -177,4 +185,4 @@ class BlackboxSettings : public ModuleSettings {
 }  // namespace settings
 }  // namespace storm
 
-#endif /* STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_ */∏cd 
+#endif /* STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_ */

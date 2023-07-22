@@ -4,26 +4,126 @@
 
 #include <algorithm>
 
+#include <regex>
+
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
 template<typename StateType>
-EMdp<StateType>::EMdp() : explorationOrder(), hashStorage(), stateLabeling() {
+EMdp<StateType>::EMdp() : hashStorage(), stateLabeling() {
 }
 
 template<typename StateType>
-void EMdp<StateType>::addStateToExplorationOrder(StateType state) {
-    if(explorationOrder.find(state) == explorationOrder.end())
-        explorationOrder[state] = (explorationCount++);
+std::string EMdp<StateType>::labelVecToStr(std::vector<std::string> labelVec) {
+    std::string result =  "[";
+    for(auto label : labelVec) 
+        result += label + ", ";
+    if(!labelVec.empty()) {
+        result.pop_back();
+        result.pop_back();
+    }
+    return result + "]";
 }
+
+template<typename StateType>
+void EMdp<StateType>::eMdpToFile(std::string fileName) {
+      std::ofstream MyFile(fileName);
+
+      
+      MyFile << "init: " << initState << "\n";
+
+
+      for(auto stateItr = getStateItr(); stateItr.hasNext();) {
+        auto state = stateItr.next();
+        MyFile << state << ": " << labelVecToStr(getStateLabels(state)) << "\n";
+
+        for(auto actItr = getStateActionsItr(state); actItr.hasNext();) {
+            auto action = actItr.next();
+            MyFile << "\t" << action << ": " << labelVecToStr(getActionLabels(state, action)) << "\n";
+
+            for(auto succItr = getStateActionsSuccItr(state, action); succItr.hasNext();) {
+                auto succ = succItr.next();
+                MyFile << "\t\t" << succ << ": " << getSampleCount(state, action) << "\n";
+            }
+        }
+      }
+      MyFile << "eof";
+      MyFile.close();
+}
+
+template<typename StateType>
+EMdp<StateType> EMdp<StateType>::eMdpFromFile(std::string fileName) {
+    auto newEMdp = EMdp<StateType>();
+    std::ifstream myFile(fileName);
+    std::string line;
+    std::regex init("init: [[:digit:]]+");
+
+    std::regex stateRe("[[:digit:]]+: \\[(([^,]+, )*[^,]+)?\\]"); //matches expr of form "state: [act1, act2]""
+    std::regex actionRe("\\t[[:digit:]]+: \\[(([^,]+, )*[^,]+)?\\]"); //matches expr of form "\tstate:[act1, act2]"
+    std::regex succRe("\\t\\t[[:digit:]]+: [[:digit:]]+"); //matches expr of form "\t\tstate: count"
+
+    std::regex e("([a-zA-Z0-9])+"); //matches labels, samples and states 
+
+
+    std::getline(myFile, line);
+
+    if(std::regex_match(line, init)) { 
+        std::regex s("[[:digit:]]+");
+        std::sregex_iterator iter(line.begin(), line.end(), s);
+        newEMdp.addInitialState(stoi(iter->str()));
+    } else { 
+        std::cout << "Wrong file format!\n";
+        return EMdp();
+    } 
+
+    bool lastLineWasState = false; //A succ line cannot imidiatly follow after a state line
+    StateType lastState = -1;
+    StateType lastAction = -1;
+
+    while(!myFile.eof()) {
+        std::getline(myFile, line);
+        std::regex_token_iterator<std::string::iterator> iter ( line.begin(), line.end(), e);
+        std::regex_token_iterator<std::string::iterator> rend;
+
+        if (line.compare("eof") == 0) { //Reached end of file? 
+            break;
+        } else if(std::regex_match(line, stateRe)) { //Is line state line? 
+            lastLineWasState = true;
+            lastState = stoi(iter->str());
+            iter++;
+
+            while (iter!=rend) {
+                newEMdp.addStateLabel(iter->str(), lastState);
+                ++iter;
+            }
+        } 
+        else if(std::regex_match(line, actionRe)) { //Is line action line? 
+            lastLineWasState = false;
+            lastAction = stoi(iter->str());
+            iter++;
+
+            while (iter!=rend) {
+                newEMdp.addActionLabel(iter->str(), lastState, lastAction);
+                ++iter;
+            }
+        } 
+        else if(std::regex_match(line, succRe) && !lastLineWasState) { //Is line succ line? 
+            lastLineWasState = false;
+            newEMdp.addVisits(lastState, lastAction, stoi((*iter)), stoi((*(++iter))));
+        } 
+        else { // => line has wrong format 
+            std::cout << "Wrong file format!\n";
+            return EMdp();
+        }
+    }
+
+    return newEMdp;
+}
+
 
 template<typename StateType>
 void EMdp<StateType>::print() {
-
-    std::cout << "exploration order [state, explorationTime]:\n";
-    for (const auto& i: explorationOrder)
-        std::cout << "[" << i.first << ", " << i.second << "] ";
     std::cout << "\nInitial State: " << initState << "\n";
     std::cout << "explored EMdp:\n";
     hashStorage.print();
@@ -39,22 +139,30 @@ void EMdp<StateType>::addInitialState(StateType state) {
 }
 
 template<typename StateType>
+StateType EMdp<StateType>::getInitialState() {
+    return initState;
+}
+
+template<typename StateType>
+void EMdp<StateType>::addState(StateType state, std::vector<StateType> availActions) {
+    hashStorage.addStateActions(state, availActions);
+}
+
+template<typename StateType>
 void EMdp<StateType>::addVisit(StateType state, StateType action, StateType succ) {
-    addStateToExplorationOrder(succ);
     hashStorage.incTrans(state, action, succ, 1);
 }
 
 template<typename StateType>
 void EMdp<StateType>::addVisits(StateType state, StateType action, StateType succ, StateType visits) {
-    addStateToExplorationOrder(succ);
     hashStorage.incTrans(state, action, succ, visits);
 }
 
 template<typename StateType>
-void EMdp<StateType>::addState(StateType state, std::vector<StateType> availActions) {
-    addStateToExplorationOrder(state);
-    hashStorage.addStateActions(state, availActions);
+void EMdp<StateType>::addUnsampledAction(StateType state, StateType action) {
+    hashStorage.addUnsampledAction(state, action);
 }
+
 
 //_______________________ State/Trans Labeling Functions _______________________//
 
@@ -177,36 +285,38 @@ std::vector<std::pair<StateType, StateType> > EMdp<StateType>::getPredecessors(S
     return hashStorage.getPredecessors(state);
 }
 
-template class EMdp<int_fast32_t>;
+template class EMdp<uint32_t>;
+template class EMdp<uint64_t>;
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
 
 /*
 int main(int argc, char const *argv[]) {
-    auto EMdp = storm::modelchecker::blackbox::EMdp<int_fast32_t>();
-    EMdp.addInitialState(1);
     
-    EMdp.addStateLabel("label1", 1);
-    EMdp.addStateLabel("label2", 1);
-    EMdp.addStateLabel("label2", 1);
-    EMdp.addStateLabel("label3", 1);
+    auto emdp = storm::modelchecker::blackbox::EMdp<int_fast32_t>();
+    emdp.addInitialState(1);
     
-    for(auto x : EMdp.getStateLabels(1)) {
-        std::cout << x << "\n";
-    }
+    emdp.addStateLabel("label1", 10);
+    emdp.addStateLabel("label2", 10);
+    emdp.addStateLabel("label1", 10);
+    emdp.addStateLabel("label2", 10);
+    emdp.addStateLabel("label1", 18);
+    emdp.addStateLabel("label2", 18);
 
-    std::cout << "\n";
-    EMdp.removeStateLabel("label1", 1);
-    EMdp.removeStateLabel("label2", 1);
+    emdp.addActionLabel("actLabel2", 10, 50);
+    emdp.addActionLabel("actLabel232", 10, 6);
 
-    for(auto x : EMdp.getStateLabels(1)) {
-        std::cout << x << "\n";
-    }
+    emdp.addVisits(10,50,18,23423);
+    emdp.addVisits(10,6,22,323);
     
-    
-    EMdp.writeDotFile("name.txt");
-    return 0;
+    emdp.eMdpToFile("emdp_test.txt");
+    emdp.print();
+    auto x = emdp.eMdpFromFile("emdp_test.txt");
+    x.print();
 }
 */
+
+
+
 

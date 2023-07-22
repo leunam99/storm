@@ -37,8 +37,10 @@ const std::string BlackboxSettings::convertToDotBMdpOptionName = "bMDPtoDot";
 const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepssim";
 const std::string BlackboxSettings::simulationHeuristicOptionName = "simheuristic";
 const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheuristic";
+// plot simulation
 // infer constants
 const std::string BlackboxSettings::deltaDistributionOptionName = "deltadist";
+const std::string BlackboxSettings::deltaOptionName = "delta";
 const std::string BlackboxSettings::boundFuncOptionName = "boundfunc";
 // general constants
 const std::string BlackboxSettings::pMinOptionName = "pmin";
@@ -176,6 +178,16 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .build())
                         .build());
 
+    this->addOption(storm::settings::OptionBuilder(moduleName, deltaOptionName, true, "Set uncertainty of bounds created for the BMdp during infer stage.")
+                        .setIsAdvanced()
+                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument(
+                                         "delta",
+                                         "uncertainty of bounds of created BMdp.")
+                                         .setDefaultValueDouble(0.3)
+                                         .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
+                                         .build())
+                        .build());
+
     std::vector<std::string> boundFunctions = {"hoeffding", "oshoeffding"};
     this->addOption(storm::settings::OptionBuilder(moduleName, boundFuncOptionName, true, "Set boundary function used to create bounds of bounded mdp.")
                         .setIsAdvanced()
@@ -189,7 +201,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
 
     // general options
     this->addOption(storm::settings::OptionBuilder(moduleName, pMinOptionName, false, "Lower bound for all transition probabilities in the blackbox mdp.")
-                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("value", "Lower bound for all transition probabilities.")
+                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("pMin", "Lower bound for all transition probabilities.")
                                          .setDefaultValueDouble(1e-06)
                                          .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
                                          .build())
@@ -198,7 +210,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
     this->addOption(storm::settings::OptionBuilder(moduleName, precisionOptionName, false, "The precision to achieve. (To be implemented)")
                         .setShortName(precisionOptionShortName)
                         .setIsAdvanced()
-                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("value", "The value to use to determine convergence.")
+                        .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("eps", "The value to use to determine convergence.")
                                          .setDefaultValueDouble(1e-06)
                                          .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
                                          .build())
@@ -225,12 +237,21 @@ std::string BlackboxSettings::getEMdpDotOutFileName() const {
     return this->getOption(convertToDotEMdpOptionName).getArgumentByName("outstream").getValueAsString();
 }
 
-std::string BlackboxSettings::getEMdpNeighbDotInFileName() const {
+std::string BlackboxSettings::getEMdpNeighborhoodDotInFileName() const {
     return this->getOption(convertDotNeighborhoodEMdpOptionName).getArgumentByName("eMDPInfile").getValueAsString();
 }
 
-std::string BlackboxSettings::getEMdpNeighbDotOutFileName() const {
+std::string BlackboxSettings::getEMdpNeighborhoodDotOutFileName() const {
     return this->getOption(convertDotNeighborhoodEMdpOptionName).getArgumentByName("outstream").getValueAsString();
+
+}
+
+ uint_fast64_t BlackboxSettings::getEMdpNeighborhoodState() const {
+    return this->getOption(convertDotNeighborhoodEMdpOptionName).getArgumentByName("state").getValueAsUnsignedInteger();
+}
+
+ uint_fast64_t BlackboxSettings::getEMdpNeighborhoodDepth() const {
+    return this->getOption(convertDotNeighborhoodEMdpOptionName).getArgumentByName("depth").getValueAsUnsignedInteger();
 }
 
 std::string BlackboxSettings::getBMdpDotOutFileName() const {
@@ -262,7 +283,7 @@ std::seed_seq BlackboxSettings::getSimHeuristicSeed() const {
 }
 
 BoundFuncType BlackboxSettings::getBoundFuncType() const {
-    std::string boundFuncStr = this->getOption(deltaDistributionOptionName).getArgumentByName("deltaDist").getValueAsString();
+    std::string boundFuncStr = this->getOption(boundFuncOptionName).getArgumentByName("boundFunc").getValueAsString();
     if (boundFuncStr == "hoeffding") {
         return BoundFuncType::HOEFFDING;
     } else if (boundFuncStr == "oshoeffding") {
@@ -272,11 +293,15 @@ BoundFuncType BlackboxSettings::getBoundFuncType() const {
 };
 
 DeltaDistType BlackboxSettings::getDeltaDistType() const {
-    std::string deltaDistStr = this->getOption(boundFuncOptionName).getArgumentByName("boundFunc").getValueAsString();
+    std::string deltaDistStr = this->getOption(deltaDistributionOptionName).getArgumentByName("deltaDist").getValueAsString();
     if (deltaDistStr == "uniform") {
         return DeltaDistType::UNIFORM;
     }
     STORM_LOG_THROW(false, storm::exceptions::IllegalArgumentValueException, "Unknown delta distribution type '" << deltaDistStr << "'.");
+};
+
+double BlackboxSettings::getDelta() const {
+    return this->getOption(deltaOptionName).getArgumentByName("delta").getValueAsDouble();
 };
 
 double BlackboxSettings::getPMin() const {

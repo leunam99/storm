@@ -10,7 +10,7 @@ namespace sparse {
 /*!
  * This class represents a (discrete-time) Markov decision process.
  */
-template<class ValueType, typename RewardModelType = StandardRewardModel<ValueType>>
+template<class ValueType, typename RewardModelType = StandardRewardModel<ValueType> >
 class Mdp : public NondeterministicModel<ValueType, RewardModelType> {
    public:
     /*!

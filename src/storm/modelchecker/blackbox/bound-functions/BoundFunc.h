@@ -1,3 +1,6 @@
+#ifndef STORM_BOUNDFUNC_H
+#define STORM_BOUNDFUNC_H
+
 #include <utility> 
 #include <stdint.h>
 #include <iostream>
@@ -18,24 +21,10 @@ class BoundFunc {
      * @param totalSamples : total Samples for one Action generated in Simulate
      * @param partialSample : Samples for (state,transition,state) generated in Simulate
      * @param delta : Inconfidence value delta
-     * @return : ValueTypePair with upper and lower bound
+     * @return : ValuePair with upper and lower bound
      */
     virtual std::pair<ValueType,ValueType> INTERVAL(int64_t totalSamples, int64_t partialSample, double delta) = 0; //abstract method
 };
-
-template <typename ValueType>
-ValueType clamp0(ValueType x) {
-        if(0 <= x && x <= 1)  
-            return x;
-        return 0;
-}
-
-template <typename ValueType>
-ValueType clamp1(ValueType x) {
-        if(0 <= x && x <= 1)  
-            return x;
-        return 1;
-}
 
 template <typename ValueType>
 class HoeffDingBound : public BoundFunc<ValueType> {
@@ -43,7 +32,7 @@ class HoeffDingBound : public BoundFunc<ValueType> {
     std::pair<ValueType,ValueType> INTERVAL(int64_t totalSamples, int64_t partialSample, double delta) {
         ValueType bound_width = sqrt((log(delta / 2)) / (-2 * totalSamples));
         ValueType median = (ValueType)partialSample / (ValueType)totalSamples;
-        return std::make_pair(median - bound_width, median + bound_width);
+        return std::make_pair(std::clamp(median - bound_width, 0., 1.), std::clamp(median + bound_width, 0., 1.));
     }
 };
 
@@ -53,7 +42,7 @@ class OneSidedHoeffDingBound : public BoundFunc<ValueType> {
     std::pair<ValueType,ValueType> INTERVAL(int64_t totalSamples, int64_t partialSample, double delta) {
         ValueType bound_width = sqrt((log(delta / 2)) / (-2 * totalSamples));
         ValueType median = (ValueType)partialSample / (ValueType)totalSamples;
-        return std::make_pair(median - bound_width, 1);
+        return std::make_pair(std::clamp(median - bound_width, 0., 1.), 1.);
     } 
 };
 
@@ -68,7 +57,4 @@ std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
 };
 
-
-
-
-
+#endif

@@ -133,6 +133,9 @@ MemoryStructure MemoryStructureBuilder<ValueType, RewardModelType>::buildTrivial
 
 template class MemoryStructureBuilder<double>;
 template class MemoryStructureBuilder<double, storm::models::sparse::StandardRewardModel<storm::Interval>>;
+template class MemoryStructureBuilder<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<double>>;
+template class MemoryStructureBuilder<utility::ValuePair<double>, storm::models::sparse::StandardRewardModel<utility::ValuePair<double>>>;
+
 template class MemoryStructureBuilder<storm::RationalNumber>;
 template class MemoryStructureBuilder<storm::RationalFunction>;
 

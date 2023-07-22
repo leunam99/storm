@@ -1,3 +1,5 @@
+#pragma once
+
 #include <unordered_map>
 #include <stdint.h>
 #include <vector>
@@ -97,6 +99,15 @@ class HashStorage {
      * @param actions
      */
     void addStateActions(StateType state, std::vector<StateType> actions);
+
+    /**
+     * Add action that is reachable from the state to HashStorage, without having to add a successor state 
+     * (because the successor state might not have been sampled yet)
+     * 
+     * @param state 
+     * @param action 
+     */
+    void addUnsampledAction(StateType state, StateType action);
 
     /*!
      * Increments a transition of the form (state,action,succ) = samples

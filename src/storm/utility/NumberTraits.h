@@ -2,6 +2,7 @@
 
 #include "storm/adapters/RationalFunctionForward.h"
 #include "storm/adapters/RationalNumberForward.h"
+#include "storm/modelchecker/blackbox/ValuePair.h"
 
 #include <cstdint>
 
@@ -15,6 +16,14 @@ struct NumberTraits {
 template<>
 struct NumberTraits<double> {
     static const bool SupportsExponential = true;
+    static const bool IsExact = false;
+
+    typedef uint64_t IntegerType;
+};
+
+template<>
+struct NumberTraits<utility::ValuePair<double>> {
+    static const bool SupportsExponential = false;
     static const bool IsExact = false;
 
     typedef uint64_t IntegerType;

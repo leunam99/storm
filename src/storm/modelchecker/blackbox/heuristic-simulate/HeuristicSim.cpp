@@ -50,6 +50,7 @@ void NaiveHeuristicSim<StateType, ValueType>::reset() {
 }
 
 template class NaiveHeuristicSim<uint32_t, double>;
+template class NaiveHeuristicSim<uint64_t, double>;
 
 } //namespace heuristicSim
 } //namespace blackbox

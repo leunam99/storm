@@ -15,6 +15,9 @@
 #include "storm/generator/CompressedState.h"
 #include "storm/solver/OptimizationDirection.h"
 
+#include "storm/settings/SettingsManager.h"
+#include "storm/settings/modules/BlackboxSettings.h"
+
 
 namespace storm {
 namespace modelchecker {
@@ -29,7 +32,7 @@ StateType BlackboxMDP<StateType>::getSucCount(StateType state, StateType action)
 
 template <typename StateType>
 double BlackboxMDP<StateType>::getPmin() {
-    throw storm::exceptions::NotImplementedException();
+    return storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getPMin();
 }
 
 template <typename StateType, typename ValueType>
@@ -89,7 +92,7 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
 
     // get actions; store them and their successors in explorationInformation
     stateGeneration.load(comprState);
-    storm::generator::StateBehavior<ValueType, StateType> behavior = stateGeneration.expand();    
+    storm::generator::StateBehavior<ValueType, exploration_state_type> behavior = stateGeneration.expand();    
     
     StateType startAction = explorationInformation.getActionCount();
     explorationInformation.addActionsToMatrix(behavior.getNumberOfChoices());
@@ -107,8 +110,10 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
 }
 
 template class BlackboxMDP<uint32_t>;
+template class BlackboxMDP<uint64_t>;
 
 template class BlackboxWrapperOnWhitebox<uint32_t, double>;
+template class BlackboxWrapperOnWhitebox<uint64_t, double>;
 
 } //namespace blackbox
 } //namespace modelchecker

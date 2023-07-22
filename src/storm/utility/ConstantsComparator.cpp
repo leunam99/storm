@@ -96,6 +96,8 @@ bool ConstantsComparator<ValueType, ConstantsComparatorEnablePrecision<ValueType
 template class ConstantsComparator<double>;
 template class ConstantsComparator<int>;
 template class ConstantsComparator<storm::storage::sparse::state_type>;
+template class ConstantsComparator<utility::ValuePair<double>>;
+
 
 #ifdef STORM_HAVE_CARL
 #if defined(STORM_HAVE_CLN)

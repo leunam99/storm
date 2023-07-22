@@ -211,6 +211,11 @@ template std::ostream& operator<<(std::ostream& out, Distribution<double> const&
 template class Distribution<double, uint_fast64_t>;
 template std::ostream& operator<<(std::ostream& out, Distribution<double, uint_fast64_t> const& distribution);
 
+template class Distribution<utility::ValuePair<double>>;
+template std::ostream& operator<<(std::ostream& out, Distribution<utility::ValuePair<double>> const& distribution);
+template class Distribution<utility::ValuePair<double>, uint_fast64_t>;
+template std::ostream& operator<<(std::ostream& out, Distribution<utility::ValuePair<double>, uint_fast64_t> const& distribution);
+
 #ifdef STORM_HAVE_CARL
 template class Distribution<storm::RationalNumber>;
 template std::ostream& operator<<(std::ostream& out, Distribution<storm::RationalNumber> const& distribution);
