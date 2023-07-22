@@ -6,7 +6,6 @@
 namespace storm::utility {
 
 template<typename ValueType> ValuePair<ValueType>::ValuePair(std::pair<ValueType, ValueType> v) : valuePair{v} {}
-//template<typename ValueType> ValuePair<ValueType>::ValuePair(std::pair<ValueType, ValueType>&& v) : valuePair{std::move(v)} {}
 template<typename ValueType> ValuePair<ValueType>::ValuePair(double p) : valuePair{std::make_pair(p, p)} {}
 template<typename ValueType> ValuePair<ValueType>::ValuePair() : ValuePair(0) {}
 template<typename ValueType> ValuePair<ValueType>::ValuePair(double p, double q) : valuePair{std::make_pair(p, q)} {}
@@ -91,15 +90,6 @@ bool ValuePair<ValueType>::operator!=(ValuePair other) const {
 }
 
 template<typename ValueType>
-ValuePairIterator<ValueType> ValuePair<ValueType>::begin() const{
-    return ValuePairIterator<ValueType>(*this);
-}
-
-template<typename ValueType>
-ValuePairIterator<ValueType> ValuePair<ValueType>::end() const{
-    return ValuePairIterator<ValueType>();
-}
-template<typename ValueType>
 ValuePair<ValueType> ValuePair<ValueType>::operator*(ValueType other) const {
     return *this * ValuePair(other, other);
 }
@@ -126,42 +116,6 @@ template<class V> V operator+(V a, const ValuePair<V>& b){
 
 template<class V> V operator*(V a, const ValuePair<V>& b){
     return a * b.getLBound();
-}
-
-template<typename ValueType>
-ValuePairIterator<ValueType>::ValuePairIterator(ValuePair<ValueType> v)  : v(v), second(false), end(false) {}
-
-template<typename ValueType>
-ValueType& ValuePairIterator<ValueType>::operator*(){
-    if(second)
-        return v.getUBoundRef() ;
-    else
-        return v.getLBoundRef();
-}
-template<typename ValueType>
-ValuePairIterator<ValueType>& ValuePairIterator<ValueType>::operator++() {
-    if(second)
-        end = true;
-    else
-        second = true;
-
-    return *this;
-}
-
-template<typename ValueType>
-ValuePairIterator<ValueType> ValuePairIterator<ValueType>::operator++(int) {
-    ValuePairIterator<ValueType> tmp = *this; ++(*this); return tmp;
-}
-template<typename ValueType>
-ValuePairIterator<ValueType>::ValuePairIterator() : second(false), end(true) {}
-
-template<typename ValueType>
-bool ValuePairIterator<ValueType>::isSecond() const {
-    return second;
-}
-template<typename ValueType>
-bool ValuePairIterator<ValueType>::isAnEnd() const {
-    return end;
 }
 
 template<typename ValueType>
@@ -193,14 +147,23 @@ bool ConstantsComparator<ValuePair<ValueType>>::isZero(const ValuePair<ValueType
     return value.getLBound() <= storm::utility::convertNumber<ValueType>(storm::settings::getModule<storm::settings::modules::GeneralSettings>().getPrecision());
 }
 
+template<typename ValueType>
+std::size_t hash_value(ValuePair<ValueType> const& b)
+{
+    boost::hash<ValueType> hasher;
+    std::size_t seed = hasher(b.getLBound());
+    boost::hash_combine(seed, b.getUBound());
+    return seed;
+}
+
 template class ValuePair<double>;
-template class ValuePairIterator<double>;
 template std::ostream& operator<< <double>(std::ostream& os, const storm::utility::ValuePair<double>& vp);
 template double& operator+=(double& a, const ValuePair<double>& b);
 template double operator+(double a, const ValuePair<double>& b);
 template double operator*(double a, const ValuePair<double>& b);
 
 template class ConstantsComparator<ValuePair<double>>;
+template std::size_t hash_value(ValuePair<double> const& b);
 
 }
 
