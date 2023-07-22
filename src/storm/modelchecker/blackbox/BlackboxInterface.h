@@ -35,7 +35,10 @@ class BlackboxMDP {
      
 
      /*!
-      * sample a random successor from the action on the given state and return the successors state identifier. 
+      * sample a random successor from the action on the given state and return the successors state identifier.
+      *
+      * it is guaranteed that at any time, the indice of all ever returned successors are consecutive. Every new 
+      * previously unseen successor will have the next largest index
       * 
       * @param state 
       * @param action
@@ -97,7 +100,10 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
      
 
      /*!
-      * sample a random successor from the action on the given state and return the successors state identifier. 
+      * sample a random successor from the action on the given state and return the successors state identifier.
+      *
+      * it is guaranteed that at any time, the indice of all ever returned successors are consecutive. Every new 
+      * previously unseen successor will have the next largest index
       * 
       * @param state 
       * @param action
@@ -117,6 +123,8 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
      storm::modelchecker::exploration_detail::ExplorationInformation<exploration_state_type, ValueType> explorationInformation;
      storm::modelchecker::exploration_detail::StateGeneration<exploration_state_type, ValueType> stateGeneration;
      mutable std::default_random_engine randomGenerator;
+     std::unordered_map<StateType, StateType> stateMappingInOut;  // maps internal indice to external
+     std::unordered_map<StateType, StateType> stateMappingOutIn;  // maps external indice to internal
 
 };
 

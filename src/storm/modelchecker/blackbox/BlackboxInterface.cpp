@@ -45,22 +45,26 @@ BlackboxWrapperOnWhitebox<StateType, ValueType>::BlackboxWrapperOnWhitebox(storm
     explorationInformation.newRowGroup(0);
     stateGeneration.computeInitialStates();
     exploreState(stateGeneration.getFirstInitialState());
+    stateMappingInOut[stateGeneration.getFirstInitialState()] = 0;
+    stateMappingOutIn[0] = getInitialState();
 }
 
 template <typename StateType, typename ValueType>
 StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::getInitialState() {
-    return stateGeneration.getFirstInitialState();
+    return stateMappingInOut.at(stateGeneration.getFirstInitialState());
 }
 
 template <typename StateType, typename ValueType>
 StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::getAvailActions(StateType state) {
-    StateType stateRow = explorationInformation.getRowGroup(state);
+    StateType stateIdx = stateMappingOutIn.at(state);
+    StateType stateRow = explorationInformation.getRowGroup(stateIdx);
     return explorationInformation.getRowGroupSize(stateRow);
 }
 
 template <typename StateType, typename ValueType>
 StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::sampleSucc(StateType state, StateType action) {
-    StateType stateRowIdx = explorationInformation.getStartRowOfGroup(explorationInformation.getRowGroup(state));
+    StateType stateIdx = stateMappingOutIn.at(state);
+    StateType stateRowIdx = explorationInformation.getStartRowOfGroup(explorationInformation.getRowGroup(stateIdx));
     auto& actionRow = explorationInformation.getRowOfMatrix(stateRowIdx + action);
 
     std::uniform_int_distribution<StateType> distribution(0, actionRow.size() - 1);
@@ -70,7 +74,12 @@ StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::sampleSucc(StateType 
     if (explorationInformation.isUnexplored(successor)) {
         exploreState(successor);
     }
-    return successor;
+    // if successor is returned the first time, add mapping
+    if (stateMappingInOut.find(successor) == stateMappingInOut.end()) {
+        stateMappingInOut[successor] = stateMappingInOut.size();
+        stateMappingOutIn[stateMappingInOut.at(successor)] = successor;
+    }
+    return stateMappingInOut.at(successor);
 }
 
 template <typename StateType, typename ValueType>
@@ -79,15 +88,15 @@ bool BlackboxWrapperOnWhitebox<StateType, ValueType>::isGreybox() {
 }
 
 template <typename StateType, typename ValueType>
-void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType state) {
-    // TODO optimization: terminal and target states don't need to explored
+void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType stateIdx) {
+    // This is a private function, it accepts stateIdx to be an internal index
 
-    auto unexploredIt = explorationInformation.findUnexploredState(state);
+    auto unexploredIt = explorationInformation.findUnexploredState(stateIdx);
     if (unexploredIt == explorationInformation.unexploredStatesEnd()) {
         return;
     }
 
-    explorationInformation.assignStateToNextRowGroup(state);
+    explorationInformation.assignStateToNextRowGroup(stateIdx);
     storm::generator::CompressedState comprState = unexploredIt->second;
 
     // get actions; store them and their successors in explorationInformation

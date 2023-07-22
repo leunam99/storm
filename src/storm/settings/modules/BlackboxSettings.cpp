@@ -180,12 +180,12 @@ double BlackboxSettings::getDelta() const {
 };
 
 double BlackboxSettings::getPMin() const {
-    return this->getOption(pMinOptionName).getArgumentByName("value").getValueAsDouble();
+    return this->getOption(pMinOptionName).getArgumentByName("pMin").getValueAsDouble();
 }
 
 
 double BlackboxSettings::getPrecision() const {
-    return this->getOption(precisionOptionName).getArgumentByName("value").getValueAsDouble();
+    return this->getOption(precisionOptionName).getArgumentByName("eps").getValueAsDouble();
 }
 
 bool BlackboxSettings::check() const {
