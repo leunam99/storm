@@ -7,16 +7,16 @@ typedef storm::storage::SparseMatrixIndexType index_type;
 
 
 
-template <typename ValueType>
-storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<int> &emdp){
+template <typename ValueType, typename IndexType>
+storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<IndexType> &emdp){
 
     //colum count: number of states + 1 dummy state
-    index_type states = 1 + emdp.getTotalStateCount();
+    IndexType states = 1 + emdp.getTotalStateCount();
     //row count: sum of number of actions for each state + 1 for dummy state
-    index_type rows = 1 + emdp.gettotalStateActionPairCount();
+    IndexType rows = 1 + emdp.gettotalStateActionPairCount();
     //entries: total number of nonzero entries + 1 for dummy state + 1 for each action to account for unsampled transitions
     //this overestimates the needed entries because some of them do not need the unsampled ones
-    index_type entries = 1 + emdp.getTotalTransitionCount() + emdp.gettotalStateActionPairCount();
+    IndexType entries = 1 + emdp.getTotalTransitionCount() + emdp.gettotalStateActionPairCount();
 
     return storm::storage::SparseMatrixBuilder<ValueType>(rows,states,entries,false,true,states);
 
@@ -44,10 +44,9 @@ void transferActionInformation(storm::models::sparse::ChoiceLabeling& choiceLabe
 
 // TODO make emdp (and therefore all called functions) const??
 template <typename IndexType, typename ValueType>
-BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDistribution<IndexType> &valueFunc, double pmin, double delta, bool isBlackbox){
+BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDistribution<IndexType> &valueFunc, double pmin, double delta, bool isBlackbox){
 
     using Bounds = storm::utility::ValuePair<ValueType>;
-    using index_type = storm::storage::sparse::state_type;
 
     //TODO rewards!
 
@@ -55,16 +54,16 @@ BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDis
     storm::models::sparse::StateLabeling stateLabeling(emdp.getTotalStateCount() + 1);
     storm::models::sparse::ChoiceLabeling choiceLabeling(emdp.gettotalStateActionPairCount() + 1); //TODO werden unsampled actions mitgezählt??
     //calculate size of BMdp and reserve enough space
-    storm::storage::SparseMatrixBuilder<Bounds> matrixBuilder = initialiseMatrix<Bounds>(emdp);
+    storm::storage::SparseMatrixBuilder<Bounds> matrixBuilder = initialiseMatrix<Bounds, IndexType>(emdp);
 
-    index_type dummy_state = emdp.getTotalStateCount(); //put dummy state at the last index
+    IndexType dummy_state = emdp.getTotalStateCount(); //put dummy state at the last index
 
     //initialise value function with eMDP
     valueFunc.initialiseFor(emdp, delta);
 
     int currentRow = 0;
 
-    for(index_type state = 0; state < emdp.getTotalStateCount(); state++ ){
+    for(IndexType state = 0; state < emdp.getTotalStateCount(); state++ ){
         matrixBuilder.newRowGroup(currentRow);
 
         std::cout << "state: " << state << "\n";
@@ -133,4 +132,4 @@ BMdp<ValueType> infer(EMdp<int> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDis
 }
 
 
-template BMdp<double> infer<int_fast64_t,double>(EMdp<int> &emdp, BoundFunc<double> &boundFunc, DeltaDistribution<int_fast64_t> &valueFunc, double pmin, double delta, bool isBlackbox);
+template BMdp<double> infer<uint32_t, double>(EMdp<uint32_t> &emdp, BoundFunc<double> &boundFunc, DeltaDistribution<uint32_t> &valueFunc, double pmin, double delta, bool isBlackbox);

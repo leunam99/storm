@@ -77,6 +77,8 @@ class BlackboxMDP {
 
 template <typename StateType, typename ValueType>
 class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
+    typedef uint32_t exploration_state_type; // exploration code only uses uint32_t and is not flexible
+
     public:
      BlackboxWrapperOnWhitebox(storm::prism::Program const& program);
     
@@ -112,8 +114,8 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
      void exploreState(StateType state);
 
      storm::prism::Program program;
-     storm::modelchecker::exploration_detail::ExplorationInformation<StateType, ValueType> explorationInformation;
-     storm::modelchecker::exploration_detail::StateGeneration<StateType, ValueType> stateGeneration;
+     storm::modelchecker::exploration_detail::ExplorationInformation<exploration_state_type, ValueType> explorationInformation;
+     storm::modelchecker::exploration_detail::StateGeneration<exploration_state_type, ValueType> stateGeneration;
      mutable std::default_random_engine randomGenerator;
 
 };

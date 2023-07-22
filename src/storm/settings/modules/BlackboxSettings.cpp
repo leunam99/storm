@@ -24,6 +24,7 @@ print to Dot
     bmdp
 io eMDP
     neighbours
+save_memory -> bool, use uint32 or uint64
 */
 
 const std::string BlackboxSettings::moduleName = "blackbox";

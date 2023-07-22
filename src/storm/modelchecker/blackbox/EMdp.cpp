@@ -285,7 +285,8 @@ std::vector<std::pair<StateType, StateType> > EMdp<StateType>::getPredecessors(S
     return hashStorage.getPredecessors(state);
 }
 
-template class EMdp<int_fast32_t>;
+template class EMdp<uint32_t>;
+template class EMdp<uint64_t>;
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm

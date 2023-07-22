@@ -89,7 +89,7 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
 
     // get actions; store them and their successors in explorationInformation
     stateGeneration.load(comprState);
-    storm::generator::StateBehavior<ValueType, StateType> behavior = stateGeneration.expand();    
+    storm::generator::StateBehavior<ValueType, exploration_state_type> behavior = stateGeneration.expand();    
     
     StateType startAction = explorationInformation.getActionCount();
     explorationInformation.addActionsToMatrix(behavior.getNumberOfChoices());
@@ -107,8 +107,10 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
 }
 
 template class BlackboxMDP<uint32_t>;
+template class BlackboxMDP<uint64_t>;
 
 template class BlackboxWrapperOnWhitebox<uint32_t, double>;
+template class BlackboxWrapperOnWhitebox<uint64_t, double>;
 
 } //namespace blackbox
 } //namespace modelchecker

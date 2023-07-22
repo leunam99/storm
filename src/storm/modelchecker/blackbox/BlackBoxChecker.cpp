@@ -58,15 +58,15 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
     std::string eMdpFilePath = "eMdp"; // TODO get from cli
 
     // init objects for algorithm
-    EMdp<BlackboxStateType> eMDP;
+    EMdp<StateType> eMDP;
     auto heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic)));
     BlackBoxExplorer<StateType, ValueType> blackboxExplorer(blackboxMDP, heuristicSim);
     auto boundFunc = getBoundFunc<ValueType>(boundFuncType);
-    auto deltaDist = getDeltaDistribution<BlackboxStateType>(deltaDistType);
+    auto deltaDist = getDeltaDistribution<StateType>(deltaDistType);
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
 
     // init objects for output generation
-    // EMdpDotGenerator<BlackboxStateType> eMdpDotGenerator;
+    // EMdpDotGenerator<StateType> eMdpDotGenerator;
     // std::string eMdpFilename;
     // std::ofstream eMdpFile;
     // TODO init objects for bMDP output
@@ -84,7 +84,7 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         // eMdpFile.close();
 
         // infer 
-        // auto bMDP = infer<BlackboxStateType, ValueType>(eMDP, boundFunc, deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
+        // auto bMDP = infer<StateType, ValueType>(eMDP, boundFunc, deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
         // TODO create infer output
 
         // value approximation (implemented some time in future)
@@ -95,6 +95,7 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
 }
 
 template class BlackBoxChecker<storm::models::sparse::Mdp<double>, uint32_t>;
+template class BlackBoxChecker<storm::models::sparse::Mdp<double>, uint64_t>;
 
 } //namespace blackbox
 } //namespace modelchecker

@@ -5,7 +5,7 @@
 #include "test/storm_gtest.h"
 
 TEST(EMdp, CreationWithDimensions) {
-    auto e = storm::modelchecker::blackbox::EMdp<int>();
+    auto e = storm::modelchecker::blackbox::EMdp<uint32_t>();
 
     e.addInitialState(1);
 
@@ -22,7 +22,7 @@ TEST(EMdp, CreationWithDimensions) {
     e.addVisits(0,2,1, 9000);
 
     HoeffDingBound<double> bound;
-    UniformDelta<int_fast32_t> delta;
+    UniformDelta<uint32_t> delta;
 
     //storm::storage::sparse::ModelComponents<storm::utility::ValuePair<double>,storm::models::sparse::StandardRewardModel<double>> m{};
 
