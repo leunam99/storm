@@ -24,6 +24,8 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>&
 
     // set initial state
     eMDP.addInitialState(blackboxMdp->getInitialState());
+    // safe highest stateIdx, to later update new states
+    StateType latestExploredState = eMDP.getTotalStateCount() - 1;
 
     for (StateType i = 0; i < numExplorations; i++) {
         stack.push_back(std::make_pair(blackboxMdp->getInitialState(), 0));
@@ -51,7 +53,7 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>&
                     eMDP.addUnsampledAction(state, i);
                 }
 
-                // TODO add StateLabels and Reward
+                // TODO add Reward
             }
 
             actionTaken = stack.back().second;
@@ -62,6 +64,12 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>&
 
         // update maxPathLen
         maxPathLen = 3 * eMDP.getTotalStateCount();  // TODO magic number; collect constants
+    }
+
+    // set labels of new states
+    for (StateType i = latestExploredState; i < eMDP.getTotalStateCount(); i++) {
+        for (auto const &label: blackboxMdp->getStateLabels(i))
+        eMDP.addStateLabel(label, i);
     }
 }
 

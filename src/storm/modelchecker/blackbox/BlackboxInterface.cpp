@@ -87,6 +87,16 @@ bool BlackboxWrapperOnWhitebox<StateType, ValueType>::isGreybox() {
 }
 
 template <typename StateType, typename ValueType>
+std::set<std::string> BlackboxWrapperOnWhitebox<StateType, ValueType>::getStateLabels(StateType state) {
+    StateType stateIdx = stateMappingOutIn[state];
+    //only update stateLabelin if necessary
+    if (stateIdx >= stateLabeling.getNumberOfItems()) {
+        stateLabeling = stateGenerationLabels.label();
+    }
+    return stateLabeling.getLabelsOfState(stateIdx);
+}
+
+template <typename StateType, typename ValueType>
 void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType stateIdx) {
     // This is a private function, it accepts stateIdx to be an internal index
 

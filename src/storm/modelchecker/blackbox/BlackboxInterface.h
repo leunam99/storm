@@ -9,7 +9,9 @@
 
 #include "storm/modelchecker/blackbox/storage/StateGenerationLabels.h"
 #include "storm/modelchecker/exploration/ExplorationInformation.h"
+#include "storm/models/sparse/StateLabeling.h"
 #include "storm/logic/Formula.h"
+
 
 namespace storm {
 namespace modelchecker {
@@ -60,7 +62,11 @@ class BlackboxMDP {
 
      // virtual auto getStateRewards(StateType state) = 0;
 
-     // virtual auto getStateLabels(StateType state) = 0;
+     /*!
+      * returns a list of all labels of the given state
+      * @param state state to inquire labels from 
+      */
+     virtual std::set<std::string> getStateLabels(StateType state) = 0;
 
      // virtual auto getActionReward(StateType state, StateType action) = 0;
 
@@ -116,13 +122,22 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
       */
      bool isGreybox() override;
 
+     /*!
+      * returns a list of all labels of the given state
+      * @param state state to inquire labels from 
+      */
+     std::set<std::string> getStateLabels(StateType state);
+
     private:
      void exploreState(StateType state);
 
      storm::prism::Program program;
      storm::modelchecker::exploration_detail::ExplorationInformation<exploration_state_type, ValueType> explorationInformation;
      storm::modelchecker::exploration_detail::StateGenerationLabels<exploration_state_type, ValueType> stateGenerationLabels;
+     storm::models::sparse::StateLabeling stateLabeling;
+
      mutable std::default_random_engine randomGenerator;
+
      std::unordered_map<StateType, StateType> stateMappingInOut;  // maps internal indice to external
      std::unordered_map<StateType, StateType> stateMappingOutIn;  // maps external indice to internal
 
