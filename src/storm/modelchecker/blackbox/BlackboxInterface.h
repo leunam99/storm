@@ -67,10 +67,6 @@ class BlackboxMDP {
       * @param state state to inquire labels from 
       */
      virtual std::set<std::string> getStateLabels(StateType state) = 0;
-
-     // virtual auto getActionReward(StateType state, StateType action) = 0;
-
-     // virtual auto getActionLabels(StateType state, StateType action) = 0;
      
      /*!
       * greybox method
@@ -126,7 +122,7 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
       * returns a list of all labels of the given state
       * @param state state to inquire labels from 
       */
-     std::set<std::string> getStateLabels(StateType state);
+     std::set<std::string> getStateLabels(StateType state) override;
 
     private:
      void exploreState(StateType state);

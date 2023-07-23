@@ -45,6 +45,11 @@ class StateGeneration {
 
     bool isTargetState() const;
 
+   protected:
+    StateGeneration(storm::prism::Program const& program, storm::generator::NextStateGeneratorOptions const& generatorOptions,
+                    ExplorationInformation<StateType, ValueType>& explorationInformation, storm::expressions::Expression const& conditionStateExpression,
+                    storm::expressions::Expression const& targetStateExpression);
+
    private:
     storm::generator::PrismNextStateGenerator<ValueType, StateType> generator;
     std::function<StateType(storm::generator::CompressedState const&)> stateToIdCallback;

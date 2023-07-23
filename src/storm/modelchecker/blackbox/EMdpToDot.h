@@ -1,3 +1,5 @@
+#pragma once
+
 #include <unordered_map>
 #include <string.h>
 #include "stdint.h"
@@ -86,7 +88,7 @@ class EMdpDotGenerator {
           * Constructs new EMdp Dot Generator 
           * 
           */
-         EMdpDotGenerator();
+         EMdpDotGenerator() = default;
 
          /*!
           * Constructs new EMdp Dot Generator 

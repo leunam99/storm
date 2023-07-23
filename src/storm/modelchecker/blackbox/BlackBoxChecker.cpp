@@ -66,9 +66,9 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
 
     // init objects for output generation
-    // EMdpDotGenerator<StateType> eMdpDotGenerator;
-    // std::string eMdpFilename;
-    // std::ofstream eMdpFile;
+    EMdpDotGenerator<StateType> eMdpDotGenerator;
+    std::string eMdpFilename;
+    std::ofstream eMdpFile;
     // TODO init objects for bMDP output
 
     // run 3 step algorithm
@@ -79,9 +79,9 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         // simulate
         blackboxExplorer.performExploration(eMDP, simulationsPerIter);
         // create simulate output
-        // eMdpFile.open(eMdpFilePath + "_" + std::to_string(iterCount) + ".dot");
-        // eMdpDotGenerator.convert(eMDP, eMdpFile);
-        // eMdpFile.close();
+        eMdpFile.open(eMdpFilePath + "_" + std::to_string(iterCount) + ".dot");
+        eMdpDotGenerator.convert(eMDP, eMdpFile);
+        eMdpFile.close();
 
         // infer 
         auto bMDP = infer<StateType, ValueType>(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());

@@ -1,3 +1,4 @@
+#include "storm/builder/BuilderOptions.h"
 #include "storm/modelchecker/blackbox/storage/StateGenerationLabels.h"
 
 namespace storm {
@@ -6,10 +7,11 @@ namespace exploration_detail {
 
 template<typename StateType, typename ValueType>
 StateGenerationLabels<StateType, ValueType>::StateGenerationLabels(storm::prism::Program const& program, ExplorationInformation<StateType, ValueType>& explorationInformation,
-                                                                   storm::expressions::Expression const& conditionStateExpression, storm::expressions::Expression const& targetStateExpression):
-                                                                   StateGeneration<StateType, ValueType>(program, explorationInformation, conditionStateExpression, targetStateExpression) {
-// intentionally empty
+                                                                   storm::expressions::Expression const& conditionStateExpression, storm::expressions::Expression const& targetStateExpression)
+    : StateGeneration<StateType, ValueType>::StateGeneration(program, storm::generator::NextStateGeneratorOptions(true, true), explorationInformation, conditionStateExpression, targetStateExpression) {
+
 }
+
 
 template<typename StateType, typename ValueType>
 storm::models::sparse::StateLabeling StateGenerationLabels<StateType, ValueType>::label(std::vector<StateType> const& deadlockStateIndices) {

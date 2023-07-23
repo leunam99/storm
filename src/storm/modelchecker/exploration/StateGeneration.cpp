@@ -12,7 +12,17 @@ StateGeneration<StateType, ValueType>::StateGeneration(storm::prism::Program con
                                                        ExplorationInformation<StateType, ValueType>& explorationInformation,
                                                        storm::expressions::Expression const& conditionStateExpression,
                                                        storm::expressions::Expression const& targetStateExpression)
-    : generator(program),
+    : StateGeneration(program, storm::generator::NextStateGeneratorOptions(), explorationInformation, conditionStateExpression, targetStateExpression) {
+// intentionally empty
+}
+
+template<typename StateType, typename ValueType>
+StateGeneration<StateType, ValueType>::StateGeneration(storm::prism::Program const& program,
+                                                       storm::generator::NextStateGeneratorOptions const& generatorOptions,
+                                                       ExplorationInformation<StateType, ValueType>& explorationInformation,
+                                                       storm::expressions::Expression const& conditionStateExpression,
+                                                       storm::expressions::Expression const& targetStateExpression)
+    : generator(program, generatorOptions),
       stateStorage(generator.getStateSize()),
       conditionStateExpression(conditionStateExpression),
       targetStateExpression(targetStateExpression) {
@@ -27,7 +37,7 @@ StateGeneration<StateType, ValueType>::StateGeneration(storm::prism::Program con
         }
 
         return actualIndexBucketPair.first;
-    };
+    };                        
 }
 
 template<typename StateType, typename ValueType>
