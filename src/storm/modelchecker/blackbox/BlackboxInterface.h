@@ -7,7 +7,7 @@
 */
 #include <random>
 
-#include "storm/modelchecker/exploration/StateGeneration.h"
+#include "storm/modelchecker/blackbox/storage/StateGenerationLabels.h"
 #include "storm/modelchecker/exploration/ExplorationInformation.h"
 #include "storm/logic/Formula.h"
 
@@ -121,7 +121,7 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
 
      storm::prism::Program program;
      storm::modelchecker::exploration_detail::ExplorationInformation<exploration_state_type, ValueType> explorationInformation;
-     storm::modelchecker::exploration_detail::StateGeneration<exploration_state_type, ValueType> stateGeneration;
+     storm::modelchecker::exploration_detail::StateGenerationLabels<exploration_state_type, ValueType> stateGenerationLabels;
      mutable std::default_random_engine randomGenerator;
      std::unordered_map<StateType, StateType> stateMappingInOut;  // maps internal indice to external
      std::unordered_map<StateType, StateType> stateMappingOutIn;  // maps external indice to internal

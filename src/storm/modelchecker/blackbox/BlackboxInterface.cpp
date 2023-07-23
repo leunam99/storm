@@ -1,6 +1,5 @@
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
 
-#include "storm/modelchecker/exploration/StateGeneration.h"
 #include "storm/modelchecker/exploration/ExplorationInformation.h"
 #include "storm/storage/expressions/ExpressionEvaluator.h"
 #include "storm/storage/expressions/ExpressionManager.h"
@@ -39,19 +38,19 @@ template <typename StateType, typename ValueType>
 BlackboxWrapperOnWhitebox<StateType, ValueType>::BlackboxWrapperOnWhitebox(storm::prism::Program const& program)
                                                 : program(program.substituteConstantsFormulas()),
                                                   explorationInformation(storm::OptimizationDirection::Maximize),
-                                                  stateGeneration(this->program, explorationInformation, 
+                                                  stateGenerationLabels(this->program, explorationInformation, 
                                                   this->program.getManager().boolean(true), this->program.getManager().boolean(true)) {
     // compute and explore initial state
     explorationInformation.newRowGroup(0);
-    stateGeneration.computeInitialStates();
-    exploreState(stateGeneration.getFirstInitialState());
-    stateMappingInOut[stateGeneration.getFirstInitialState()] = 0;
+    stateGenerationLabels.computeInitialStates();
+    exploreState(stateGenerationLabels.getFirstInitialState());
+    stateMappingInOut[stateGenerationLabels.getFirstInitialState()] = 0;
     stateMappingOutIn[0] = getInitialState();
 }
 
 template <typename StateType, typename ValueType>
 StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::getInitialState() {
-    return stateMappingInOut.at(stateGeneration.getFirstInitialState());
+    return stateMappingInOut.at(stateGenerationLabels.getFirstInitialState());
 }
 
 template <typename StateType, typename ValueType>
@@ -100,8 +99,8 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
     storm::generator::CompressedState comprState = unexploredIt->second;
 
     // get actions; store them and their successors in explorationInformation
-    stateGeneration.load(comprState);
-    storm::generator::StateBehavior<ValueType, exploration_state_type> behavior = stateGeneration.expand();    
+    stateGenerationLabels.load(comprState);
+    storm::generator::StateBehavior<ValueType, exploration_state_type> behavior = stateGenerationLabels.expand();    
     
     StateType startAction = explorationInformation.getActionCount();
     explorationInformation.addActionsToMatrix(behavior.getNumberOfChoices());
