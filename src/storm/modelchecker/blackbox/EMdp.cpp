@@ -2,8 +2,6 @@
 
 #include "EMdp.h"
 
-#include <algorithm>
-
 #include <regex>
 
 namespace storm {
@@ -15,9 +13,9 @@ EMdp<StateType>::EMdp() : hashStorage(), stateLabeling() {
 }
 
 template<typename StateType>
-std::string EMdp<StateType>::labelVecToStr(std::vector<std::string> labelVec) {
+std::string EMdp<StateType>::labelVecToStr(const std::vector<std::string>& labelVec) {
     std::string result =  "[";
-    for(auto label : labelVec) 
+    for(const auto& label : labelVec)
         result += label + ", ";
     if(!labelVec.empty()) {
         result.pop_back();
@@ -27,7 +25,7 @@ std::string EMdp<StateType>::labelVecToStr(std::vector<std::string> labelVec) {
 }
 
 template<typename StateType>
-void EMdp<StateType>::eMdpToFile(std::string fileName) {
+void EMdp<StateType>::eMdpToFile(const std::string& fileName) {
       std::ofstream MyFile(fileName);
 
       
@@ -53,7 +51,7 @@ void EMdp<StateType>::eMdpToFile(std::string fileName) {
 }
 
 template<typename StateType>
-EMdp<StateType> EMdp<StateType>::eMdpFromFile(std::string fileName) {
+EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
     auto newEMdp = EMdp<StateType>();
     std::ifstream myFile(fileName);
     std::string line;
@@ -133,9 +131,11 @@ void EMdp<StateType>::print() {
 
 template<typename StateType>
 void EMdp<StateType>::addInitialState(StateType state) {
-    if(initState == -1) 
+    if(!initStateValid) {
         hashStorage.addState(state);
         initState = state;
+        initStateValid = true;
+    }
 }
 
 template<typename StateType>
@@ -154,7 +154,7 @@ void EMdp<StateType>::addVisit(StateType state, StateType action, StateType succ
 }
 
 template<typename StateType>
-void EMdp<StateType>::addVisits(StateType state, StateType action, StateType succ, StateType visits) {
+void EMdp<StateType>::addVisits(StateType state, StateType action, StateType succ, uint64_t visits) {
     hashStorage.incTrans(state, action, succ, visits);
 }
 
@@ -237,22 +237,22 @@ StateType EMdp<StateType>::getTotalTransitionCount() {
 }
 
 template<typename StateType>
-StateType EMdp<StateType>::getSampleCount(StateType state, StateType action) {
+uint64_t EMdp<StateType>::getSampleCount(StateType state, StateType action) {
     return hashStorage.getTotalSamples(state, action);
 }
 
 template<typename StateType>
-StateType EMdp<StateType>::getSampleCount(StateType state, StateType action, StateType succ) {
+uint64_t EMdp<StateType>::getSampleCount(StateType state, StateType action, StateType succ) {
     return hashStorage.getSuccSamples(state, action, succ);
 }
 
 template<typename StateType>
-void EMdp<StateType>::setSuccCount(StateType state, StateType action, StateType count) {
+void EMdp<StateType>::setSuccCount(StateType state, StateType action, int count) {
     hashStorage.setSuccCount(std::make_pair(state, action), count);
 }
 
 template<typename StateType>
-StateType EMdp<StateType>::getSuccCount(StateType state, StateType action) {
+int EMdp<StateType>::getSuccCount(StateType state, StateType action) {
     return hashStorage.getSuccCount(std::make_pair(state, action));
 }
 

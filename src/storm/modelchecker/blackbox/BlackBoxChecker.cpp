@@ -6,13 +6,13 @@
 
 #include "BlackBoxChecker.h"
 
-#include "storm/modelchecker/blackbox/BlackBoxExplorer.h"
 #include "storm/modelchecker/blackbox/BMdp.h"
+#include "storm/modelchecker/blackbox/BlackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/EMdpToDot.h"
 #include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
 #include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
-#include "storm/modelchecker/blackbox/EMdpToDot.h"
-#include "storm/modelchecker/blackbox/EMdp2BMdp.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
+#include "storm/modelchecker/blackbox/infer.h"
 
 #include "storm/modelchecker/results/ExplicitQuantitativeCheckResult.h"
 #include "storm/models/sparse/Mdp.h"
@@ -29,20 +29,25 @@ namespace blackbox {
 
 
 template<typename ModelType, typename StateType>
-BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program const& program): blackboxMDP(nullptr){
+BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program const& program) {
     BlackboxWrapperOnWhitebox<StateType, ValueType> whiteboxWrapper(program);
-    auto ptr = std::make_shared<BlackboxWrapperOnWhitebox<StateType, ValueType>>(program);
-    blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);    
+    if(storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getIsGreybox()){
+        auto ptr = std::make_shared<GreyboxWrapperOnWhitebox<StateType, ValueType>>(program);
+        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);
+    } else {
+        auto ptr = std::make_shared<BlackboxWrapperOnWhitebox<StateType, ValueType>>(program);
+        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);
+    }
 }
 
 template<typename ModelType, typename StateType>
-bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Formula, ValueType> const& checkTask) const {
+bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Formula, ValueType> const&) const {
     // TODO implement actual check
     return true;
 }
 
 template<typename ModelType, typename StateType>
-std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) { 
+std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const&, CheckTask<storm::logic::UntilFormula, ValueType> const&) {
     auto blackboxSettings = storm::settings::getModule<storm::settings::modules::BlackboxSettings>();
     // cli arguments simulate
     uint_fast64_t maxIterations = blackboxSettings.getMaxIterations();
@@ -84,7 +89,8 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         // eMdpFile.close();
 
         // infer 
-        auto bMDP = infer<StateType, ValueType>(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
+        auto bMDP = infer<StateType, ValueType>(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, blackboxMDP->isGreybox());
+        //bMDP.writeDotToStream(std::cout);
         // TODO create infer output
 
         // value approximation (implemented some time in future)

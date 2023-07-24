@@ -61,7 +61,7 @@ class EMdp {
      * @param visits  visits to be added to counter
      */
 
-    void addVisits(StateType state, StateType action, StateType succ, StateType visits);
+    void addVisits(StateType state, StateType action, StateType succ, uint64_t visits);
 
     /*!
      * Add action that is reachable from the state to the emdp, without having to add a successor state 
@@ -127,14 +127,14 @@ class EMdp {
      * @param labelVec 
      * @return std::string 
      */
-    std::string labelVecToStr(std::vector<std::string> labelVec);
+    std::string labelVecToStr(const std::vector<std::string>& labelVec);
 
     /*!
     * Writes the Emdp to a file 
     *
     * @param fileName
     */
-    void eMdpToFile(std::string fileName);
+    void eMdpToFile(const std::string& fileName);
 
     /*!
      * Constructs an EMdp from a File 
@@ -142,7 +142,7 @@ class EMdp {
      * @param fileName the File containing the Emdp 
      * @return EMdp<StateType> 
      */
-    static EMdp<StateType> eMdpFromFile(std::string fileName);
+    static EMdp<StateType> eMdpFromFile(const std::string& fileName);
 
     /*!
      * print the EMdp to std::cout
@@ -181,7 +181,7 @@ class EMdp {
      * @param state   state index 
      * @param action  action index
      */
-    StateType getSampleCount(StateType state, StateType action);
+    uint64_t getSampleCount(StateType state, StateType action);
 
     /*!
      * returns how often this state action successor triple was sampled
@@ -189,7 +189,7 @@ class EMdp {
      * @param action  action index
      * @param succ    successor state index
      */
-    StateType getSampleCount(StateType state, StateType action, StateType succ);
+    uint64_t getSampleCount(StateType state, StateType action, StateType succ);
 
     /*!
      * Set the number of successors for a state action pair in the greybox setting 
@@ -197,14 +197,14 @@ class EMdp {
      * @param state 
      * @return StateType 
      */
-    void setSuccCount(StateType state, StateType action, StateType count);
+    void setSuccCount(StateType state, StateType action, int count);
 
     /*!
      * Get the number of successors for a state action pair in the greybox setting 
      * 
      * @return StateType 
      */
-    StateType getSuccCount(StateType state, StateType action);
+    int getSuccCount(StateType state, StateType action);
 
     //? Save to disk
 
@@ -261,7 +261,8 @@ class EMdp {
     
 
    std::unordered_map<std::pair<StateType, StateType>, std::vector<std::string>, pairHash > actionLabeling; 
-   StateType initState = -1;
+   StateType initState;
+   bool initStateValid = false;
    StateType explorationCount = 0; //Number of explored states
 };
 

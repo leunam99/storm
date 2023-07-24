@@ -27,9 +27,9 @@ class DeltaDistribution {
      */
     virtual double getDeltaT(IndexType state, IndexType action, IndexType target_state) = 0;
 
-
+    virtual ~DeltaDistribution();
 };
-
+template<typename IndexType> DeltaDistribution<IndexType>::~DeltaDistribution() = default;
 
 template <typename IndexType>
 class UniformDelta : public DeltaDistribution<IndexType> {
@@ -50,7 +50,7 @@ class UniformDelta : public DeltaDistribution<IndexType> {
      * @param target_state
      * @return
      */
-    double getDeltaT(IndexType state, IndexType action, IndexType target_state) override {
+    double getDeltaT(IndexType, IndexType, IndexType) override {
         return transitionDelta;
     }
    private:

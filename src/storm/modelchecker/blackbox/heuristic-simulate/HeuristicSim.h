@@ -58,8 +58,11 @@ class HeuristicSim {
       * reset any memory this heuristic has collected dor its decision making
       */
      virtual void reset() = 0;
+
+     virtual ~HeuristicSim();
 };
 
+template <typename StateType, typename ValueType> HeuristicSim<StateType,ValueType>::~HeuristicSim() = default;
 
 template <typename StateType, typename ValueType>
 class NaiveHeuristicSim : public HeuristicSim<StateType, ValueType> {

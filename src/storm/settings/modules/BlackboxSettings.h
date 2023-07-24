@@ -136,6 +136,8 @@ class BlackboxSettings : public ModuleSettings {
      */
     double getPrecision() const;
 
+    bool getIsGreybox() const;
+
     /*!
      * Retrieves maximum number of algorithm iterations.
      *
@@ -174,6 +176,7 @@ class BlackboxSettings : public ModuleSettings {
     static const std::string deltaDistributionOptionName;
     static const std::string deltaOptionName;
     static const std::string boundFuncOptionName;
+    static const std::string greyboxOptionName;
 
     // general constants
     static const std::string pMinOptionName;
