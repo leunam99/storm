@@ -8,7 +8,7 @@ namespace exploration_detail {
 template<typename StateType, typename ValueType>
 StateGenerationLabels<StateType, ValueType>::StateGenerationLabels(storm::prism::Program const& program, ExplorationInformation<StateType, ValueType>& explorationInformation,
                                                                    storm::expressions::Expression const& conditionStateExpression, storm::expressions::Expression const& targetStateExpression)
-    : StateGeneration<StateType, ValueType>::StateGeneration(program, storm::generator::NextStateGeneratorOptions(true, true), explorationInformation, conditionStateExpression, targetStateExpression) {
+    : StateGeneration<StateType, ValueType>::StateGeneration(program, storm::generator::NextStateGeneratorOptions(true, true).setBuildChoiceLabels(true), explorationInformation, conditionStateExpression, targetStateExpression) {
 
 }
 

@@ -67,6 +67,13 @@ class BlackboxMDP {
       * @param state state to inquire labels from 
       */
      virtual std::set<std::string> getStateLabels(StateType state) = 0;
+
+     /*!
+      * returns a list of all labels of the given action
+      * @param state state with action to inquire labels from 
+      * @param action action to inquire labels from 
+      */
+     virtual std::set<std::string> getActionLabels(StateType state, StateType action) = 0;
      
      /*!
       * greybox method
@@ -124,6 +131,13 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
       */
      std::set<std::string> getStateLabels(StateType state) override;
 
+     /*!
+      * returns a list of all labels of the given action
+      * @param state state with action to inquire labels from 
+      * @param action action to inquire labels from 
+      */
+     std::set<std::string> getActionLabels(StateType state, StateType action) override;
+
     private:
      void exploreState(StateType state);
 
@@ -134,8 +148,20 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
 
      mutable std::default_random_engine randomGenerator;
 
+    // TODO copied from EMdp.h declare somether to just import
+    struct pairHash {
+        template <class T1, class T2>
+        std::size_t operator () (const std::pair<T1,T2> &p) const {
+            auto h1 = std::hash<T1>{}(p.first);
+            auto h2 = std::hash<T2>{}(p.second);
+
+            return h1 ^ h2;  
+        }
+    };
+
      std::unordered_map<StateType, StateType> stateMappingInOut;  // maps internal indice to external
      std::unordered_map<StateType, StateType> stateMappingOutIn;  // maps external indice to internal
+     std::unordered_map<std::pair<StateType, StateType>, std::set<std::string>, pairHash> actionLabels;
 
 };
 

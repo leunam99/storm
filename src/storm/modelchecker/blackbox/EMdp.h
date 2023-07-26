@@ -1,6 +1,3 @@
-#ifndef STORM_EMDP_H
-#define STORM_EMDP_H
-
 #pragma once
 #include <string.h>
 #include "stdint.h"
@@ -268,4 +265,3 @@ class EMdp {
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_EMDP_H

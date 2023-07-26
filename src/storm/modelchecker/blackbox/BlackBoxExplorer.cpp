@@ -70,6 +70,12 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>&
     for (StateType i = latestExploredState; i < eMDP.getTotalStateCount(); i++) {
         for (auto const &label: blackboxMdp->getStateLabels(i))
         eMDP.addStateLabel(label, i);
+        // action labels
+        for (StateType a = 0; a < blackboxMdp->getAvailActions(i); a++) {
+            for (auto& label: blackboxMdp->getActionLabels(i, a)) {
+                eMDP.addActionLabel(label, i, a);
+            }
+        }
     }
 }
 

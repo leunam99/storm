@@ -89,11 +89,17 @@ bool BlackboxWrapperOnWhitebox<StateType, ValueType>::isGreybox() {
 template <typename StateType, typename ValueType>
 std::set<std::string> BlackboxWrapperOnWhitebox<StateType, ValueType>::getStateLabels(StateType state) {
     StateType stateIdx = stateMappingOutIn[state];
-    //only update stateLabelin if necessary
+    //only update stateLabeling if necessary
     if (stateIdx >= stateLabeling.getNumberOfItems()) {
         stateLabeling = stateGenerationLabels.label();
     }
     return stateLabeling.getLabelsOfState(stateIdx);
+}
+
+template <typename StateType, typename ValueType>
+std::set<std::string> BlackboxWrapperOnWhitebox<StateType, ValueType>::getActionLabels(StateType state, StateType action) {
+    StateType stateIdx = stateMappingOutIn[state];
+    return actionLabels[std::make_pair(stateIdx, action)];
 }
 
 template <typename StateType, typename ValueType>
@@ -117,6 +123,9 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
     StateType localAction = 0;
     
     for (auto const& choice : behavior) {
+        if (choice.hasLabels()) {
+            actionLabels[std::make_pair(stateIdx, localAction)] = choice.getLabels();
+        }
         for (auto const& entry : choice) {
            explorationInformation.getRowOfMatrix(startAction + localAction).emplace_back(entry.first, entry.second);
         }
