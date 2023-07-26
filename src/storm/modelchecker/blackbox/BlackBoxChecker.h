@@ -1,9 +1,4 @@
-//
-// Created by Maximilian Kamps on 25.05.23.
-//
-
-#ifndef STORM_BLACKBOXCHECKER_H
-#define STORM_BLACKBOXCHECKER_H
+#pragma once
 
 #include "storm/modelchecker/AbstractModelChecker.h"
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
@@ -41,4 +36,3 @@ class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_BLACKBOXCHECKER_H

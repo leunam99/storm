@@ -1,6 +1,4 @@
-#ifndef STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_
-#define STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_
-
+#pragma once
 #include <random>
 
 #include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
@@ -200,5 +198,3 @@ class BlackboxSettings : public ModuleSettings {
 }  // namespace modules
 }  // namespace settings
 }  // namespace storm
-
-#endif /* STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_ */

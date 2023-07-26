@@ -1,3 +1,4 @@
+#pragma once
 #include <unordered_map>
 #include <string.h>
 #include "stdint.h"

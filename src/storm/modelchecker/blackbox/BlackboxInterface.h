@@ -1,5 +1,4 @@
-#ifndef STORM_BLACKBOX_INTERFACE
-#define STORM_BLACKBOX_INTERFACE
+#pragma once
 
 /*
  * This header defines the general interface expected from a blackbox MDP
@@ -143,4 +142,3 @@ class GreyboxWrapperOnWhitebox: public BlackboxWrapperOnWhitebox<StateType, Valu
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_BLACKBOX_INTERFACE

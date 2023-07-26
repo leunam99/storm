@@ -1,5 +1,4 @@
-#ifndef STORM_Bmdp_H
-#define STORM_Bmdp_H
+#pragma once
 
 #include "models/sparse/NondeterministicModel.h"
 #include "storm/adapters/RationalFunctionAdapter.h"
@@ -63,5 +62,4 @@ class BMdp : public NondeterministicModel<utility::ValuePair<BoundType>, RewardM
 }  // namespace models
 }  // namespace storm
 
-#endif  // STORM_Bmdp_H
 

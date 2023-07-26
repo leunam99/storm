@@ -1,5 +1,4 @@
-#ifndef STORM_BOUNDFUNC_H
-#define STORM_BOUNDFUNC_H
+#pragma once
 
 #include <utility> 
 #include <stdint.h>
@@ -58,5 +57,3 @@ std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
     }
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
 }
-
-#endif

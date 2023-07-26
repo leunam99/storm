@@ -1,9 +1,4 @@
-//
-// Created by Maximilian Kamps on 25.05.23.
-//
-
-#ifndef STORM_HEURISTICSIM_H
-#define STORM_HEURISTICSIM_H
+#pragma once
 
 #include <random>
 
@@ -118,4 +113,3 @@ std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSim
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_HEURISTICSIM_H
