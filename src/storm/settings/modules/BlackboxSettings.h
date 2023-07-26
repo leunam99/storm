@@ -19,6 +19,19 @@ namespace modules {
  */
 class BlackboxSettings : public ModuleSettings {
    public:
+
+    bool isSetPrintEMdp() const;
+    bool isSetWriteEMdpToFile() const;
+    bool isSetEMdptoDot() const;
+    bool isSetEMdpNeighbToDot() const; 
+    bool isSetDotIncAct() const;
+    bool isSetDotIncSmpl() const;
+    bool isSetDotIncLab() const;
+    bool isSetDotIncCol() const;
+
+    bool isSetPrintBMdp() const;
+    bool isSetBMdpToDot() const;
+    
     /*!
      * Creates a new set of exploration settings.
      */

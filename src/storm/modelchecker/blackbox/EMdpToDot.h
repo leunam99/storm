@@ -96,7 +96,7 @@ class EMdpDotGenerator {
           * @param includeLabel if true include labels
           * @param includeColor if true color states and actions 
           */
-         EMdpDotGenerator(bool includeAction, bool includeSamples, bool includeLabel, bool includeColor);
+         EMdpDotGenerator(bool incAction, bool incSamples, bool incLabel, bool incColor);
          
          /*!
           * Writes the neighborhood of a state to outStream

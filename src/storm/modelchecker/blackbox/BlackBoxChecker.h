@@ -22,7 +22,7 @@ class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
 
      BlackBoxChecker(storm::prism::Program const& program);
 
-     /*!
+     /*! 
       * Determines whether the model checker can handle the given verification task. If this method returns
       * false, the task must not be checked using this model checker.
       *

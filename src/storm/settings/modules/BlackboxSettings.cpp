@@ -24,10 +24,10 @@ const std::string BlackboxSettings::printEMdpOptionName = "printeMDP";
 const std::string BlackboxSettings::writeEMdpToFile = "eMDPtoFile";
 const std::string BlackboxSettings::convertToDotEMdpOptionName = "eMDPtoDot";
 const std::string BlackboxSettings::convertDotNeighborhoodEMdpOptionName = "eMDPNeighbToDot";
-const std::string BlackboxSettings::dotIncludeActionsOptionName = "eMDPDotIncAct";
-const std::string BlackboxSettings::dotIncludeSamplesOptionName = "eMDPDotIncSmpl"; 
-const std::string BlackboxSettings::dotIncludeLabelsOptionName = "eMDPDotIncLab";
-const std::string BlackboxSettings::dotIncludeColorOptionName = "eMDPDotIncCol";
+const std::string BlackboxSettings::dotIncludeActionsOptionName = "dotIncAct";
+const std::string BlackboxSettings::dotIncludeSamplesOptionName = "dotIncSmpl"; 
+const std::string BlackboxSettings::dotIncludeLabelsOptionName = "dotIncLab";
+const std::string BlackboxSettings::dotIncludeColorOptionName = "dotIncCol";
 
 // visualize bmdp constants 
 const std::string BlackboxSettings::printBMdpOptionName = "printbMDP";
@@ -60,8 +60,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
                                          "filename",
-                                         "The name of the file to write the eMDP to. 'eMDP.txt' default.")
-                                         .setDefaultValueString("eMDP.txt")
+                                         "The name of the file to write the eMDP to.")
                                          .build())
                         .build());
 
@@ -69,13 +68,11 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
                                          "eMDPInfile",
-                                         "The name of the file to read the eMDP from. If not set converts the currently explored eMDP.")
-                                         .setDefaultValueString("explored")
+                                         "The name of the file to read the eMDP from. Argument 'expl' converts the currently explored eMDP.")
                                          .build())
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
                                          "outstream",
-                                         "The name of the file to write the dot string to. If not set prints the dot string to the console.")
-                                         .setDefaultValueString("console")
+                                         "The name of the file to write the dot string to. Argument 'log' prints the dot string to the console.")
                                          .build())
                         .build());
 
@@ -87,11 +84,9 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .build())
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
                                          "outstream",
-                                         "The name of the file to write the dot string to. If not set prints the dot string to the console.")
-                                         .setDefaultValueString("console")
+                                         "The name of the file to write the dot string to. Argument 'log' prints the dot string to the console.")
                                          .build())
                         .addArgument(storm::settings::ArgumentBuilder::createUnsignedIntegerArgument("state", "State for which neighborhood should be visualized.")
-                                         .setDefaultValueUnsignedInteger(0)
                                          .build())
                         .addArgument(storm::settings::ArgumentBuilder::createUnsignedIntegerArgument("depth", "Depth to which neighborhood should be explored.")
                                          .setDefaultValueUnsignedInteger(3)
@@ -99,22 +94,22 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .build());    
 
     this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeActionsOptionName, true,
-                                                   "Includes actions when converting the eMDP to the dot format.")
+                                                   "Includes actions when converting the eMDP/bMDP to the dot format.")
                         .setIsAdvanced()
                         .build());    
 
     this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeSamplesOptionName, true,
-                                                   "Includes Samples when converting the eMDP to the dot format.")
+                                                   "Includes Samples when converting the eMDP/bMDP to the dot format.")
                         .setIsAdvanced()
                         .build());   
 
     this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeLabelsOptionName, true,
-                                                   "Includes Labels when converting the eMDP to the dot format.")
+                                                   "Includes Labels when converting the eMDP/bMDP to the dot format.")
                         .setIsAdvanced()
                         .build());   
 
     this->addOption(storm::settings::OptionBuilder(moduleName, dotIncludeColorOptionName, true,
-                                                   "Includes Color when converting the eMDP to the dot format.")
+                                                   "Includes Color when converting the eMDP/bMDP to the dot format.")
                         .setIsAdvanced()
                         .build());         
 
@@ -129,8 +124,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createStringArgument(
                                          "outstream",
-                                         "The name of the file to write the dot string to. If not set prints the dot string to the console.")
-                                         .setDefaultValueString("console")
+                                         "The name of the file to write the dot string to. Argument 'log' prints the dot string to the console.")
                                          .build())
                         .build());
 
@@ -225,8 +219,41 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .build());                        
 }
 
+bool BlackboxSettings::isSetPrintEMdp() const {
+    return this->getOption(printEMdpOptionName).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetWriteEMdpToFile() const{
+    return this->getOption(writeEMdpToFile).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetEMdptoDot() const {
+    return this->getOption(convertToDotEMdpOptionName).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetEMdpNeighbToDot() const {
+    return this->getOption(convertDotNeighborhoodEMdpOptionName).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetDotIncAct() const {
+    return this->getOption(dotIncludeActionsOptionName).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetDotIncSmpl() const {
+    return this->getOption(dotIncludeSamplesOptionName).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetDotIncLab() const {
+    return this->getOption(dotIncludeLabelsOptionName).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetDotIncCol() const {
+    return this->getOption(dotIncludeColorOptionName).getHasOptionBeenSet();
+}
+
+
+bool BlackboxSettings::isSetPrintBMdp() const {
+    return this->getOption(printBMdpOptionName).getHasOptionBeenSet();
+}
+bool BlackboxSettings::isSetBMdpToDot() const {
+    return this->getOption(convertToDotBMdpOptionName).getHasOptionBeenSet();
+}
+
 std::string BlackboxSettings::getEMdpOutFileName() const {
-    return this->getOption(printEMdpOptionName).getArgumentByName("filename").getValueAsString();
+    return this->getOption(writeEMdpToFile).getArgumentByName("filename").getValueAsString();
 }
 
 std::string BlackboxSettings::getEMdpDotInFileName() const {
