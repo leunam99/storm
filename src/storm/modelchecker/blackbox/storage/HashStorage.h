@@ -42,7 +42,7 @@ class HashStorage {
     * 3.) key = succ       | value = #samples of the (state,action,succ) triple
     */
 
-    using countSampleMapPair = std::pair<StateType, std::unordered_map<StateType, StateType> >;
+    using countSampleMapPair = std::pair<StateType, std::unordered_map<StateType, uint64_t> >;
     std::unordered_map<StateType, std::unordered_map<StateType, countSampleMapPair > > data;
 
 
@@ -58,7 +58,7 @@ class HashStorage {
     };
 
     // Maps state action pair to number of known successors -> used in greybox setting 
-    std::unordered_map<std::pair<StateType, StateType>, StateType, pairHash> succCountMap;
+    std::unordered_map<std::pair<StateType, StateType>, int, pairHash> succCountMap;
 
     // Maps states to their predecessors action pair (created on demand for debugging)
     std::unordered_map<StateType, std::vector<std::pair<StateType, StateType> > > reverseMap;
@@ -74,7 +74,7 @@ class HashStorage {
      * @param action 
      * @return std::unordered_map<StateType, StateType>
      */
-    std::unordered_map<StateType, StateType> getSuccMap(StateType state, StateType action);
+    std::unordered_map<StateType, uint64_t> getSuccMap(StateType state, StateType action);
 
    public:
     /**
@@ -119,7 +119,7 @@ class HashStorage {
      * @param succ 
      * @param samples
      */
-    void incTrans(StateType state, StateType action, StateType succ, StateType samples);
+    void incTrans(StateType state, StateType action, StateType succ, uint64_t samples);
 
     /*!
      * Returns a vector of all states 
@@ -216,7 +216,7 @@ class HashStorage {
      * @param action 
      * @return StateType
      */
-    StateType getTotalSamples(StateType state, StateType action);
+    uint64_t getTotalSamples(StateType state, StateType action);
 
     /*!
      * Returns the samples for a (state,action,succ) triple
@@ -224,9 +224,9 @@ class HashStorage {
      * @param state 
      * @param action 
      * @param succ 
-     * @return StateType
+     * @return uint64_t
      */
-    StateType getSuccSamples(StateType state, StateType action, StateType succ);
+    uint64_t getSuccSamples(StateType state, StateType action, StateType succ);
 
     /*!
      * Set the number of successors for a (state,action) pair 
@@ -235,7 +235,7 @@ class HashStorage {
      * @param stateActionPair 
      * @param count 
      */
-    void setSuccCount(std::pair<StateType, StateType> stateActionPair, StateType count);
+    void setSuccCount(std::pair<StateType, StateType> stateActionPair, int count);
 
     /*!
      * get the number of successors for a (state,action) pair 
@@ -244,7 +244,7 @@ class HashStorage {
      * @param stateActionPair 
      * @param count 
      */
-    StateType getSuccCount(std::pair<StateType, StateType> stateActionPair);
+    int getSuccCount(std::pair<StateType, StateType> stateActionPair);
 
     /*!
      * Creates a mapping to the (state,action) predecessors of every state. 

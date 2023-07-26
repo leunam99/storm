@@ -42,6 +42,8 @@ const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheurist
 const std::string BlackboxSettings::deltaDistributionOptionName = "deltadist";
 const std::string BlackboxSettings::deltaOptionName = "delta";
 const std::string BlackboxSettings::boundFuncOptionName = "boundfunc";
+const std::string BlackboxSettings::greyboxOptionName = "greybox";
+
 // general constants
 const std::string BlackboxSettings::pMinOptionName = "pmin";
 const std::string BlackboxSettings::precisionOptionName = "precision";
@@ -193,6 +195,10 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .build())
                         .build());
 
+    this->addOption(storm::settings::OptionBuilder(moduleName, greyboxOptionName, false, "Take the model as an greybox instead of a blackbox")
+                        .setIsAdvanced()
+                        .build());
+
     // general options
     this->addOption(storm::settings::OptionBuilder(moduleName, pMinOptionName, false, "Lower bound for all transition probabilities in the blackbox mdp.")
                         .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("pMin", "Lower bound for all transition probabilities.")
@@ -338,6 +344,10 @@ double BlackboxSettings::getPMin() const {
 
 double BlackboxSettings::getPrecision() const {
     return this->getOption(precisionOptionName).getArgumentByName("eps").getValueAsDouble();
+}
+
+bool BlackboxSettings::getIsGreybox() const {
+    return this->getOption(greyboxOptionName).getHasOptionBeenSet();
 }
 
 bool BlackboxSettings::check() const {

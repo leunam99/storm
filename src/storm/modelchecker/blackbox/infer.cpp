@@ -1,4 +1,4 @@
-#include "storm/modelchecker/blackbox/EMdp2BMdp.h"
+#include "storm/modelchecker/blackbox/infer.h"
 
 #include "storm/storage/SparseMatrix.h"
 
@@ -15,7 +15,7 @@ storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<IndexType> 
     //row count: sum of number of actions for each state + 1 for dummy state
     IndexType rows = 1 + emdp.gettotalStateActionPairCount();
     //entries: total number of nonzero entries + 1 for dummy state + 1 for each action to account for unsampled transitions
-    //this overestimates the needed entries because some of them do not need the unsampled ones
+    //this overestimates the needed entries because some of them we do not need the unsampled ones
     IndexType entries = 1 + emdp.getTotalTransitionCount() + emdp.gettotalStateActionPairCount();
 
     return storm::storage::SparseMatrixBuilder<ValueType>(rows,states,entries,false,true,states);
@@ -41,10 +41,8 @@ void transferActionInformation(storm::models::sparse::ChoiceLabeling& choiceLabe
     }
 }
 
-
-// TODO make emdp (and therefore all called functions) const??
 template <typename IndexType, typename ValueType>
-BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDistribution<IndexType> &valueFunc, double pmin, double delta, bool isBlackbox){
+BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, DeltaDistribution<IndexType> &valueFunc, double pmin, double delta, bool isGreybox){
 
     using Bounds = storm::utility::ValuePair<ValueType>;
 
@@ -52,7 +50,7 @@ BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, De
 
     //Because of the dummy state both the state and action label need to be copied as it is not possible to change the item count of a labeling
     storm::models::sparse::StateLabeling stateLabeling(emdp.getTotalStateCount() + 1);
-    storm::models::sparse::ChoiceLabeling choiceLabeling(emdp.gettotalStateActionPairCount() + 1); //TODO werden unsampled actions mitgezählt??
+    storm::models::sparse::ChoiceLabeling choiceLabeling(emdp.gettotalStateActionPairCount() + 1);
     //calculate size of BMdp and reserve enough space
     storm::storage::SparseMatrixBuilder<Bounds> matrixBuilder = initialiseMatrix<Bounds, IndexType>(emdp);
 
@@ -66,11 +64,9 @@ BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, De
     for(IndexType state = 0; state < emdp.getTotalStateCount(); state++ ){
         matrixBuilder.newRowGroup(currentRow);
 
-        std::cout << "state: " << state << "\n";
-
         transferStateInformation(emdp.getStateLabels(state), stateLabeling, state);
 
-        for(auto actItr = emdp.getStateActionsItr(state); actItr.hasNext();) { //TODO because this is also just ascending, we could iterate differently instead!
+        for(auto actItr = emdp.getStateActionsItr(state); actItr.hasNext();) {
             auto action = actItr.next();
             int actionSamples = emdp.getSampleCount(state,action);
 
@@ -78,29 +74,29 @@ BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, De
 
             transferActionInformation(choiceLabeling, currentRow, emdp.getActionLabels(state, action));
 
-            std::cout << "\taction: " << action << "\n";
-
             if (actionSamples == 0) {
                 // Account for unsampled actions: one transition to dummy state (interval [1,1])
                 matrixBuilder.addNextValue(currentRow,dummy_state,storm::utility::ValuePair(std::make_pair(1.0,1.0)));
-                std::cout << "\t\tunsampled\n";
             } else {
                 for(auto targetItr = emdp.getStateActionsSuccItr(state,action); targetItr.hasNext();){
                     auto target_state = targetItr.next();
                     sampledSuccessors++;
 
-                    // delta assigned to this transition
-                    double delta_transition = valueFunc.getDeltaT(state, action,target_state);
-                    int samples = emdp.getSampleCount(state,action,target_state);
-                    auto interval = boundFunc.INTERVAL(actionSamples, samples, delta_transition);
+                    //Small optimisation: if we know that there is only one successor, we do not need to calculate anything and just set the interval to [1,1]
+                    if(isGreybox && emdp.getSuccCount(state,action) == 1){
+                        matrixBuilder.addNextValue(currentRow, target_state, storm::utility::ValuePair(std::make_pair(1.0,1.0)));
+                    } else {
+                        // delta assigned to this transition
+                        double delta_transition = valueFunc.getDeltaT(state, action, target_state);
+                        int samples = emdp.getSampleCount(state, action, target_state);
+                        auto interval = boundFunc.INTERVAL(actionSamples, samples, delta_transition);
 
-                    std::cout << "\t\ttransition: succ " << target_state << ", value" << storm::utility::ValuePair(interval) << "\n";
-
-                    matrixBuilder.addNextValue(currentRow,target_state,storm::utility::ValuePair(std::move(interval)));
+                        matrixBuilder.addNextValue(currentRow, target_state, storm::utility::ValuePair(std::move(interval)));
+                    }
                 }
 
                 // account for unsampled successors: transition to dummy state with the interval [0, 1]
-                if(isBlackbox){
+                if(!isGreybox){
                     //blackbox: skip if this state action pair has been sampled enough times
                     int requiredSamples =floor( log(delta) / log(1 - pmin));
                     if(actionSamples <= requiredSamples){
