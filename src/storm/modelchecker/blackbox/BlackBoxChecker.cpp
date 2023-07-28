@@ -100,6 +100,3 @@ template class BlackBoxChecker<storm::models::sparse::Mdp<double>, uint64_t>;
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-
-//TODO einzelnd kompilieren
-//TODO über storm executeable ausführbar sein
