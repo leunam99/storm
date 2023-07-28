@@ -176,23 +176,6 @@ StateType GreyboxWrapperOnWhitebox<StateType, ValueType>::getSucCount(StateType 
     return actionRow.size();
 }
 
-template<typename StateType, typename ValueType>
-GreyboxWrapperOnWhitebox<StateType, ValueType>::GreyboxWrapperOnWhitebox(storm::prism::Program const& program) : BlackboxWrapperOnWhitebox<StateType, ValueType>(program) {}
-
-template<typename StateType, typename ValueType>
-bool GreyboxWrapperOnWhitebox<StateType, ValueType>::isGreybox() {
-    return true;
-}
-
-template <typename StateType, typename ValueType>
-StateType GreyboxWrapperOnWhitebox<StateType, ValueType>::getSucCount(StateType state, StateType action) {
-    StateType stateIdx = BlackboxWrapperOnWhitebox<StateType, ValueType>::stateMappingOutIn.at(state);
-    StateType stateRowIdx = BlackboxWrapperOnWhitebox<StateType, ValueType>::explorationInformation.getStartRowOfGroup(BlackboxWrapperOnWhitebox<StateType, ValueType>::explorationInformation.getRowGroup(stateIdx));
-    auto& actionRow = BlackboxWrapperOnWhitebox<StateType, ValueType>::explorationInformation.getRowOfMatrix(stateRowIdx + action);
-
-    return actionRow.size();
-}
-
 template class BlackboxMDP<uint32_t, double>;
 template class BlackboxMDP<uint64_t, double>;
 

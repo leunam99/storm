@@ -34,10 +34,10 @@ BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program con
     BlackboxWrapperOnWhitebox<StateType, ValueType> whiteboxWrapper(program);
     if(storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getIsGreybox()){
         auto ptr = std::make_shared<GreyboxWrapperOnWhitebox<StateType, ValueType>>(program);
-        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);
+        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType, ValueType>>(ptr);
     } else {
         auto ptr = std::make_shared<BlackboxWrapperOnWhitebox<StateType, ValueType>>(program);
-        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);
+        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType, ValueType>>(ptr);
     }
 }
 
@@ -140,12 +140,8 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
             executeBMdpFlags(blackboxSettings, bMDP); 
             executeEMdpFlags(blackboxSettings, eMDP);
         
-        // TODO create infer output
         // value approximation (implemented some time in future)
     }
-
-    
-    
 
     // TODO return actual result when it can be computed
     return  std::make_unique<storm::modelchecker::ExplicitQuantitativeCheckResult<ValueType>>(0, 1);
