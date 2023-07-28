@@ -27,13 +27,13 @@ class HeuristicSim {
     protected:
      typedef StateType ActionType;
      typedef std::vector<std::pair<StateType, ActionType>> StateActionStack;         
-     std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp;
+     std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMdp;
 
     public:
      /*!
       * Constructor for HeuristicSim for a BlackboxMDP
       */
-     HeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp);
+     HeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMdp);
 
      /*!
       * returns the type of this simulation heuristic
@@ -67,9 +67,9 @@ class NaiveHeuristicSim : public HeuristicSim<StateType, ValueType> {
     using StateActionStack = typename HeuristicSim<StateType, ValueType>::StateActionStack;   
 
     public:
-     NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp, std::seed_seq& seed);
+     NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMdp, std::seed_seq& seed);
      
-     NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp);
+     NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMdp);
 
      /*!
       * returns the type of this simulation heuristic
@@ -103,7 +103,7 @@ class NaiveHeuristicSim : public HeuristicSim<StateType, ValueType> {
 };
 
 template <typename StateType, typename ValueType>
-std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSimType type, std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMDP, std::seed_seq& seed) {
+std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSimType type, std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMDP, std::seed_seq& seed) {
     switch (type) {
         case HeuristicSimType::NAIVE:
             return std::static_pointer_cast<HeuristicSim<StateType, ValueType>>(std::make_shared<NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seed));

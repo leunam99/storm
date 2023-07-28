@@ -17,8 +17,7 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-// TODO add reward system
-template <typename StateType>
+template <typename StateType, typename ValueType>
 class BlackboxMDP {
     public:
 
@@ -58,9 +57,20 @@ class BlackboxMDP {
       */
      virtual bool isGreybox() = 0;
 
-     // virtual auto getRewardModels() = 0;
+     /*!
+      * returns a vector of the defined reward models for this Blackbox MDP
+      */
+     virtual const std::vector<storm::prism::RewardModel> getRewardModels() = 0;
 
-     // virtual auto getStateRewards(StateType state) = 0;
+     /*!
+      * returns a vector of rewards for this state ordered after the RewardModels returned by getRewardModels
+      */
+     virtual const std::vector<ValueType> getStateRewards(StateType state) = 0;
+
+     /*!
+      * returns a vector of rewards for this action ordered after the RewardModels returned by getRewardModels
+      */
+     virtual const std::vector<ValueType> getStateActionRewards(StateType state, StateType action) = 0;
 
      /*!
       * returns a list of all labels of the given state
@@ -88,7 +98,7 @@ class BlackboxMDP {
 };
 
 template <typename StateType, typename ValueType>
-class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
+class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType, ValueType> {
     typedef uint32_t exploration_state_type; // exploration code only uses uint32_t and is not flexible
 
     public:
@@ -124,6 +134,21 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
       * returns true if this MDP is a greybox MDP, false if it is a blackbox MDP 
       */
      bool isGreybox() override;
+
+     /*!
+      * returns a vector of the defined reward models for this Blackbox MDP
+      */
+     const std::vector<storm::prism::RewardModel> getRewardModels() override;
+
+     /*!
+      * returns a vector of rewards for this state ordered after the RewardModels returned by getRewardModels
+      */
+     const std::vector<ValueType> getStateRewards(StateType state) override;
+
+     /*!
+      * returns a vector of rewards for this action ordered after the RewardModels returned by getRewardModels
+      */
+     const std::vector<ValueType> getStateActionRewards(StateType state, StateType action) override;
 
      /*!
       * returns a list of all labels of the given state
@@ -162,6 +187,8 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
      std::unordered_map<StateType, StateType> stateMappingInOut;  // maps internal indice to external
      std::unordered_map<StateType, StateType> stateMappingOutIn;  // maps external indice to internal
      std::unordered_map<std::pair<StateType, StateType>, std::set<std::string>, pairHash> actionLabels;
+     std::unordered_map<StateType, std::vector<ValueType>> stateRewards;
+     std::unordered_map<std::pair<StateType, StateType>, std::vector<ValueType>, pairHash> stateActionRewards;
 
 };
 

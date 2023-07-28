@@ -34,7 +34,7 @@ class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
      std::unique_ptr<CheckResult> computeUntilProbabilities(Environment const& env, CheckTask<storm::logic::UntilFormula, ValueType> const& checkTask) override;
 
     private:
-     std::shared_ptr<BlackboxMDP<StateType>> blackboxMDP;
+     std::shared_ptr<BlackboxMDP<StateType, ValueType>> blackboxMDP;
 
 };
 

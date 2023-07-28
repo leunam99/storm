@@ -10,13 +10,13 @@ namespace blackbox {
 namespace heuristicSim {
 
 template<typename StateType, typename ValueType>
-HeuristicSim<StateType, ValueType>::HeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp) :
+HeuristicSim<StateType, ValueType>::HeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMdp) :
                                                 blackboxMdp(blackboxMdp) {
     // intentionally left empty
 }
 
 template<typename StateType, typename ValueType>
-NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp,
+NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMdp,
                                                            std::seed_seq& seed) :
                                                            HeuristicSim<StateType, ValueType>(blackboxMdp),
                                                            randomGenerator(seed) {
@@ -24,7 +24,7 @@ NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm
 }
 
 template<typename StateType, typename ValueType>
-NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType>> blackboxMdp) :
+NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm::modelchecker::blackbox::BlackboxMDP<StateType, ValueType>> blackboxMdp) :
                                                            HeuristicSim<StateType, ValueType>(blackboxMdp),
                                                            randomGenerator(std::chrono::system_clock::now().time_since_epoch().count()) {
     // intentionally left empty

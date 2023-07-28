@@ -26,7 +26,7 @@ class BlackBoxExplorer {
       * @param heuristicSim
       * @return BlackBoxExplorer
       */
-     BlackBoxExplorer(std::shared_ptr<BlackboxMDP<StateType>> blackboxMDP, std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim);
+     BlackBoxExplorer(std::shared_ptr<BlackboxMDP<StateType, ValueType>> blackboxMDP, std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim);
 
      /*!
       * explores paths in the blackboxMDP and stores the visits in the given eMDP
@@ -37,7 +37,7 @@ class BlackBoxExplorer {
      void performExploration(EMdp<StateType>& eMDP, StateType numExplorations);
 
     private:
-     std::shared_ptr<BlackboxMDP<StateType>> blackboxMdp;
+     std::shared_ptr<BlackboxMDP<StateType, ValueType>> blackboxMdp;
      std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim;
 
 };

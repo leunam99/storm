@@ -22,15 +22,15 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-template <typename StateType>
-StateType BlackboxMDP<StateType>::getSucCount(StateType state, StateType action) {
+template <typename StateType, typename ValueType>
+StateType BlackboxMDP<StateType, ValueType>::getSucCount(StateType state, StateType action) {
     STORM_LOG_THROW(isGreybox(), storm::exceptions::NotImplementedException, "getSucCount is not implemented for this greybox MDP");
     STORM_LOG_THROW(!isGreybox(), storm::exceptions::NotSupportedException, "getSucCount is not implemented for this blackbox MDP");
     return 0;
 }
 
-template <typename StateType>
-double BlackboxMDP<StateType>::getPmin() {
+template <typename StateType, typename ValueType>
+double BlackboxMDP<StateType, ValueType>::getPmin() {
     return storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getPMin();
 }
 
@@ -87,6 +87,23 @@ bool BlackboxWrapperOnWhitebox<StateType, ValueType>::isGreybox() {
 }
 
 template <typename StateType, typename ValueType>
+const std::vector<storm::prism::RewardModel> BlackboxWrapperOnWhitebox<StateType, ValueType>::getRewardModels() {
+    return program.getRewardModels();
+}
+
+template <typename StateType, typename ValueType>
+const std::vector<ValueType> BlackboxWrapperOnWhitebox<StateType, ValueType>::getStateRewards(StateType state) {
+    StateType stateIdx = stateMappingOutIn[state];
+    return stateRewards[stateIdx];
+}
+
+template <typename StateType, typename ValueType>
+const std::vector<ValueType> BlackboxWrapperOnWhitebox<StateType, ValueType>::getStateActionRewards(StateType state, StateType action) {
+    StateType stateIdx = stateMappingOutIn[state];
+    return stateActionRewards[std::make_pair(stateIdx, action)];
+}
+
+template <typename StateType, typename ValueType>
 std::set<std::string> BlackboxWrapperOnWhitebox<StateType, ValueType>::getStateLabels(StateType state) {
     StateType stateIdx = stateMappingOutIn[state];
     //only update stateLabeling if necessary
@@ -116,7 +133,10 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
 
     // get actions; store them and their successors in explorationInformation
     stateGenerationLabels.load(comprState);
-    storm::generator::StateBehavior<ValueType, exploration_state_type> behavior = stateGenerationLabels.expand();    
+    storm::generator::StateBehavior<ValueType, exploration_state_type> behavior = stateGenerationLabels.expand();
+
+    // store state rewards
+    stateRewards[stateIdx] = behavior.getStateRewards();
     
     StateType startAction = explorationInformation.getActionCount();
     explorationInformation.addActionsToMatrix(behavior.getNumberOfChoices());
@@ -126,6 +146,7 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
         if (choice.hasLabels()) {
             actionLabels[std::make_pair(stateIdx, localAction)] = choice.getLabels();
         }
+        stateActionRewards[std::make_pair(stateIdx, localAction)] = choice.getRewards();
         for (auto const& entry : choice) {
            explorationInformation.getRowOfMatrix(startAction + localAction).emplace_back(entry.first, entry.second);
         }
@@ -136,8 +157,8 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
     explorationInformation.removeUnexploredState(unexploredIt);
 }
 
-template class BlackboxMDP<uint32_t>;
-template class BlackboxMDP<uint64_t>;
+template class BlackboxMDP<uint32_t, double>;
+template class BlackboxMDP<uint64_t, double>;
 
 template class BlackboxWrapperOnWhitebox<uint32_t, double>;
 template class BlackboxWrapperOnWhitebox<uint64_t, double>;

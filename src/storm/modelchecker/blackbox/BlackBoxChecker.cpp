@@ -32,7 +32,7 @@ template<typename ModelType, typename StateType>
 BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program const& program): blackboxMDP(nullptr){
     BlackboxWrapperOnWhitebox<StateType, ValueType> whiteboxWrapper(program);
     auto ptr = std::make_shared<BlackboxWrapperOnWhitebox<StateType, ValueType>>(program);
-    blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);    
+    blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType, ValueType>>(ptr);    
 }
 
 template<typename ModelType, typename StateType>
