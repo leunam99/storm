@@ -1,9 +1,4 @@
-//
-// Created by Maximilian Kamps on 25.05.23.
-//
-
-#ifndef STORM_BLACKBOXCHECKER_H
-#define STORM_BLACKBOXCHECKER_H
+#pragma once
 
 #include "storm/modelchecker/AbstractModelChecker.h"
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
@@ -22,7 +17,7 @@ class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
 
      BlackBoxChecker(storm::prism::Program const& program);
 
-     /*!
+     /*! 
       * Determines whether the model checker can handle the given verification task. If this method returns
       * false, the task must not be checked using this model checker.
       *
@@ -41,4 +36,3 @@ class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelTyp
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_BLACKBOXCHECKER_H

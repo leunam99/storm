@@ -1,5 +1,4 @@
-#ifndef STORM_BOUNDFUNC_H
-#define STORM_BOUNDFUNC_H
+#pragma once
 
 #include <utility> 
 #include <stdint.h>
@@ -23,14 +22,16 @@ class BoundFunc {
      * @param delta : Inconfidence value delta
      * @return : ValuePair with upper and lower bound
      */
-    virtual std::pair<ValueType,ValueType> INTERVAL(int64_t totalSamples, int64_t partialSample, double delta) = 0; //abstract method
+    virtual std::pair<ValueType,ValueType> INTERVAL(uint64_t totalSamples, uint64_t partialSample, double delta) = 0;
+    virtual ~BoundFunc();
 };
+template<typename ValueType> BoundFunc<ValueType>::~BoundFunc() = default;
 
 template <typename ValueType>
 class HoeffDingBound : public BoundFunc<ValueType> {
    public:
-    std::pair<ValueType,ValueType> INTERVAL(int64_t totalSamples, int64_t partialSample, double delta) {
-        ValueType bound_width = sqrt((log(delta / 2)) / (-2 * totalSamples));
+    std::pair<ValueType,ValueType> INTERVAL(uint64_t totalSamples, uint64_t partialSample, double delta) {
+        ValueType bound_width = sqrt((log(delta / 2)) / (-2 * (ValueType) totalSamples));
         ValueType median = (ValueType)partialSample / (ValueType)totalSamples;
         return std::make_pair(std::clamp(median - bound_width, 0., 1.), std::clamp(median + bound_width, 0., 1.));
     }
@@ -39,8 +40,8 @@ class HoeffDingBound : public BoundFunc<ValueType> {
 template <typename ValueType>
 class OneSidedHoeffDingBound : public BoundFunc<ValueType> {
    public:
-    std::pair<ValueType,ValueType> INTERVAL(int64_t totalSamples, int64_t partialSample, double delta) {
-        ValueType bound_width = sqrt((log(delta / 2)) / (-2 * totalSamples));
+    std::pair<ValueType,ValueType> INTERVAL(uint64_t totalSamples, uint64_t partialSample, double delta) {
+        ValueType bound_width = sqrt((log(delta / 2)) / (-2 * (ValueType) totalSamples));
         ValueType median = (ValueType)partialSample / (ValueType)totalSamples;
         return std::make_pair(std::clamp(median - bound_width, 0., 1.), 1.);
     } 
@@ -55,6 +56,4 @@ std::shared_ptr<BoundFunc<ValueType>> getBoundFunc(BoundFuncType type) {
             return std::static_pointer_cast<BoundFunc<ValueType>>(std::make_shared<OneSidedHoeffDingBound<ValueType>>());
     }
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected boundary function " << type << "is not supported");
-};
-
-#endif
+}

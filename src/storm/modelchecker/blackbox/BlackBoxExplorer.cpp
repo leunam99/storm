@@ -49,8 +49,12 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>&
             state = stack.back().first;
             if (!eMDP.isStateKnown(state)) {
                 // init State with all actions in eMDP
-                for (int i = 0; i < blackboxMdp->getAvailActions(state); i++) {
-                    eMDP.addUnsampledAction(state, i);
+                for (StateType action = 0; action < blackboxMdp->getAvailActions(state); action++) {
+                    eMDP.addUnsampledAction(state, action);
+
+                    if(blackboxMdp->isGreybox()){
+                        eMDP.setSuccCount(state, action, blackboxMdp->getSucCount(state, action));
+                    }
                 }
 
                 // TODO add Reward

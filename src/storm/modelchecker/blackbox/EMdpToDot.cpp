@@ -5,12 +5,13 @@ namespace modelchecker {
 namespace blackbox {
 
 template<typename StateType>
-EMdpDotGenerator<StateType>::EMdpDotGenerator(bool includeAction, bool includeSamples, bool includeLabel, bool includeColor) {
-    includeAction = includeAction; 
-    includeSamples = includeSamples;
-    includeLabel = includeLabel;
-    includeColor = includeColor;
+EMdpDotGenerator<StateType>::EMdpDotGenerator(bool incAction, bool incSamples, bool incLabel, bool incColor) {
+    includeAction = incAction; 
+    includeSamples = incSamples;
+    includeLabel = incLabel;
+    includeColor = incColor;
 
+    std::cout << "Inc labels: " << includeLabel << std::endl;
 
     colorMap[0] = "red";
     colorMap[1] = "blue";
@@ -20,6 +21,8 @@ EMdpDotGenerator<StateType>::EMdpDotGenerator(bool includeAction, bool includeSa
     colorMap[5] = "brown";
     colorMap[6] = "black";
 };
+
+
 
 template<typename StateType>
 std::string EMdpDotGenerator<StateType>::colorObj(StateType colorCtr) {
@@ -51,8 +54,8 @@ void EMdpDotGenerator<StateType>::addTrans(StateType state1, StateType state2, s
 template<typename StateType> 
 void EMdpDotGenerator<StateType>::addEMdpStateDotLabel(StateType state, std::vector<std::string> labelVec, std::string color, std::ostream& outStream) {
     outStream << state << " [label=\"name: " << state;
-    outStream << (includeLabel ? "\\n" + addLabels(labelVec) : "");
-    outStream << (includeColor ? "\", " + colorObj(color) : "");
+    outStream << (includeLabel ? "\\n" + addLabels(labelVec) : "") << "\"";
+    outStream << (includeColor ? ", " + colorObj(color) : "");
     outStream << "]" << std::endl;
 }
 
@@ -61,8 +64,8 @@ void EMdpDotGenerator<StateType>::addEMdpDotLabel(StateType action, StateType sa
     outStream << "[label=\"";
     outStream << (includeAction  ? "act: " + std::to_string(action) + "\\n" : "");
     outStream << (includeSamples ? "#samples: " + std::to_string(samples) + "\\n" : "");
-    outStream << (includeLabel   ? addLabels(labelVec) + "\\n" : "");
-    outStream << (includeColor   ? "\", " + colorObj(colorCtr) : "");
+    outStream << (includeLabel   ? addLabels(labelVec) + "\\n" : "") << "\"";
+    outStream << (includeColor   ? ", " + colorObj(colorCtr) : "");
     outStream << "]" << std::endl;
 }
 

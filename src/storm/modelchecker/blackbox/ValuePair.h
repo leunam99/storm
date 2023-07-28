@@ -1,6 +1,4 @@
-
-#ifndef STORM_VALUEPAIR_H
-#define STORM_VALUEPAIR_H
+#pragma once
 
 #include <cstddef>
 #include <iterator>
@@ -90,5 +88,3 @@ std::size_t hash_value(ValuePair<ValueType> const& b);
 
 }
 
-
-#endif  // STORM_VALUEPAIR_H

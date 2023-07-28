@@ -1,5 +1,5 @@
 #include "modelchecker/blackbox/EMdp.h"
-#include "modelchecker/blackbox/EMdp2BMdp.h"
+#include "modelchecker/blackbox/infer.h"
 #include "storm/models/sparse/StandardRewardModel.h"
 
 #include "test/storm_gtest.h"

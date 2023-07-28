@@ -1,5 +1,4 @@
-#ifndef STORM_BLACKBOX_INTERFACE
-#define STORM_BLACKBOX_INTERFACE
+#pragma once
 
 /*
  * This header defines the general interface expected from a blackbox MDP
@@ -95,6 +94,8 @@ class BlackboxMDP {
       * @throws NotSupportedException, NotImplementedException 
       */
      virtual StateType getSucCount(StateType state, StateType action);
+
+     virtual ~BlackboxMDP();
 };
 
 template <typename StateType, typename ValueType>
@@ -102,7 +103,7 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType, ValueType> {
     typedef uint32_t exploration_state_type; // exploration code only uses uint32_t and is not flexible
 
     public:
-     BlackboxWrapperOnWhitebox(storm::prism::Program const& program);
+     explicit BlackboxWrapperOnWhitebox(storm::prism::Program const& program);
     
      /*!
       * returns the state indentifier of the initial state
@@ -117,7 +118,6 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType, ValueType> {
       */
      StateType getAvailActions(StateType state) override;
      
-
      /*!
       * sample a random successor from the action on the given state and return the successors state identifier.
       *
@@ -134,6 +134,7 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType, ValueType> {
       * returns true if this MDP is a greybox MDP, false if it is a blackbox MDP 
       */
      bool isGreybox() override;
+
 
      /*!
       * returns a vector of the defined reward models for this Blackbox MDP
@@ -163,7 +164,7 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType, ValueType> {
       */
      std::set<std::string> getActionLabels(StateType state, StateType action) override;
 
-    private:
+    protected:
      void exploreState(StateType state);
 
      storm::prism::Program program;
@@ -192,7 +193,16 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType, ValueType> {
 
 };
 
+template <typename StateType, typename ValueType>
+class GreyboxWrapperOnWhitebox: public BlackboxWrapperOnWhitebox<StateType, ValueType> {
+   public:
+    explicit GreyboxWrapperOnWhitebox(storm::prism::Program const& program);
+    bool isGreybox() override;
+    StateType getSucCount(StateType state, StateType action) override;
+
+};
+
+
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_BLACKBOX_INTERFACE

@@ -43,8 +43,8 @@ HashStorage<StateType>::HashStorage() : data() {
 }
 
 template<typename StateType>
-std::unordered_map<StateType, StateType> HashStorage<StateType>::getSuccMap(StateType state, StateType action) {
-    std::unordered_map<StateType, StateType> succMap;
+std::unordered_map<StateType, uint64_t> HashStorage<StateType>::getSuccMap(StateType state, StateType action) {
+    std::unordered_map<StateType, uint64_t> succMap;
     if (data.find(state) == data.end()) {
         return succMap;
     }
@@ -94,7 +94,7 @@ void HashStorage<StateType>::addUnsampledAction(StateType state, StateType actio
 
 
 template<typename StateType>
-void HashStorage<StateType>::incTrans(StateType state, StateType action, StateType succ, StateType samples) {
+void HashStorage<StateType>::incTrans(StateType state, StateType action, StateType succ, uint64_t samples) {
     addState(state);  // add state to data if it doesn't exist
     addState(succ);   // add succ to data if it doesn't exist
 
@@ -211,7 +211,7 @@ StateType HashStorage<StateType>::getTotalTransitionCount() {
 }
 
 template<typename StateType>
-StateType HashStorage<StateType>::getTotalSamples(StateType state, StateType action) {
+uint64_t HashStorage<StateType>::getTotalSamples(StateType state, StateType action) {
     if (data.find(state) == data.end()) {
         return -1;
     }
@@ -224,7 +224,7 @@ StateType HashStorage<StateType>::getTotalSamples(StateType state, StateType act
 }
 
 template<typename StateType>
-StateType HashStorage<StateType>::getSuccSamples(StateType state, StateType action, StateType succ) {
+uint64_t HashStorage<StateType>::getSuccSamples(StateType state, StateType action, StateType succ) {
     auto succMap = getSuccMap(state, action);
 
     if (succMap.find(succ) != succMap.end())
@@ -233,12 +233,12 @@ StateType HashStorage<StateType>::getSuccSamples(StateType state, StateType acti
 }
 
 template<typename StateType>
-void HashStorage<StateType>::setSuccCount(std::pair<StateType, StateType> stateActionPair, StateType count) {
+void HashStorage<StateType>::setSuccCount(std::pair<StateType, StateType> stateActionPair, int count) {
     succCountMap[stateActionPair] = count;
 }
 
 template<typename StateType>
-StateType HashStorage<StateType>::getSuccCount(std::pair<StateType, StateType> stateActionPair) {
+int HashStorage<StateType>::getSuccCount(std::pair<StateType, StateType> stateActionPair) {
     if(succCountMap.find(stateActionPair) != succCountMap.end())
         return succCountMap[stateActionPair];
     return -1;

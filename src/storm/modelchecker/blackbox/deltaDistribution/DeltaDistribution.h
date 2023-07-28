@@ -1,5 +1,4 @@
-#ifndef STORM_DELTADISTRIBUTION_H
-#define STORM_DELTADISTRIBUTION_H
+#pragma once
 
 #include "modelchecker/blackbox/EMdp.h"
 
@@ -27,9 +26,9 @@ class DeltaDistribution {
      */
     virtual double getDeltaT(IndexType state, IndexType action, IndexType target_state) = 0;
 
-
+    virtual ~DeltaDistribution();
 };
-
+template<typename IndexType> DeltaDistribution<IndexType>::~DeltaDistribution() = default;
 
 template <typename IndexType>
 class UniformDelta : public DeltaDistribution<IndexType> {
@@ -50,7 +49,7 @@ class UniformDelta : public DeltaDistribution<IndexType> {
      * @param target_state
      * @return
      */
-    double getDeltaT(IndexType state, IndexType action, IndexType target_state) override {
+    double getDeltaT(IndexType, IndexType, IndexType) override {
         return transitionDelta;
     }
    private:
@@ -66,4 +65,3 @@ std::shared_ptr<DeltaDistribution<IndexType>> getDeltaDistribution(DeltaDistType
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected delta distribution " << type << "is not supported");
 };
 
-#endif  // STORM_DELTADISTRIBUTION_H

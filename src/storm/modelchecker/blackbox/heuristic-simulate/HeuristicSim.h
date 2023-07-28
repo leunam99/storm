@@ -1,9 +1,4 @@
-//
-// Created by Maximilian Kamps on 25.05.23.
-//
-
-#ifndef STORM_HEURISTICSIM_H
-#define STORM_HEURISTICSIM_H
+#pragma once
 
 #include <random>
 
@@ -58,8 +53,11 @@ class HeuristicSim {
       * reset any memory this heuristic has collected dor its decision making
       */
      virtual void reset() = 0;
+
+     virtual ~HeuristicSim();
 };
 
+template <typename StateType, typename ValueType> HeuristicSim<StateType,ValueType>::~HeuristicSim() = default;
 
 template <typename StateType, typename ValueType>
 class NaiveHeuristicSim : public HeuristicSim<StateType, ValueType> {
@@ -115,4 +113,3 @@ std::shared_ptr<HeuristicSim<StateType, ValueType>> getHeuristicSim(HeuristicSim
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_HEURISTICSIM_H

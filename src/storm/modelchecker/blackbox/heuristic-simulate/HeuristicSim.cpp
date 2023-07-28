@@ -31,7 +31,7 @@ NaiveHeuristicSim<StateType, ValueType>::NaiveHeuristicSim(std::shared_ptr<storm
 }
 
 template<typename StateType, typename ValueType>
-bool NaiveHeuristicSim<StateType, ValueType>::shouldStopSim(StateActionStack& pathHist) {
+bool NaiveHeuristicSim<StateType, ValueType>::shouldStopSim(StateActionStack&) {
     // no extra logic here
     return false;
 }
