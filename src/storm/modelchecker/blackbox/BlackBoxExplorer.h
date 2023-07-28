@@ -1,13 +1,8 @@
-//
-// Created by Maximilian Kamps on 25.05.23.
-//
+#pragma once
 
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
 #include "storm/modelchecker/blackbox/EMdp.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
-
-#ifndef STORM_BLACKBOXEXPLORER_H
-#define STORM_BLACKBOXEXPLORER_H
 
 namespace storm {
 namespace modelchecker {
@@ -45,4 +40,3 @@ class BlackBoxExplorer {
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-#endif  // STORM_BLACKBOXEXPLORER_H

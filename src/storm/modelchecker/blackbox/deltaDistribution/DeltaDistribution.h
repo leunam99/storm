@@ -1,5 +1,4 @@
-#ifndef STORM_DELTADISTRIBUTION_H
-#define STORM_DELTADISTRIBUTION_H
+#pragma once
 
 #include "modelchecker/blackbox/EMdp.h"
 
@@ -66,4 +65,3 @@ std::shared_ptr<DeltaDistribution<IndexType>> getDeltaDistribution(DeltaDistType
     STORM_LOG_THROW(false, storm::exceptions::NotSupportedException, "the selected delta distribution " << type << "is not supported");
 };
 
-#endif  // STORM_DELTADISTRIBUTION_H

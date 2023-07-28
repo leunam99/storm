@@ -1,6 +1,4 @@
-#ifndef STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_
-#define STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_
-
+#pragma once
 #include <random>
 
 #include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
@@ -19,6 +17,19 @@ namespace modules {
  */
 class BlackboxSettings : public ModuleSettings {
    public:
+
+    bool isSetPrintEMdp() const;
+    bool isSetWriteEMdpToFile() const;
+    bool isSetEMdptoDot() const;
+    bool isSetEMdpNeighbToDot() const; 
+    bool isSetDotIncAct() const;
+    bool isSetDotIncSmpl() const;
+    bool isSetDotIncLab() const;
+    bool isSetDotIncCol() const;
+
+    bool isSetPrintBMdp() const;
+    bool isSetBMdpToDot() const;
+    
     /*!
      * Creates a new set of exploration settings.
      */
@@ -187,5 +198,3 @@ class BlackboxSettings : public ModuleSettings {
 }  // namespace modules
 }  // namespace settings
 }  // namespace storm
-
-#endif /* STORM_SETTINGS_MODULES_BLACKBOXSETTINGS_H_ */
