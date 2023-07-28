@@ -87,7 +87,7 @@ class EMdpDotGenerator {
           * Constructs new EMdp Dot Generator 
           * 
           */
-         EMdpDotGenerator();
+         EMdpDotGenerator() = default;
 
          /*!
           * Constructs new EMdp Dot Generator 
