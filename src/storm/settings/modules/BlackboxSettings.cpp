@@ -201,19 +201,19 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                                          .build())
                         .build());
 
-    this->addOption(storm::settings::OptionBuilder(moduleName, greyboxOptionName, false, "Take the model as an greybox instead of a blackbox")
+    this->addOption(storm::settings::OptionBuilder(moduleName, greyboxOptionName, true, "Take the model as an greybox instead of a blackbox")
                         .setIsAdvanced()
                         .build());
 
     // general options
-    this->addOption(storm::settings::OptionBuilder(moduleName, pMinOptionName, false, "Lower bound for all transition probabilities in the blackbox mdp.")
+    this->addOption(storm::settings::OptionBuilder(moduleName, pMinOptionName, true, "Lower bound for all transition probabilities in the blackbox mdp.")
                         .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("pMin", "Lower bound for all transition probabilities.")
                                          .setDefaultValueDouble(1e-06)
                                          .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
                                          .build())
                         .build());
 
-    this->addOption(storm::settings::OptionBuilder(moduleName, precisionOptionName, false, "The precision to achieve. (To be implemented)")
+    this->addOption(storm::settings::OptionBuilder(moduleName, precisionOptionName, true, "The precision to achieve. (To be implemented)")
                         .setShortName(precisionOptionShortName)
                         .setIsAdvanced()
                         .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("eps", "The value to use to determine convergence.")
