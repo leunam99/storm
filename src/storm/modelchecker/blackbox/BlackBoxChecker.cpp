@@ -34,10 +34,10 @@ BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program con
     BlackboxWrapperOnWhitebox<StateType, ValueType> whiteboxWrapper(program);
     if(storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getIsGreybox()){
         auto ptr = std::make_shared<GreyboxWrapperOnWhitebox<StateType, ValueType>>(program);
-        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);
+        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType, ValueType>>(ptr);
     } else {
         auto ptr = std::make_shared<BlackboxWrapperOnWhitebox<StateType, ValueType>>(program);
-        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType>>(ptr);
+        blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType, ValueType>>(ptr);
     }
 }
 
@@ -123,8 +123,6 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
     auto deltaDist = getDeltaDistribution<StateType>(deltaDistType);
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
 
-    // init objects for output generation
-
     // run 3 step algorithm
     uint_fast64_t iterCount = 0;
     while (eps < valueBounds.second - valueBounds.first && iterCount < maxIterations) {
@@ -140,12 +138,8 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
             executeBMdpFlags(blackboxSettings, bMDP); 
             executeEMdpFlags(blackboxSettings, eMDP);
         
-        // TODO create infer output
         // value approximation (implemented some time in future)
     }
-
-    
-    
 
     // TODO return actual result when it can be computed
     return  std::make_unique<storm::modelchecker::ExplicitQuantitativeCheckResult<ValueType>>(0, 1);
@@ -161,6 +155,3 @@ template class BlackBoxChecker<storm::models::sparse::Mdp<double>, uint64_t>;
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-
-//TODO einzelnd kompilieren
-//TODO über storm executeable ausführbar sein

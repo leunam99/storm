@@ -6,16 +6,17 @@
 */
 #include <random>
 
-#include "storm/modelchecker/exploration/StateGeneration.h"
+#include "storm/modelchecker/blackbox/storage/StateGenerationLabels.h"
 #include "storm/modelchecker/exploration/ExplorationInformation.h"
+#include "storm/models/sparse/StateLabeling.h"
 #include "storm/logic/Formula.h"
+
 
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-// TODO add reward system
-template <typename StateType>
+template <typename StateType, typename ValueType>
 class BlackboxMDP {
     public:
 
@@ -55,15 +56,33 @@ class BlackboxMDP {
       */
      virtual bool isGreybox() = 0;
 
-     // virtual auto getRewardModels() = 0;
+     /*!
+      * returns a vector of the defined reward models for this Blackbox MDP
+      */
+     virtual const std::vector<storm::prism::RewardModel> getRewardModels() = 0;
 
-     // virtual auto getStateRewards(StateType state) = 0;
+     /*!
+      * returns a vector of rewards for this state ordered after the RewardModels returned by getRewardModels
+      */
+     virtual const std::vector<ValueType> getStateRewards(StateType state) = 0;
 
-     // virtual auto getStateLabels(StateType state) = 0;
+     /*!
+      * returns a vector of rewards for this action ordered after the RewardModels returned by getRewardModels
+      */
+     virtual const std::vector<ValueType> getStateActionRewards(StateType state, StateType action) = 0;
 
-     // virtual auto getActionReward(StateType state, StateType action) = 0;
+     /*!
+      * returns a list of all labels of the given state
+      * @param state state to inquire labels from 
+      */
+     virtual std::set<std::string> getStateLabels(StateType state) = 0;
 
-     // virtual auto getActionLabels(StateType state, StateType action) = 0;
+     /*!
+      * returns a list of all labels of the given action
+      * @param state state with action to inquire labels from 
+      * @param action action to inquire labels from 
+      */
+     virtual std::set<std::string> getActionLabels(StateType state, StateType action) = 0;
      
      /*!
       * greybox method
@@ -80,7 +99,7 @@ class BlackboxMDP {
 };
 
 template <typename StateType, typename ValueType>
-class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
+class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType, ValueType> {
     typedef uint32_t exploration_state_type; // exploration code only uses uint32_t and is not flexible
 
     public:
@@ -99,7 +118,6 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
       */
      StateType getAvailActions(StateType state) override;
      
-
      /*!
       * sample a random successor from the action on the given state and return the successors state identifier.
       *
@@ -117,15 +135,61 @@ class BlackboxWrapperOnWhitebox: public BlackboxMDP<StateType> {
       */
      bool isGreybox() override;
 
+
+     /*!
+      * returns a vector of the defined reward models for this Blackbox MDP
+      */
+     const std::vector<storm::prism::RewardModel> getRewardModels() override;
+
+     /*!
+      * returns a vector of rewards for this state ordered after the RewardModels returned by getRewardModels
+      */
+     const std::vector<ValueType> getStateRewards(StateType state) override;
+
+     /*!
+      * returns a vector of rewards for this action ordered after the RewardModels returned by getRewardModels
+      */
+     const std::vector<ValueType> getStateActionRewards(StateType state, StateType action) override;
+
+     /*!
+      * returns a list of all labels of the given state
+      * @param state state to inquire labels from 
+      */
+     std::set<std::string> getStateLabels(StateType state) override;
+
+     /*!
+      * returns a list of all labels of the given action
+      * @param state state with action to inquire labels from 
+      * @param action action to inquire labels from 
+      */
+     std::set<std::string> getActionLabels(StateType state, StateType action) override;
+
     protected:
      void exploreState(StateType state);
 
      storm::prism::Program program;
      storm::modelchecker::exploration_detail::ExplorationInformation<exploration_state_type, ValueType> explorationInformation;
-     storm::modelchecker::exploration_detail::StateGeneration<exploration_state_type, ValueType> stateGeneration;
+     storm::modelchecker::exploration_detail::StateGenerationLabels<exploration_state_type, ValueType> stateGenerationLabels;
+     storm::models::sparse::StateLabeling stateLabeling;
+
      mutable std::default_random_engine randomGenerator;
+
+    // TODO copied from EMdp.h declare somether to just import
+    struct pairHash {
+        template <class T1, class T2>
+        std::size_t operator () (const std::pair<T1,T2> &p) const {
+            auto h1 = std::hash<T1>{}(p.first);
+            auto h2 = std::hash<T2>{}(p.second);
+
+            return h1 ^ h2;  
+        }
+    };
+
      std::unordered_map<StateType, StateType> stateMappingInOut;  // maps internal indice to external
      std::unordered_map<StateType, StateType> stateMappingOutIn;  // maps external indice to internal
+     std::unordered_map<std::pair<StateType, StateType>, std::set<std::string>, pairHash> actionLabels;
+     std::unordered_map<StateType, std::vector<ValueType>> stateRewards;
+     std::unordered_map<std::pair<StateType, StateType>, std::vector<ValueType>, pairHash> stateActionRewards;
 
 };
 
