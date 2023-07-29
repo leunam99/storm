@@ -75,7 +75,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
 
     if(blackboxSettings.isSetEMdpNeighbToDot()) { //Neighborhood Dot coversion if flag is set 
         auto eMDPtemp = eMDP.eMdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
-        if(blackboxSettings.getEMdpDotOutFileName() == "log") {
+        if(blackboxSettings.getEMdpNeighborhoodDotOutFileName() == "log") {
             dotGenEMdp.convertNeighborhood(eMDPtemp, blackboxSettings.getEMdpNeighborhoodState(), blackboxSettings.getEMdpNeighborhoodDepth(), std::cout);
         } else {
             std::ofstream outFile(blackboxSettings.getEMdpNeighborhoodDotOutFileName());
@@ -88,8 +88,6 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
 
 template<typename StateType>
 void executeBMdpFlags(settings::modules::BlackboxSettings blackboxSettings, BMdp<StateType> bMDP) {
-    if(blackboxSettings.isSetPrintBMdp()) //Print the explored bMDP if flag is set 
-        bMDP.printModelInformationToStream(std::cout);
     if(blackboxSettings.isSetBMdpToDot()) { //Convert bMDP to dot 
         if(blackboxSettings.getBMdpDotOutFileName() == "log") {
             bMDP.writeDotToStream(std::cout, 30, blackboxSettings.isSetDotIncLab(), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, true);

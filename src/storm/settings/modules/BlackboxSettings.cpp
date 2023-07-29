@@ -30,7 +30,6 @@ const std::string BlackboxSettings::dotIncludeLabelsOptionName = "dotIncLab";
 const std::string BlackboxSettings::dotIncludeColorOptionName = "dotIncCol";
 
 // visualize bmdp constants 
-const std::string BlackboxSettings::printBMdpOptionName = "printbMDP";
 const std::string BlackboxSettings::convertToDotBMdpOptionName = "bMDPtoDot"; 
 
 // simulation constants
@@ -116,11 +115,6 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .build());         
 
     // visualize bmdp options 
-
-    this->addOption(storm::settings::OptionBuilder(moduleName, printBMdpOptionName, true,
-                                                   "Prints the bMDP to the console.")
-                        .setIsAdvanced()
-                        .build());
 
     this->addOption(storm::settings::OptionBuilder(moduleName, convertToDotBMdpOptionName, true, "Converts the bMDP to the dot format.")
                         .setIsAdvanced()
@@ -250,10 +244,6 @@ bool BlackboxSettings::isSetDotIncCol() const {
     return this->getOption(dotIncludeColorOptionName).getHasOptionBeenSet();
 }
 
-
-bool BlackboxSettings::isSetPrintBMdp() const {
-    return this->getOption(printBMdpOptionName).getHasOptionBeenSet();
-}
 bool BlackboxSettings::isSetBMdpToDot() const {
     return this->getOption(convertToDotBMdpOptionName).getHasOptionBeenSet();
 }
@@ -367,7 +357,6 @@ bool BlackboxSettings::check() const {
                       this->getOption(dotIncludeSamplesOptionName).getHasOptionBeenSet() ||
                       this->getOption(dotIncludeLabelsOptionName).getHasOptionBeenSet() ||
                       this->getOption(dotIncludeColorOptionName).getHasOptionBeenSet() ||
-                      this->getOption(printBMdpOptionName).getHasOptionBeenSet() ||
                       this->getOption(convertToDotBMdpOptionName).getHasOptionBeenSet();
     STORM_LOG_WARN_COND(storm::settings::getModule<storm::settings::modules::CoreSettings>().getEngine() == storm::utility::Engine::Blackbox || !optionsSet,
                         "blackbox engine is not selected, so setting options for it has no effect.");

@@ -11,8 +11,6 @@ EMdpDotGenerator<StateType>::EMdpDotGenerator(bool incAction, bool incSamples, b
     includeLabel = incLabel;
     includeColor = incColor;
 
-    std::cout << "Inc labels: " << includeLabel << std::endl;
-
     colorMap[0] = "red";
     colorMap[1] = "blue";
     colorMap[2] = "green";
@@ -161,7 +159,7 @@ template class EMdpDotGenerator<uint64_t>;
 /*
 int main(int argc, char const *argv[])
 {   
-
+    
     auto emdp = storm::modelchecker::blackbox::EMdp<int_fast32_t>();
     emdp.addVisit(0,0,1);
     emdp.addVisit(0,0,7);
@@ -190,7 +188,9 @@ int main(int argc, char const *argv[])
     auto dot = storm::modelchecker::blackbox::EMdpDotGenerator<int_fast32_t>(true,true,true,true);
     dot.convertNeighborhood(emdp, 1, 2, std::cout);
     std::cout << "Helooooooo";
+    
     return 0;
     
 }
 */
+
