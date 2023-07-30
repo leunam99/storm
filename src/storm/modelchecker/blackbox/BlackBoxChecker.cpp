@@ -75,6 +75,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
 
     if(blackboxSettings.isSetEMdpNeighbToDot()) { //Neighborhood Dot coversion if flag is set 
         auto eMDPtemp = eMDP.eMdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
+        eMDPtemp.createReverseMapping();
         if(blackboxSettings.getEMdpNeighborhoodDotOutFileName() == "log") {
             dotGenEMdp.convertNeighborhood(eMDPtemp, blackboxSettings.getEMdpNeighborhoodState(), blackboxSettings.getEMdpNeighborhoodDepth(), std::cout);
         } else {

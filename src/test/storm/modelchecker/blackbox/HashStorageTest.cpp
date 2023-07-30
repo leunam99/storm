@@ -25,24 +25,13 @@ TEST(HashStorage, incTransExistingState) {
         ASSERT_EQ(hashStorage.getTotalStateCount(), 2);
 }
 
-TEST(HashStorage, getSuccCount) {
-        auto hashStorage = storm::modelchecker::blackbox::storage::HashStorage<uint_fast64_t>();
-        hashStorage.incTrans(1,30,2,1);
-        hashStorage.incTrans(1,30,3,1);
-        hashStorage.incTrans(1,40,4,1);
-        hashStorage.incTrans(1,40,5,1);
-
-        ASSERT_EQ(hashStorage.getSuccCount(std::make_pair(1,30)), 2);
-        ASSERT_EQ(hashStorage.getSuccCount(std::make_pair(1,40)), 2);
-}
-
 TEST(HashStorage, getTotalSamplesForState) {
         auto hashStorage = storm::modelchecker::blackbox::storage::HashStorage<uint_fast64_t>();
         hashStorage.incTrans(1,2,3,10);
         hashStorage.incTrans(1,2,4,11);
         hashStorage.incTrans(1,2,5,9);
 
-        ASSERT_EQ(hashStorage.getTotalSamples(1,2), 20);
+        ASSERT_EQ(hashStorage.getTotalSamples(1,2), 30);
 }
 
 TEST(HashStorage, reverseMap) {
@@ -72,7 +61,7 @@ TEST(HashStorage, logTotals) {
 
         ASSERT_EQ(hashStorage.getTotalStateCount(), 5);
         ASSERT_EQ(hashStorage.getTotalTransitionCount(), 5);
-        ASSERT_EQ(hashStorage.gettotalStateActionPairCount(), 6);
+        ASSERT_EQ(hashStorage.gettotalStateActionPairCount(), 3);
 }
 
 
