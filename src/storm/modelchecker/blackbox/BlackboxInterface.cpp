@@ -144,15 +144,26 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
     explorationInformation.addActionsToMatrix(behavior.getNumberOfChoices());
     StateType localAction = 0;
     
-    for (auto const& choice : behavior) {
-        if (choice.hasLabels()) {
-            actionLabels[std::make_pair(stateIdx, localAction)] = choice.getLabels();
+
+    if (behavior.getNumberOfChoices() == 0) {
+        // make this a n artificial sink state
+        actionLabels[std::make_pair(stateIdx, 0)] = {"no action defined"};
+        for (int i = 0; i < getRewardModels().size(); i++) {
+            stateActionRewards[std::make_pair(stateIdx, 0)].emplace_back(0);
         }
-        stateActionRewards[std::make_pair(stateIdx, localAction)] = choice.getRewards();
-        for (auto const& entry : choice) {
-           explorationInformation.getRowOfMatrix(startAction + localAction).emplace_back(entry.first, entry.second);
+        explorationInformation.addActionsToMatrix(1);
+        explorationInformation.getRowOfMatrix(startAction).emplace_back(stateIdx, stateIdx);
+    } else {
+        for (auto const& choice : behavior) {
+            if (choice.hasLabels()) {
+                actionLabels[std::make_pair(stateIdx, localAction)] = choice.getLabels();
+            }
+            stateActionRewards[std::make_pair(stateIdx, localAction)] = choice.getRewards();
+            for (auto const& entry : choice) {
+            explorationInformation.getRowOfMatrix(startAction + localAction).emplace_back(entry.first, entry.second);
+            }
+            ++localAction;
         }
-        ++localAction;
     }
 
     explorationInformation.terminateCurrentRowGroup();

@@ -18,14 +18,14 @@ TEST(BlackBoxExplorer, exploreSimpleMDP) {
     explorer.performExploration(eMDP, 1);
 
     // expect a single was sampled of maximal 5 different states, more is not possible in two dice
-    ASSERT_TRUE(eMDP.getTotalStateCount() < 5);
+    ASSERT_EQ(eMDP.getTotalStateCount(), 5);
     std::cout << "state COUNT" << eMDP.getTotalStateCount() << "\n";
     std::vector<uint32_t> states = {0, 1, 2, 3, 4, 5};
 
-    ASSERT_TRUE(eMDP.getSampleCount(0, 0, 1) == 1);
+    ASSERT_EQ(eMDP.getSampleCount(0, 0, 1), 1);
     std::cout << "state COUNT" << eMDP.getTotalStateCount() << "\n";
 
-    ASSERT_TRUE(eMDP.getSampleCount(1, 0, 2) == 1);
+    ASSERT_EQ(eMDP.getSampleCount(1, 0, 2), 1);
     if (eMDP.getSuccCount(2, 0) > 1) {
         // exploration looped in states 
     }
