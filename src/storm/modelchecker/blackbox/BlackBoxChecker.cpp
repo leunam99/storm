@@ -137,10 +137,10 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
 
         if(iterCount == maxIterations) //cli argument execution for eMDP and bMDP 
             executeBMdpFlags(blackboxSettings, bMDP); 
-            executeEMdpFlags(blackboxSettings, eMDP);
         
         // value approximation (implemented some time in future)
     }
+    executeEMdpFlags(blackboxSettings, eMDP);
 
     // TODO return actual result when it can be computed
     return  std::make_unique<storm::modelchecker::ExplicitQuantitativeCheckResult<ValueType>>(0, 1);

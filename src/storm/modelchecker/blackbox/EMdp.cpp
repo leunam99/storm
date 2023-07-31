@@ -54,6 +54,7 @@ template<typename StateType>
 EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
     auto newEMdp = EMdp<StateType>();
     std::ifstream myFile(fileName);
+    StateType numLines = 0;
     std::string line;
     std::regex init("init: [[:digit:]]+");
 
@@ -62,8 +63,6 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
     std::regex succRe("\\t\\t[[:digit:]]+: [[:digit:]]+"); //matches expr of form "\t\tstate: count"
 
     std::regex e("([a-zA-Z0-9])+"); //matches labels, samples and states 
-
-
     std::getline(myFile, line);
 
     if(std::regex_match(line, init)) { 
@@ -81,6 +80,7 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
 
     while(!myFile.eof()) {
         std::getline(myFile, line);
+        numLines++;
         std::regex_token_iterator<std::string::iterator> iter ( line.begin(), line.end(), e);
         std::regex_token_iterator<std::string::iterator> rend;
 
@@ -111,7 +111,7 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
             newEMdp.addVisits(lastState, lastAction, stoi((*iter)), stoi((*(++iter))));
         } 
         else { // => line has wrong format 
-            std::cout << "Wrong file format!\n";
+            std::cout << "Wrong file format in line " <<  numLines << " in file \"" << fileName << "\"!\n";
             return EMdp();
         }
     }
