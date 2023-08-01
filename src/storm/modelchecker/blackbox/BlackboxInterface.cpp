@@ -68,7 +68,10 @@ StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::sampleSucc(StateType 
     StateType stateRowIdx = explorationInformation.getStartRowOfGroup(explorationInformation.getRowGroup(stateIdx));
     auto& actionRow = explorationInformation.getRowOfMatrix(stateRowIdx + action);
 
-    std::uniform_int_distribution<StateType> distribution(0, actionRow.size() - 1);
+    // sample successor according to probabilities
+    std::vector<ValueType> probabilities(actionRow.size());
+    std::transform(actionRow.begin(), actionRow.end(), probabilities.begin(), [] (storm::storage::MatrixEntry<exploration_state_type, ValueType> const& entry) { return entry.getValue(); });
+    std::discrete_distribution<StateType> distribution(probabilities.begin(), probabilities.end());
     StateType successor = actionRow[distribution(randomGenerator)].getColumn();
     
     // explore successor and add new unexplored states if necessary
