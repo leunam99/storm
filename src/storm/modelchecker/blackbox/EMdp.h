@@ -132,7 +132,7 @@ class EMdp {
     *
     * @param fileName
     */
-    void eMdpToFile(const std::string& fileName);
+    void emdpToFile(const std::string& fileName);
 
     /*!
      * Constructs an EMdp from a File 
@@ -140,7 +140,7 @@ class EMdp {
      * @param fileName the File containing the Emdp 
      * @return EMdp<StateType> 
      */
-    static EMdp<StateType> eMdpFromFile(const std::string& fileName);
+    static EMdp<StateType> emdpFromFile(const std::string& fileName);
 
     /*!
      * print the EMdp to std::cout

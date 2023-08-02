@@ -8,7 +8,7 @@
 
 #include "storm/modelchecker/blackbox/BMdp.h"
 #include "storm/modelchecker/blackbox/BlackBoxExplorer.h"
-#include "storm/modelchecker/blackbox/EMdpToDot.h"
+#include "storm/modelchecker/blackbox/eMDPToDot.h"
 #include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
 #include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
@@ -54,7 +54,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
 
 
     if(blackboxSettings.isSetWriteEMdpToFile()) { //Write to file if flag is set 
-        eMDP.eMdpToFile(blackboxSettings.getEMdpOutFileName());
+        eMDP.emdpToFile(blackboxSettings.getEMdpOutFileName());
     }
 
     auto dotGenEMdp = EMdpDotGenerator<StateType>(blackboxSettings.isSetDotIncAct(), 
@@ -63,7 +63,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
                                                   blackboxSettings.isSetDotIncCol());
 
     if(blackboxSettings.isSetEMdptoDot()) { //Dot coversion if flag is set 
-        auto eMDPtemp = (blackboxSettings.getEMdpDotInFileName() == "expl") ? eMDP : eMDP.eMdpFromFile(blackboxSettings.getEMdpDotInFileName());
+        auto eMDPtemp = (blackboxSettings.getEMdpDotInFileName() == "expl") ? eMDP : eMDP.emdpFromFile(blackboxSettings.getEMdpDotInFileName());
         if(blackboxSettings.getEMdpDotOutFileName() == "log") {
             dotGenEMdp.convert(eMDPtemp, std::cout);
         } else {
@@ -74,7 +74,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
     }
 
     if(blackboxSettings.isSetEMdpNeighbToDot()) { //Neighborhood Dot coversion if flag is set 
-        auto eMDPtemp = eMDP.eMdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
+        auto eMDPtemp = eMDP.emdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
         eMDPtemp.createReverseMapping();
         if(blackboxSettings.getEMdpNeighborhoodDotOutFileName() == "log") {
             dotGenEMdp.convertNeighborhood(eMDPtemp, blackboxSettings.getEMdpNeighborhoodState(), blackboxSettings.getEMdpNeighborhoodDepth(), std::cout);
