@@ -249,7 +249,7 @@ class HashStorage {
     /*!
      * Creates a mapping to the (state,action) predecessors of every state. 
      * Is generated on demand
-     * Used for the visualization of neighborhoods in eMDPToDot
+     * Used for the visualization of neighborhoods in eMdpToDot
      */
     void createReverseMapping();
 
