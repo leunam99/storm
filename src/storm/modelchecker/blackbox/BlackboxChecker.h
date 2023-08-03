@@ -5,7 +5,21 @@
 
 #include "storm/storage/prism/Program.h"
 
+/*
+This Checker implements the SMC-Algorithm for blackbox MDP from paper 
+"Statistical Model Checking Blackbox MDP via Families of Bounded Parameter MDP" by Maximilian Weiniger <weininge@in.tum.de>
 
+The code for the SIMULATE phase can be found in files 
+    - Simulator 
+    - heuristicSim/HeuristicSim
+
+The code for the INFER phase can be found in files
+    - infer
+
+The code for the data structures eMDP and bMDP can be found in the files with the respective name
+
+The oracle for a blackbox MDP is defined in BlackboxInterface
+*/
 namespace storm {
 namespace modelchecker {
 namespace blackbox {

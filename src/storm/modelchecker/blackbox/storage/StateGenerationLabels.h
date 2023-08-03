@@ -21,8 +21,8 @@ template<typename StateType, typename ValueType>
 class ExplorationInformation;
 
 /*
- * This class simply extends the StateGeneration class with the labels function
- * that returns a StateLabeling for all (discovered) states
+ * This class simply extends the StateGeneration class with the labels function that returns a StateLabeling for all (discovered) states
+ * Furthermore it activates the building of rewards and labels in the underlying model generator
  */
 template<typename StateType, typename ValueType>
 class StateGenerationLabels: public StateGeneration<StateType, ValueType>{
