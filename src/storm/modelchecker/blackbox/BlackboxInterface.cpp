@@ -149,7 +149,7 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
     
 
     if (behavior.getNumberOfChoices() == 0) {
-        // make this a n artificial sink state
+        // make this an artificial sink state
         actionLabels[std::make_pair(stateIdx, 0)] = {"no action defined"};
         for (int i = 0; i < getRewardModels().size(); i++) {
             stateActionRewards[std::make_pair(stateIdx, 0)].emplace_back(0);
