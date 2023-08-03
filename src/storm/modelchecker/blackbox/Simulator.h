@@ -24,12 +24,12 @@ class Simulator {
     Simulator(std::shared_ptr<BlackboxMDP<StateType, ValueType>> blackboxMDP, std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim);
 
     /*!
-     * simulate paths in the blackboxMDP and stores the visits in the given eMDP
+     * simulate paths in the blackboxMDP and stores the visits in the given emdp
      *
-     * @param eMDP
+     * @param emdp
      * @param numExploration number of paths to explore
      */
-    void simulate(EMdp<StateType>& eMDP, StateType numExplorations);
+    void simulate(EMdp<StateType>& emdp, StateType numExplorations);
 
    private:
     std::shared_ptr<BlackboxMDP<StateType, ValueType>> blackboxMdp;
