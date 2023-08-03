@@ -47,13 +47,13 @@ bool BlackboxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Fo
 }
 
 template<typename StateType>
-void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp<StateType> eMDP) {
-    if(blackboxSettings.isSetPrintEMdp()) //Print the explored eMDP if flag is set 
-            eMDP.print();
+void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp<StateType> emdp) {
+    if(blackboxSettings.isSetPrintEMdp()) //Print the explored emdp if flag is set 
+            emdp.print();
 
 
     if(blackboxSettings.isSetWriteEMdpToFile()) { //Write to file if flag is set 
-        eMDP.emdpToFile(blackboxSettings.getEMdpOutFileName());
+        emdp.emdpToFile(blackboxSettings.getEMdpOutFileName());
     }
 
     auto dotGenEMdp = EMdpDotGenerator<StateType>(blackboxSettings.isSetDotIncAct(), 
@@ -62,7 +62,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
                                                   blackboxSettings.isSetDotIncCol());
 
     if(blackboxSettings.isSetEMdptoDot()) { //Dot coversion if flag is set 
-        auto eMDPtemp = (blackboxSettings.getEMdpDotInFileName() == "expl") ? eMDP : eMDP.emdpFromFile(blackboxSettings.getEMdpDotInFileName());
+        auto eMDPtemp = (blackboxSettings.getEMdpDotInFileName() == "expl") ? emdp : emdp.emdpFromFile(blackboxSettings.getEMdpDotInFileName());
         if(blackboxSettings.getEMdpDotOutFileName() == "log") {
             dotGenEMdp.convert(eMDPtemp, std::cout);
         } else {
@@ -73,7 +73,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
     }
 
     if(blackboxSettings.isSetEMdpNeighbToDot()) { //Neighborhood Dot coversion if flag is set 
-        auto eMDPtemp = eMDP.emdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
+        auto eMDPtemp = emdp.emdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
         eMDPtemp.createReverseMapping();
         if(blackboxSettings.getEMdpNeighborhoodDotOutFileName() == "log") {
             dotGenEMdp.convertNeighborhood(eMDPtemp, blackboxSettings.getEMdpNeighborhoodState(), blackboxSettings.getEMdpNeighborhoodDepth(), std::cout);
@@ -87,13 +87,13 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
 
 
 template<typename StateType>
-void executeBMdpFlags(settings::modules::BlackboxSettings blackboxSettings, BMdp<StateType> bMDP) {
-    if(blackboxSettings.isSetBMdpToDot()) { //Convert bMDP to dot 
+void executeBMdpFlags(settings::modules::BlackboxSettings blackboxSettings, BMdp<StateType> bmdp) {
+    if(blackboxSettings.isSetBMdpToDot()) { //Convert bmdp to dot 
         if(blackboxSettings.getBMdpDotOutFileName() == "log") {
-            bMDP.writeDotToStream(std::cout, 30, blackboxSettings.isSetDotIncLab(), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, true);
+            bmdp.writeDotToStream(std::cout, 30, blackboxSettings.isSetDotIncLab(), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, true);
         } else {
             std::ofstream outFile(blackboxSettings.getBMdpDotOutFileName());
-            bMDP.writeDotToStream(outFile, 30, blackboxSettings.isSetDotIncLab(), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, true);
+            bmdp.writeDotToStream(outFile, 30, blackboxSettings.isSetDotIncLab(), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, true);
             outFile.close();
         }
     }
@@ -115,7 +115,7 @@ std::unique_ptr<CheckResult> BlackboxChecker<ModelType, StateType>::computeUntil
     double eps = blackboxSettings.getPrecision();
 
     // init objects for algorithm
-    EMdp<StateType> eMDP;
+    EMdp<StateType> emdp;
 
     auto heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic)));
     Simulator<StateType, ValueType> simulator(blackboxMDP, heuristicSim);
@@ -129,17 +129,17 @@ std::unique_ptr<CheckResult> BlackboxChecker<ModelType, StateType>::computeUntil
         iterCount++;
 
         // simulate
-        simulator.simulate(eMDP, simulationsPerIter);
+        simulator.simulate(emdp, simulationsPerIter);
 
         // infer 
-        auto bMDP = infer<StateType, ValueType>(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
+        auto bmdp = infer<StateType, ValueType>(emdp, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
 
-        if(iterCount == maxIterations) //cli argument execution for eMDP and bMDP 
-            executeBMdpFlags(blackboxSettings, bMDP); 
+        if(iterCount == maxIterations) //cli argument execution for emdp and bmdp
+            executeBMdpFlags(blackboxSettings, bmdp); 
         
         // value approximation (implemented some time in future)
     }
-    executeEMdpFlags(blackboxSettings, eMDP);
+    executeEMdpFlags(blackboxSettings, emdp);
 
     // TODO return actual result when it can be computed
     return  std::make_unique<storm::modelchecker::ExplicitQuantitativeCheckResult<ValueType>>(0, 1);
