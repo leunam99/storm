@@ -197,20 +197,11 @@ typename std::enable_if<std::is_same<ValueType, double>::value, std::unique_ptr<
     STORM_LOG_THROW(model.isPrismProgram(), storm::exceptions::NotSupportedException, "Blackbox engine is currently only applicable to PRISM models.");
     storm::prism::Program const& program = model.asPrismProgram();
 
-    bool save_memory = true;  // TODO read from cli as input
-
     std::unique_ptr<storm::modelchecker::CheckResult> result;
     if (program.getModelType() == storm::prism::Program::ModelType::MDP) {
-        if (save_memory) {
-            storm::modelchecker::blackbox::BlackboxChecker<storm::models::sparse::Mdp<ValueType>, uint32_t> checker(program);
-            if (checker.canHandle(task)) {
-                result = checker.check(env, task);
-            }
-        } else {
-            storm::modelchecker::blackbox::BlackboxChecker<storm::models::sparse::Mdp<ValueType>, uint64_t> checker(program);
-            if (checker.canHandle(task)) {
-                result = checker.check(env, task);
-            }
+        storm::modelchecker::blackbox::BlackboxChecker<storm::models::sparse::Mdp<ValueType>, uint32_t> checker(program);
+        if (checker.canHandle(task)) {
+            result = checker.check(env, task);
         }
 
     } else {
