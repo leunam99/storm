@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 
-#include "BlackBoxChecker.h"
+#include "storm/modelchecker/blackbox/BlackboxChecker.h"
 
 #include "storm/modelchecker/blackbox/BMdp.h"
 #include "storm/modelchecker/blackbox/Simulator.h"
@@ -30,7 +30,7 @@ namespace blackbox {
 
 
 template<typename ModelType, typename StateType>
-BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program const& program) {
+BlackboxChecker<ModelType, StateType>::BlackboxChecker(storm::prism::Program const& program) {
     if(storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getIsGreybox()){
         auto ptr = std::make_shared<GreyboxWrapperOnWhitebox<StateType, ValueType>>(program);
         blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType, ValueType>>(ptr);
@@ -41,7 +41,7 @@ BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program con
 }
 
 template<typename ModelType, typename StateType>
-bool BlackBoxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Formula, ValueType> const&) const {
+bool BlackboxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Formula, ValueType> const&) const {
     // TODO implement actual check
     return true;
 }
@@ -100,7 +100,7 @@ void executeBMdpFlags(settings::modules::BlackboxSettings blackboxSettings, BMdp
 }
 
 template<typename ModelType, typename StateType>
-std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const&, CheckTask<storm::logic::UntilFormula, ValueType> const&) {
+std::unique_ptr<CheckResult> BlackboxChecker<ModelType, StateType>::computeUntilProbabilities(Environment const&, CheckTask<storm::logic::UntilFormula, ValueType> const&) {
     auto blackboxSettings = storm::settings::getModule<storm::settings::modules::BlackboxSettings>();
     // cli arguments simulate
     uint_fast64_t maxIterations = blackboxSettings.getMaxIterations();
@@ -149,8 +149,8 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
 
 
 
-template class BlackBoxChecker<storm::models::sparse::Mdp<double>, uint32_t>;
-template class BlackBoxChecker<storm::models::sparse::Mdp<double>, uint64_t>;
+template class BlackboxChecker<storm::models::sparse::Mdp<double>, uint32_t>;
+template class BlackboxChecker<storm::models::sparse::Mdp<double>, uint64_t>;
 
 } //namespace blackbox
 } //namespace modelchecker

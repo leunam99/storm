@@ -11,11 +11,11 @@ namespace modelchecker {
 namespace blackbox {
 
 template<typename ModelType, typename StateType>
-class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelType> {
+class BlackboxChecker: public storm::modelchecker::AbstractModelChecker<ModelType> {
     public:
      typedef typename ModelType::ValueType ValueType;
 
-     BlackBoxChecker(storm::prism::Program const& program);
+     BlackboxChecker(storm::prism::Program const& program);
 
      /*! 
       * Determines whether the model checker can handle the given verification task. If this method returns

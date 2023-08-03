@@ -6,7 +6,7 @@
 
 #include "storm/modelchecker/abstraction/BisimulationAbstractionRefinementModelChecker.h"
 #include "storm/modelchecker/abstraction/GameBasedMdpModelChecker.h"
-#include "storm/modelchecker/blackbox/BlackBoxChecker.h"
+#include "storm/modelchecker/blackbox/BlackboxChecker.h"
 #include "storm/modelchecker/csl/HybridCtmcCslModelChecker.h"
 #include "storm/modelchecker/csl/HybridMarkovAutomatonCslModelChecker.h"
 #include "storm/modelchecker/csl/SparseCtmcCslModelChecker.h"
@@ -202,12 +202,12 @@ typename std::enable_if<std::is_same<ValueType, double>::value, std::unique_ptr<
     std::unique_ptr<storm::modelchecker::CheckResult> result;
     if (program.getModelType() == storm::prism::Program::ModelType::MDP) {
         if (save_memory) {
-            storm::modelchecker::blackbox::BlackBoxChecker<storm::models::sparse::Mdp<ValueType>, uint32_t> checker(program);
+            storm::modelchecker::blackbox::BlackboxChecker<storm::models::sparse::Mdp<ValueType>, uint32_t> checker(program);
             if (checker.canHandle(task)) {
                 result = checker.check(env, task);
             }
         } else {
-            storm::modelchecker::blackbox::BlackBoxChecker<storm::models::sparse::Mdp<ValueType>, uint64_t> checker(program);
+            storm::modelchecker::blackbox::BlackboxChecker<storm::models::sparse::Mdp<ValueType>, uint64_t> checker(program);
             if (checker.canHandle(task)) {
                 result = checker.check(env, task);
             }
