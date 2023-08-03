@@ -7,7 +7,7 @@
 #include "BlackBoxChecker.h"
 
 #include "storm/modelchecker/blackbox/BMdp.h"
-#include "storm/modelchecker/blackbox/BlackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/Simulator.h"
 #include "storm/modelchecker/blackbox/EMdpToDot.h"
 #include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
 #include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
@@ -118,7 +118,7 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
     EMdp<StateType> eMDP;
 
     auto heuristicSim(std::static_pointer_cast<heuristicSim::HeuristicSim<StateType, ValueType>>(std::make_shared<heuristicSim::NaiveHeuristicSim<StateType, ValueType>>(blackboxMDP, seedSimHeuristic)));
-    BlackBoxExplorer<StateType, ValueType> blackboxExplorer(blackboxMDP, heuristicSim);
+    Simulator<StateType, ValueType> simulator(blackboxMDP, heuristicSim);
     auto boundFunc = getBoundFunc<ValueType>(boundFuncType);
     auto deltaDist = getDeltaDistribution<StateType>(deltaDistType);
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
@@ -129,7 +129,7 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         iterCount++;
 
         // simulate
-        blackboxExplorer.performExploration(eMDP, simulationsPerIter);
+        simulator.simulate(eMDP, simulationsPerIter);
 
         // infer 
         auto bMDP = infer<StateType, ValueType>(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());

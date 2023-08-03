@@ -2,7 +2,7 @@
 // Created by Maximilian Kamps on 25.05.23.
 //
 
-#include "BlackBoxExplorer.h"
+#include "storm/modelchecker/blackbox/Simulator.h"
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
 #include "storm/modelchecker/blackbox/EMdp.h"
 #include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
@@ -12,13 +12,13 @@ namespace modelchecker {
 namespace blackbox {
 
 template <typename StateType, typename ValueType>
-BlackBoxExplorer<StateType, ValueType>::BlackBoxExplorer(std::shared_ptr<BlackboxMDP<StateType, ValueType>> blackboxMDP, std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim) :
+Simulator<StateType, ValueType>::Simulator(std::shared_ptr<BlackboxMDP<StateType, ValueType>> blackboxMDP, std::shared_ptr<heuristicSim::HeuristicSim<StateType, ValueType>> heuristicSim) :
                                                          blackboxMdp(blackboxMDP), heuristicSim(heuristicSim) {
     // intentionally empty
 }
 
 template <typename StateType, typename ValueType>
-void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>& eMDP, StateType numExplorations) {
+void Simulator<StateType, ValueType>::simulate(EMdp<StateType>& eMDP, StateType numExplorations) {
     StateActionStack stack;
     StateType maxPathLen = 10; // TODO magicNumber, collect constants
 
@@ -83,8 +83,8 @@ void BlackBoxExplorer<StateType, ValueType>::performExploration(EMdp<StateType>&
     }
 }
 
-template class BlackBoxExplorer<uint32_t, double>;
-template class BlackBoxExplorer<uint64_t, double>;
+template class Simulator<uint32_t, double>;
+template class Simulator<uint64_t, double>;
 
 } //namespace blackbox
 } //namespace modelchecker
