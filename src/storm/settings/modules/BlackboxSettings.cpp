@@ -6,8 +6,6 @@
 #include "storm/settings/SettingsManager.h"
 #include "storm/settings/modules/CoreSettings.h"
 
-#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
-
 #include "storm/exceptions/IllegalArgumentValueException.h"
 #include "storm/utility/Engine.h"
 #include "storm/utility/macros.h"
