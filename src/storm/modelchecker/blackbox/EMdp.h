@@ -4,6 +4,8 @@
 #include "stdint.h"
 #include <iostream>
 #include <fstream>
+#include <boost/functional/hash.hpp>
+
 
 #include "storage/HashStorage.h"
 
@@ -15,6 +17,14 @@ namespace blackbox {
 
 template<typename StateType>
 class EMdp {
+   private:
+    storage::HashStorage<StateType> hashStorage; //store all the states and labeling 
+    std::unordered_map<StateType, std::vector<std::string> > stateLabeling; //store the state labeling 
+    typedef std::pair<StateType, StateType> stateTypePair; 
+    std::unordered_map<stateTypePair, std::vector<std::string>, boost::hash<stateTypePair> > actionLabeling; //store the action labeling 
+    StateType initState; //The initial state 
+    bool initStateValid = false; //Used to assign the inital state only once 
+    StateType explorationCount = 0; //Number of explored states
    public:
     /*!
      * Constructs an empty EMdp
@@ -238,30 +248,7 @@ class EMdp {
      * @param state 
      * @return std::vector<std::pair<StateType, StateType> > 
      */
-    std::vector<std::pair<StateType, StateType> > getPredecessors(StateType state);
-
-   private:
-    
-   storage::HashStorage<StateType> hashStorage;
-   std::unordered_map<StateType, std::vector<std::string> > stateLabeling; 
-
-   //TODO: Use boost::hash instead, keep pairHash for easy compile
-   
-    struct pairHash {
-        template <class T1, class T2>
-        std::size_t operator () (const std::pair<T1,T2> &p) const {
-            auto h1 = std::hash<T1>{}(p.first);
-            auto h2 = std::hash<T2>{}(p.second);
-
-            return h1 ^ h2;  
-        }
-    };
-    
-
-   std::unordered_map<std::pair<StateType, StateType>, std::vector<std::string>, pairHash > actionLabeling; 
-   StateType initState;
-   bool initStateValid = false;
-   StateType explorationCount = 0; //Number of explored states
+    std::vector<stateTypePair> getPredecessors(StateType state);
 };
 
 } //namespace blackbox

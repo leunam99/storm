@@ -12,12 +12,6 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-/*
-TODO: 
-- Coloring of states (for neib)
-- Information on states samples 
-*/
-
 template<typename StateType>
 class EMdpDotGenerator {
         private: 

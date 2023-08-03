@@ -5,6 +5,7 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <boost/functional/hash.hpp>
 
 
 
@@ -13,7 +14,10 @@ namespace modelchecker {
 namespace blackbox {
 namespace storage {
 
-
+/**
+ * Used to iterate over the keys the consequitive hashStorage maps
+ * (Is independent of the value unordered_map value type)   
+ */
 template<typename StateType> 
 class KeyIterator {
     private: 
@@ -45,23 +49,12 @@ class HashStorage {
     using countSampleMapPair = std::pair<StateType, std::unordered_map<StateType, uint64_t> >;
     std::unordered_map<StateType, std::unordered_map<StateType, countSampleMapPair > > data;
 
-
-    //TODO: Use boost::hash instead, keep pairHash for easy compile
-    struct pairHash {
-        template <class T1, class T2>
-        std::size_t operator () (const std::pair<T1,T2> &p) const {
-            auto h1 = std::hash<T1>{}(p.first);
-            auto h2 = std::hash<T2>{}(p.second);
-
-            return h1 ^ h2;  
-        }
-    };
-
     // Maps state action pair to number of known successors -> used in greybox setting 
-    std::unordered_map<std::pair<StateType, StateType>, int, pairHash> succCountMap;
+    typedef std::pair<StateType, StateType> stateTypePair;
+    std::unordered_map<std::pair<StateType, StateType>, int, boost::hash<stateTypePair> > succCountMap;
 
     // Maps states to their predecessors action pair (created on demand for debugging)
-    std::unordered_map<StateType, std::vector<std::pair<StateType, StateType> > > reverseMap;
+    std::unordered_map<StateType, std::vector<stateTypePair > > reverseMap;
 
     StateType totalStateCount = 0;
     StateType totalStateActionPairCount = 0;
@@ -235,7 +228,7 @@ class HashStorage {
      * @param stateActionPair 
      * @param count 
      */
-    void setSuccCount(std::pair<StateType, StateType> stateActionPair, int count);
+    void setSuccCount(stateTypePair stateActionPair, int count);
 
     /*!
      * get the number of successors for a (state,action) pair 
@@ -244,7 +237,7 @@ class HashStorage {
      * @param stateActionPair 
      * @param count 
      */
-    int getSuccCount(std::pair<StateType, StateType> stateActionPair);
+    int getSuccCount(stateTypePair stateActionPair);
 
     /*!
      * Creates a mapping to the (state,action) predecessors of every state. 
