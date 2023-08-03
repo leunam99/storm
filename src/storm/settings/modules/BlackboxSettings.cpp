@@ -20,20 +20,20 @@ namespace modules {
 const std::string BlackboxSettings::moduleName = "blackbox";
 
 // visualize emdp constants 
-const std::string BlackboxSettings::printEMdpOptionName = "printeMDP";
-const std::string BlackboxSettings::writeEMdpToFile = "eMDPtoFile";
-const std::string BlackboxSettings::convertToDotEMdpOptionName = "eMDPtoDot";
-const std::string BlackboxSettings::convertDotNeighborhoodEMdpOptionName = "eMDPNeighbToDot";
-const std::string BlackboxSettings::dotIncludeActionsOptionName = "dotIncAct";
-const std::string BlackboxSettings::dotIncludeSamplesOptionName = "dotIncSmpl"; 
-const std::string BlackboxSettings::dotIncludeLabelsOptionName = "dotIncLab";
-const std::string BlackboxSettings::dotIncludeColorOptionName = "dotIncCol";
+const std::string BlackboxSettings::printEMdpOptionName = "printEmdp";
+const std::string BlackboxSettings::writeEMdpToFile = "emdpToFile";
+const std::string BlackboxSettings::convertToDotEMdpOptionName = "emdptoDot";
+const std::string BlackboxSettings::convertDotNeighborhoodEMdpOptionName = "emdpNeighbToDot";
+const std::string BlackboxSettings::dotIncludeActionsOptionName = "dotAct";
+const std::string BlackboxSettings::dotIncludeSamplesOptionName = "dotSmpl"; 
+const std::string BlackboxSettings::dotIncludeLabelsOptionName = "dotLab";
+const std::string BlackboxSettings::dotIncludeColorOptionName = "dotCol";
 
 // visualize bmdp constants 
-const std::string BlackboxSettings::convertToDotBMdpOptionName = "bMDPtoDot"; 
+const std::string BlackboxSettings::convertToDotBMdpOptionName = "bmdpToDot"; 
 
 // simulation constants
-const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepssim";
+const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepsim";
 const std::string BlackboxSettings::simulationHeuristicOptionName = "simheuristic";
 const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheuristic";
 // plot simulation
@@ -47,7 +47,7 @@ const std::string BlackboxSettings::greyboxOptionName = "greybox";
 const std::string BlackboxSettings::pMinOptionName = "pmin";
 const std::string BlackboxSettings::precisionOptionName = "precision";
 const std::string BlackboxSettings::precisionOptionShortName = "eps";
-const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiterations";
+const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiter";
 
 
 BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {

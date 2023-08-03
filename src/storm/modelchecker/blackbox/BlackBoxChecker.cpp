@@ -53,7 +53,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
 
 
     if(blackboxSettings.isSetWriteEMdpToFile()) { //Write to file if flag is set 
-        eMDP.eMdpToFile(blackboxSettings.getEMdpOutFileName());
+        eMDP.emdpToFile(blackboxSettings.getEMdpOutFileName());
     }
 
     auto dotGenEMdp = EMdpDotGenerator<StateType>(blackboxSettings.isSetDotIncAct(), 
@@ -62,7 +62,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
                                                   blackboxSettings.isSetDotIncCol());
 
     if(blackboxSettings.isSetEMdptoDot()) { //Dot coversion if flag is set 
-        auto eMDPtemp = (blackboxSettings.getEMdpDotInFileName() == "expl") ? eMDP : eMDP.eMdpFromFile(blackboxSettings.getEMdpDotInFileName());
+        auto eMDPtemp = (blackboxSettings.getEMdpDotInFileName() == "expl") ? eMDP : eMDP.emdpFromFile(blackboxSettings.getEMdpDotInFileName());
         if(blackboxSettings.getEMdpDotOutFileName() == "log") {
             dotGenEMdp.convert(eMDPtemp, std::cout);
         } else {
@@ -73,7 +73,7 @@ void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp
     }
 
     if(blackboxSettings.isSetEMdpNeighbToDot()) { //Neighborhood Dot coversion if flag is set 
-        auto eMDPtemp = eMDP.eMdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
+        auto eMDPtemp = eMDP.emdpFromFile(blackboxSettings.getEMdpNeighborhoodDotInFileName());
         eMDPtemp.createReverseMapping();
         if(blackboxSettings.getEMdpNeighborhoodDotOutFileName() == "log") {
             dotGenEMdp.convertNeighborhood(eMDPtemp, blackboxSettings.getEMdpNeighborhoodState(), blackboxSettings.getEMdpNeighborhoodDepth(), std::cout);
@@ -136,10 +136,10 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
 
         if(iterCount == maxIterations) //cli argument execution for eMDP and bMDP 
             executeBMdpFlags(blackboxSettings, bMDP); 
-            executeEMdpFlags(blackboxSettings, eMDP);
         
         // value approximation (implemented some time in future)
     }
+    executeEMdpFlags(blackboxSettings, eMDP);
 
     // TODO return actual result when it can be computed
     return  std::make_unique<storm::modelchecker::ExplicitQuantitativeCheckResult<ValueType>>(0, 1);

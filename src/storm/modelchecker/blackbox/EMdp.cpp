@@ -25,7 +25,7 @@ std::string EMdp<StateType>::labelVecToStr(const std::vector<std::string>& label
 }
 
 template<typename StateType>
-void EMdp<StateType>::eMdpToFile(const std::string& fileName) {
+void EMdp<StateType>::emdpToFile(const std::string& fileName) {
       std::ofstream MyFile(fileName);
 
       
@@ -51,9 +51,10 @@ void EMdp<StateType>::eMdpToFile(const std::string& fileName) {
 }
 
 template<typename StateType>
-EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
-    auto newEMdp = EMdp<StateType>();
+EMdp<StateType> EMdp<StateType>::emdpFromFile(const std::string& fileName) {
+    auto emdpResult = EMdp<StateType>();
     std::ifstream myFile(fileName);
+    StateType numLines = 0;
     std::string line;
     std::regex init("init: [[:digit:]]+");
 
@@ -62,14 +63,12 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
     std::regex succRe("\\t\\t[[:digit:]]+: [[:digit:]]+"); //matches expr of form "\t\tstate: count"
 
     std::regex e("([a-zA-Z0-9])+"); //matches labels, samples and states 
-
-
     std::getline(myFile, line);
 
     if(std::regex_match(line, init)) { 
         std::regex s("[[:digit:]]+");
         std::sregex_iterator iter(line.begin(), line.end(), s);
-        newEMdp.addInitialState(stoi(iter->str()));
+        emdpResult.addInitialState(stoi(iter->str()));
     } else { 
         std::cout << "Wrong file format!\n";
         return EMdp();
@@ -81,6 +80,7 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
 
     while(!myFile.eof()) {
         std::getline(myFile, line);
+        numLines++;
         std::regex_token_iterator<std::string::iterator> iter ( line.begin(), line.end(), e);
         std::regex_token_iterator<std::string::iterator> rend;
 
@@ -92,7 +92,7 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
             iter++;
 
             while (iter!=rend) {
-                newEMdp.addStateLabel(iter->str(), lastState);
+                emdpResult.addStateLabel(iter->str(), lastState);
                 ++iter;
             }
         } 
@@ -102,21 +102,21 @@ EMdp<StateType> EMdp<StateType>::eMdpFromFile(const std::string& fileName) {
             iter++;
 
             while (iter!=rend) {
-                newEMdp.addActionLabel(iter->str(), lastState, lastAction);
+                emdpResult.addActionLabel(iter->str(), lastState, lastAction);
                 ++iter;
             }
         } 
         else if(std::regex_match(line, succRe) && !lastLineWasState) { //Is line succ line? 
             lastLineWasState = false;
-            newEMdp.addVisits(lastState, lastAction, stoi((*iter)), stoi((*(++iter))));
+            emdpResult.addVisits(lastState, lastAction, stoi((*iter)), stoi((*(++iter))));
         } 
         else { // => line has wrong format 
-            std::cout << "Wrong file format!\n";
+            std::cout << "Wrong file format in line " <<  numLines << " in file \"" << fileName << "\"!\n";
             return EMdp();
         }
     }
 
-    return newEMdp;
+    return emdpResult;
 }
 
 
@@ -290,33 +290,6 @@ template class EMdp<uint64_t>;
 } //namespace blackbox
 } //namespace modelchecker
 } //namespace storm
-
-/*
-int main(int argc, char const *argv[]) {
-    
-    auto emdp = storm::modelchecker::blackbox::EMdp<int_fast32_t>();
-    emdp.addInitialState(1);
-    
-    emdp.addStateLabel("label1", 10);
-    emdp.addStateLabel("label2", 10);
-    emdp.addStateLabel("label1", 10);
-    emdp.addStateLabel("label2", 10);
-    emdp.addStateLabel("label1", 18);
-    emdp.addStateLabel("label2", 18);
-
-    emdp.addActionLabel("actLabel2", 10, 50);
-    emdp.addActionLabel("actLabel232", 10, 6);
-
-    emdp.addVisits(10,50,18,23423);
-    emdp.addVisits(10,6,22,323);
-    
-    emdp.eMdpToFile("emdp_test.txt");
-    emdp.print();
-    auto x = emdp.eMdpFromFile("emdp_test.txt");
-    x.print();
-}
-*/
-
 
 
 
