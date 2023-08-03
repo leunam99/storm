@@ -2,7 +2,7 @@
 
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
 #include "storm/modelchecker/blackbox/EMdp.h"
-#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
+#include "storm/modelchecker/blackbox/heuristicSimulate/HeuristicSim.h"
 
 namespace storm {
 namespace modelchecker {

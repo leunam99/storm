@@ -5,7 +5,6 @@
 #include "storm/modelchecker/blackbox/Simulator.h"
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
 #include "storm/modelchecker/blackbox/EMdp.h"
-#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
 
 namespace storm {
 namespace modelchecker {
