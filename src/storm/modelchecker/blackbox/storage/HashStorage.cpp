@@ -270,19 +270,6 @@ template class KeyIterator<uint64_t>;
 }
 }
 
-/*
-int main(int argc, char const *argv[])
-{       
-    
-    auto x = storm::modelchecker::blackbox::storage::HashStorage<int_fast32_t>();
-    x.incTrans(1,0,3,0);
-    x.incTrans(1,0,4,0);
-    x.incTrans(1,0,5,0);
-    x.incTrans(1,1,6,0);
-    x.incTrans(1,0,5,3);
-    x.print();
-}
-*/
 
 
 

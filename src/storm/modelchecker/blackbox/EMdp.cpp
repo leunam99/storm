@@ -12,17 +12,7 @@ template<typename StateType>
 EMdp<StateType>::EMdp() : hashStorage(), stateLabeling() {
 }
 
-template<typename StateType>
-std::string EMdp<StateType>::labelVecToStr(const std::vector<std::string>& labelVec) {
-    std::string result =  "[";
-    for(const auto& label : labelVec)
-        result += label + ", ";
-    if(!labelVec.empty()) {
-        result.pop_back();
-        result.pop_back();
-    }
-    return result + "]";
-}
+//_______________________ EMdp File I/O ___________________________ //
 
 template<typename StateType>
 void EMdp<StateType>::emdpToFile(const std::string& fileName) {
@@ -167,6 +157,18 @@ void EMdp<StateType>::addUnsampledAction(StateType state, StateType action) {
 //_______________________ State/Trans Labeling Functions _______________________//
 
 template<typename StateType>
+std::string EMdp<StateType>::labelVecToStr(const std::vector<std::string>& labelVec) {
+    std::string result =  "[";
+    for(const auto& label : labelVec)
+        result += label + ", ";
+    if(!labelVec.empty()) {
+        result.pop_back();
+        result.pop_back();
+    }
+    return result + "]";
+}
+
+template<typename StateType>
 void EMdp<StateType>::addStateLabel(std::string label, StateType state) {
     auto* labelVec = &stateLabeling[state];
     auto it = find(labelVec->begin(), labelVec->end(), label);
@@ -214,7 +216,7 @@ std::vector<std::string> EMdp<StateType>::getActionLabels(StateType state, State
     return std::vector<std::string>();
 }
 
-//______________________ Get/(Set) Count of Samples, Succ, Actions ____________________// 
+//______________________ Get/Set Count of Samples, Succ, Actions ____________________// 
 
 template<typename StateType>
 bool EMdp<StateType>::isStateKnown(StateType state) {

@@ -30,5 +30,7 @@ TEST(EMdp, CreationWithDimensions) {
 
     BMdp<double> bmdp = infer(e,bound,delta,0.01,0.1, true);
     bmdp.writeDotToStream(std::cout);
-
 }
+
+
+
