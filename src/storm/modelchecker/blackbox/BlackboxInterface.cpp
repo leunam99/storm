@@ -68,7 +68,10 @@ StateType BlackboxWrapperOnWhitebox<StateType, ValueType>::sampleSucc(StateType 
     StateType stateRowIdx = explorationInformation.getStartRowOfGroup(explorationInformation.getRowGroup(stateIdx));
     auto& actionRow = explorationInformation.getRowOfMatrix(stateRowIdx + action);
 
-    std::uniform_int_distribution<StateType> distribution(0, actionRow.size() - 1);
+    // sample successor according to probabilities
+    std::vector<ValueType> probabilities(actionRow.size());
+    std::transform(actionRow.begin(), actionRow.end(), probabilities.begin(), [] (storm::storage::MatrixEntry<exploration_state_type, ValueType> const& entry) { return entry.getValue(); });
+    std::discrete_distribution<StateType> distribution(probabilities.begin(), probabilities.end());
     StateType successor = actionRow[distribution(randomGenerator)].getColumn();
     
     // explore successor and add new unexplored states if necessary
@@ -144,15 +147,26 @@ void BlackboxWrapperOnWhitebox<StateType, ValueType>::exploreState(StateType sta
     explorationInformation.addActionsToMatrix(behavior.getNumberOfChoices());
     StateType localAction = 0;
     
-    for (auto const& choice : behavior) {
-        if (choice.hasLabels()) {
-            actionLabels[std::make_pair(stateIdx, localAction)] = choice.getLabels();
+
+    if (behavior.getNumberOfChoices() == 0) {
+        // make this an artificial sink state
+        actionLabels[std::make_pair(stateIdx, 0)] = {"no action defined"};
+        for (int i = 0; i < getRewardModels().size(); i++) {
+            stateActionRewards[std::make_pair(stateIdx, 0)].emplace_back(0);
         }
-        stateActionRewards[std::make_pair(stateIdx, localAction)] = choice.getRewards();
-        for (auto const& entry : choice) {
-           explorationInformation.getRowOfMatrix(startAction + localAction).emplace_back(entry.first, entry.second);
+        explorationInformation.addActionsToMatrix(1);
+        explorationInformation.getRowOfMatrix(startAction).emplace_back(stateIdx, stateIdx);
+    } else {
+        for (auto const& choice : behavior) {
+            if (choice.hasLabels()) {
+                actionLabels[std::make_pair(stateIdx, localAction)] = choice.getLabels();
+            }
+            stateActionRewards[std::make_pair(stateIdx, localAction)] = choice.getRewards();
+            for (auto const& entry : choice) {
+            explorationInformation.getRowOfMatrix(startAction + localAction).emplace_back(entry.first, entry.second);
+            }
+            ++localAction;
         }
-        ++localAction;
     }
 
     explorationInformation.terminateCurrentRowGroup();

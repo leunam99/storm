@@ -31,7 +31,6 @@ namespace blackbox {
 
 template<typename ModelType, typename StateType>
 BlackBoxChecker<ModelType, StateType>::BlackBoxChecker(storm::prism::Program const& program) {
-    BlackboxWrapperOnWhitebox<StateType, ValueType> whiteboxWrapper(program);
     if(storm::settings::getModule<storm::settings::modules::BlackboxSettings>().getIsGreybox()){
         auto ptr = std::make_shared<GreyboxWrapperOnWhitebox<StateType, ValueType>>(program);
         blackboxMDP = std::static_pointer_cast<BlackboxMDP<StateType, ValueType>>(ptr);
