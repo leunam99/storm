@@ -14,7 +14,7 @@ The code for the SIMULATE phase can be found in files
     - heuristicSim/HeuristicSim
 
 The code for the INFER phase can be found in files
-    - infer
+    - Infer
 
 The code for the data structures eMDP and bMDP can be found in the files with the respective name
 

@@ -4,7 +4,7 @@
 #include "storm-parsers/parser/PrismParser.h"
 #include "storm/modelchecker/blackbox/Simulator.h"
 #include "storm/modelchecker/blackbox/BlackboxInterface.h"
-#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
+#include "storm/modelchecker/blackbox/heuristicSimulate/HeuristicSim.h"
 
 
 TEST(Simulator, simulateSimplePath) {

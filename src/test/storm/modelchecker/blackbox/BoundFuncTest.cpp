@@ -1,6 +1,6 @@
 
 #include "test/storm_gtest.h"
-#include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
+#include "storm/modelchecker/blackbox/boundFunctions/BoundFunc.h"
 
 bool isInterval(std::pair<double, double> i){
     return i.first >= 0

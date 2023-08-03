@@ -21,6 +21,7 @@
 #include "storm/settings/SettingsManager.h"
 #include "storm/settings/modules/BlackboxSettings.h"
 #include "storm/models/sparse/StandardRewardModel.h"
+#include "storm/utility/macros.h"
 
 
 namespace storm {
@@ -49,7 +50,7 @@ bool BlackboxChecker<ModelType, StateType>::canHandle(CheckTask<storm::logic::Fo
 template<typename StateType>
 void executeEMdpFlags(settings::modules::BlackboxSettings blackboxSettings, EMdp<StateType> emdp) {
     if(blackboxSettings.isSetPrintEMdp()) //Print the explored emdp if flag is set 
-            emdp.print();
+        emdp.print();
 
 
     if(blackboxSettings.isSetWriteEMdpToFile()) { //Write to file if flag is set 
@@ -124,14 +125,18 @@ std::unique_ptr<CheckResult> BlackboxChecker<ModelType, StateType>::computeUntil
     std::pair<double, double> valueBounds = std::make_pair(0, 1);
 
     // run 3 step algorithm
+    STORM_LOG_TRACE("Start SMC-Algorithm for blackbox MDP");
     uint_fast64_t iterCount = 0;
     while (eps < valueBounds.second - valueBounds.first && iterCount < maxIterations) {
         iterCount++;
+        STORM_LOG_TRACE("Iteration " << iterCount << "/" << maxIterations);
 
         // simulate
+        STORM_LOG_TRACE("Start SIMULATE phase");
         simulator.simulate(emdp, simulationsPerIter);
 
-        // infer 
+        // infer
+        STORM_LOG_TRACE("Start INFER phase");
         auto bmdp = infer<StateType, ValueType>(emdp, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
 
         if(iterCount == maxIterations) //cli argument execution for emdp and bmdp
