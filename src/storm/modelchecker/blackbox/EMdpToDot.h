@@ -12,12 +12,6 @@ namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
-/*
-TODO: 
-- Coloring of states (for neib)
-- Information on states samples 
-*/
-
 template<typename StateType>
 class EMdpDotGenerator {
         private: 
@@ -48,7 +42,7 @@ class EMdpDotGenerator {
           * @param color color for the state 
           * @param outStream 
           */
-         void addEMdpStateDotLabel(StateType state, std::vector<std::string> labelVec, std::string color, std::ostream& outStream);
+         void addEmdpStateDotLabel(StateType state, std::vector<std::string> labelVec, std::string color, std::ostream& outStream);
 
          /*!
           * Write a dotLabel for a transition to outStream 
@@ -59,7 +53,7 @@ class EMdpDotGenerator {
           * @param colorCtr color index for the transition 
           * @param outStream 
           */
-         void addEMdpDotLabel(StateType action, StateType samples, std::vector<std::string> labelVec, StateType colorCtr, std::ostream& outStream);
+         void addEmdpDotLabel(StateType action, StateType samples, std::vector<std::string> labelVec, StateType colorCtr, std::ostream& outStream);
 
          /*!
           * Recursively writes predecessors of a state to outStream 

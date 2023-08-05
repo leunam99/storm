@@ -6,8 +6,6 @@
 #include "storm/settings/SettingsManager.h"
 #include "storm/settings/modules/CoreSettings.h"
 
-#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
-
 #include "storm/exceptions/IllegalArgumentValueException.h"
 #include "storm/utility/Engine.h"
 #include "storm/utility/macros.h"
@@ -20,21 +18,20 @@ namespace modules {
 const std::string BlackboxSettings::moduleName = "blackbox";
 
 // visualize emdp constants 
-const std::string BlackboxSettings::printEMdpOptionName = "printeMDP";
-const std::string BlackboxSettings::writeEMdpToFile = "eMDPtoFile";
-const std::string BlackboxSettings::convertToDotEMdpOptionName = "eMDPtoDot";
-const std::string BlackboxSettings::convertDotNeighborhoodEMdpOptionName = "eMDPNeighbToDot";
-const std::string BlackboxSettings::dotIncludeActionsOptionName = "dotIncAct";
-const std::string BlackboxSettings::dotIncludeSamplesOptionName = "dotIncSmpl"; 
-const std::string BlackboxSettings::dotIncludeLabelsOptionName = "dotIncLab";
-const std::string BlackboxSettings::dotIncludeColorOptionName = "dotIncCol";
+const std::string BlackboxSettings::printEMdpOptionName = "printEmdp";
+const std::string BlackboxSettings::writeEMdpToFile = "emdpToFile";
+const std::string BlackboxSettings::convertToDotEMdpOptionName = "emdptoDot";
+const std::string BlackboxSettings::convertDotNeighborhoodEMdpOptionName = "emdpNeighbToDot";
+const std::string BlackboxSettings::dotIncludeActionsOptionName = "dotAct";
+const std::string BlackboxSettings::dotIncludeSamplesOptionName = "dotSmpl"; 
+const std::string BlackboxSettings::dotIncludeLabelsOptionName = "dotLab";
+const std::string BlackboxSettings::dotIncludeColorOptionName = "dotCol";
 
 // visualize bmdp constants 
-const std::string BlackboxSettings::printBMdpOptionName = "printbMDP";
-const std::string BlackboxSettings::convertToDotBMdpOptionName = "bMDPtoDot"; 
+const std::string BlackboxSettings::convertToDotBMdpOptionName = "bmdpToDot"; 
 
 // simulation constants
-const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepssim";
+const std::string BlackboxSettings::numberOfSamplingsPerSimulationStepOptionName = "stepsim";
 const std::string BlackboxSettings::simulationHeuristicOptionName = "simheuristic";
 const std::string BlackboxSettings::seedSimHeuristicOptionName = "seedsimheuristic";
 // plot simulation
@@ -48,7 +45,7 @@ const std::string BlackboxSettings::greyboxOptionName = "greybox";
 const std::string BlackboxSettings::pMinOptionName = "pmin";
 const std::string BlackboxSettings::precisionOptionName = "precision";
 const std::string BlackboxSettings::precisionOptionShortName = "eps";
-const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiterations";
+const std::string BlackboxSettings::maxNumIterationsOptionName = "maxiter";
 
 
 BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
@@ -116,11 +113,6 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
                         .build());         
 
     // visualize bmdp options 
-
-    this->addOption(storm::settings::OptionBuilder(moduleName, printBMdpOptionName, true,
-                                                   "Prints the bMDP to the console.")
-                        .setIsAdvanced()
-                        .build());
 
     this->addOption(storm::settings::OptionBuilder(moduleName, convertToDotBMdpOptionName, true, "Converts the bMDP to the dot format.")
                         .setIsAdvanced()
@@ -250,10 +242,6 @@ bool BlackboxSettings::isSetDotIncCol() const {
     return this->getOption(dotIncludeColorOptionName).getHasOptionBeenSet();
 }
 
-
-bool BlackboxSettings::isSetPrintBMdp() const {
-    return this->getOption(printBMdpOptionName).getHasOptionBeenSet();
-}
 bool BlackboxSettings::isSetBMdpToDot() const {
     return this->getOption(convertToDotBMdpOptionName).getHasOptionBeenSet();
 }
@@ -367,7 +355,6 @@ bool BlackboxSettings::check() const {
                       this->getOption(dotIncludeSamplesOptionName).getHasOptionBeenSet() ||
                       this->getOption(dotIncludeLabelsOptionName).getHasOptionBeenSet() ||
                       this->getOption(dotIncludeColorOptionName).getHasOptionBeenSet() ||
-                      this->getOption(printBMdpOptionName).getHasOptionBeenSet() ||
                       this->getOption(convertToDotBMdpOptionName).getHasOptionBeenSet();
     STORM_LOG_WARN_COND(storm::settings::getModule<storm::settings::modules::CoreSettings>().getEngine() == storm::utility::Engine::Blackbox || !optionsSet,
                         "blackbox engine is not selected, so setting options for it has no effect.");

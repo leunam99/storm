@@ -5,17 +5,31 @@
 
 #include "storm/storage/prism/Program.h"
 
+/*
+This Checker implements the SMC-Algorithm for blackbox MDP from paper 
+"Statistical Model Checking Blackbox MDP via Families of Bounded Parameter MDP" by Maximilian Weiniger <weininge@in.tum.de>
 
+The code for the SIMULATE phase can be found in files 
+    - Simulator 
+    - heuristicSim/HeuristicSim
+
+The code for the INFER phase can be found in files
+    - Infer
+
+The code for the data structures eMDP and bMDP can be found in the files with the respective name
+
+The oracle for a blackbox MDP is defined in BlackboxInterface
+*/
 namespace storm {
 namespace modelchecker {
 namespace blackbox {
 
 template<typename ModelType, typename StateType>
-class BlackBoxChecker: public storm::modelchecker::AbstractModelChecker<ModelType> {
+class BlackboxChecker: public storm::modelchecker::AbstractModelChecker<ModelType> {
     public:
      typedef typename ModelType::ValueType ValueType;
 
-     BlackBoxChecker(storm::prism::Program const& program);
+     BlackboxChecker(storm::prism::Program const& program);
 
      /*! 
       * Determines whether the model checker can handle the given verification task. If this method returns

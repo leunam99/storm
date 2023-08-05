@@ -1,9 +1,9 @@
 #pragma once
 #include <random>
 
-#include "storm/modelchecker/blackbox/bound-functions/BoundFunc.h"
+#include "storm/modelchecker/blackbox/boundFunctions/BoundFunc.h"
 #include "storm/modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
-#include "storm/modelchecker/blackbox/heuristic-simulate/HeuristicSim.h"
+#include "storm/modelchecker/blackbox/heuristicSimulate/HeuristicSim.h"
 #include "storm/settings/modules/ModuleSettings.h"
 
 namespace storm {

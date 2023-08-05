@@ -3,7 +3,7 @@
 #include "BlackboxInterface.h"
 #include "modelchecker/blackbox/BMdp.h"
 #include "modelchecker/blackbox/EMdp.h"
-#include "modelchecker/blackbox/bound-functions/BoundFunc.h"
+#include "modelchecker/blackbox/boundFunctions/BoundFunc.h"
 #include "modelchecker/blackbox/deltaDistribution/DeltaDistribution.h"
 
 using storm::modelchecker::blackbox::EMdp;
