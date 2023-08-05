@@ -134,12 +134,12 @@ std::unique_ptr<CheckResult> BlackBoxChecker<ModelType, StateType>::computeUntil
         blackboxExplorer.performExploration(eMDP, simulationsPerIter);
 
         // infer 
-        auto bMDP = infer<StateType, ValueType>(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, !blackboxMDP->isGreybox());
+        auto bMDP = infer(eMDP, *boundFunc, *deltaDist, blackboxMDP->getPmin(), delta, blackboxMDP->isGreybox(), blackboxMDP);
 
-        if(iterCount == maxIterations) //cli argument execution for eMDP and bMDP 
-            executeBMdpFlags(blackboxSettings, bMDP); 
+        if(iterCount == maxIterations) {  // cli argument execution for eMDP and bMDP
+            executeBMdpFlags(blackboxSettings, bMDP);
             executeEMdpFlags(blackboxSettings, eMDP);
-        
+        }
         // value approximation (implemented some time in future)
     }
 

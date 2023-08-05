@@ -202,7 +202,7 @@ BlackboxSettings::BlackboxSettings() : ModuleSettings(moduleName) {
     // general options
     this->addOption(storm::settings::OptionBuilder(moduleName, pMinOptionName, true, "Lower bound for all transition probabilities in the blackbox mdp.")
                         .addArgument(storm::settings::ArgumentBuilder::createDoubleArgument("pMin", "Lower bound for all transition probabilities.")
-                                         .setDefaultValueDouble(1e-06)
+                                         .setDefaultValueDouble(1e-3)
                                          .addValidatorDouble(ArgumentValidatorFactory::createDoubleRangeValidatorExcluding(0.0, 1.0))
                                          .build())
                         .build());
