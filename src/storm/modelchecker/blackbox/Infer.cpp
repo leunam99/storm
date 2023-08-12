@@ -13,7 +13,7 @@ storm::storage::SparseMatrixBuilder<ValueType> initialiseMatrix(EMdp<IndexType> 
     //row count: sum of number of actions for each state + 1 for dummy state
     IndexType rows = 1 + emdp.gettotalStateActionPairCount();
     //entries: total number of nonzero entries + 1 for dummy state + 1 for each action to account for unsampled transitions
-    //this overestimates the needed entries because some of them we do not need the unsampled ones
+    //this overestimates the needed entries because for some of them we do not need the unsampled ones
     IndexType entries = 1 + emdp.getTotalTransitionCount() + emdp.gettotalStateActionPairCount();
 
     return storm::storage::SparseMatrixBuilder<ValueType>(rows,states,entries,false,true,states);
@@ -161,11 +161,6 @@ BMdp<ValueType> infer(EMdp<IndexType> &emdp, BoundFunc<ValueType> &boundFunc, De
     std::unordered_map<std::string,storm::models::sparse::StandardRewardModel<double>> rewardMap;
     for(int i = 0; i < amountOfRewardModels; i ++){
         rewardMap.insert(std::pair(models[i].getName(), std::move(rewards[i])));
-    }
-
-
-    for (const auto &p : rewardMap) {
-        std::cout << "m[" << p.first << "] = " << p.second << '\n';
     }
 
     storm::storage::sparse::ModelComponents<Bounds, storm::models::sparse::StandardRewardModel<ValueType> > components{matrixBuilder.build(),std::move(stateLabeling), std::move(rewardMap)};
