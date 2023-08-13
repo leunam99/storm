@@ -20,7 +20,7 @@ const std::string BlackboxSettings::moduleName = "blackbox";
 // visualize emdp constants 
 const std::string BlackboxSettings::printEMdpOptionName = "printEmdp";
 const std::string BlackboxSettings::writeEMdpToFile = "emdpToFile";
-const std::string BlackboxSettings::convertToDotEMdpOptionName = "emdptoDot";
+const std::string BlackboxSettings::convertToDotEMdpOptionName = "emdpToDot";
 const std::string BlackboxSettings::convertDotNeighborhoodEMdpOptionName = "emdpNeighbToDot";
 const std::string BlackboxSettings::dotIncludeActionsOptionName = "dotAct";
 const std::string BlackboxSettings::dotIncludeSamplesOptionName = "dotSmpl"; 
