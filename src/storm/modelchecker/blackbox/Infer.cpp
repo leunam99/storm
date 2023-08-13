@@ -1,4 +1,4 @@
-#include "storm/modelchecker/blackbox/infer.h"
+#include "storm/modelchecker/blackbox/Infer.h"
 
 #include "storm/storage/SparseMatrix.h"
 #include "storm/models/sparse/StandardRewardModel.h"
